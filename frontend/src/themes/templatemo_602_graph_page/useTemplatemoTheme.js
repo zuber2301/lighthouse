@@ -8,6 +8,11 @@ export default function useTemplatemoTheme() {
       const ctx = canvas.getContext && canvas.getContext('2d')
       if (!ctx) return
 
+      // start hidden for a reveal
+      canvas.style.opacity = '0'
+      canvas.style.transform = 'translateY(6px)'
+      canvas.style.transition = 'opacity 420ms ease, transform 420ms ease'
+
       // set logical size
       const dpr = window.devicePixelRatio || 1
       canvas.width = Math.floor(canvas.offsetWidth * dpr)
@@ -45,6 +50,12 @@ export default function useTemplatemoTheme() {
       gradient.addColorStop(1, color + '00')
       ctx.fillStyle = gradient
       ctx.fill()
+
+      // reveal
+      requestAnimationFrame(() => {
+        canvas.style.opacity = '1'
+        canvas.style.transform = 'translateY(0)'
+      })
     }
 
     // init charts
@@ -54,26 +65,29 @@ export default function useTemplatemoTheme() {
       drawMiniChart('miniChart3', '#00ccff')
     }, 120)
 
-    // animate stat cards into view
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          const el = entry.target
-          if (entry.isIntersecting) {
-            el.style.transform = 'translateY(0)'
-            el.style.opacity = '1'
-          }
-        })
-      },
-      { threshold: 0.35 }
-    )
+    // animate stat cards into view (guarded for test env where IntersectionObserver may not exist)
+    let observer = null
+    if (typeof IntersectionObserver !== 'undefined' && typeof document !== 'undefined') {
+      observer = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            const el = entry.target
+            if (entry.isIntersecting) {
+              el.style.transform = 'translateY(0)'
+              el.style.opacity = '1'
+            }
+          })
+        },
+        { threshold: 0.35 }
+      )
 
-    document.querySelectorAll('[data-theme="graph-stat-card"]').forEach((el) => observer.observe(el))
+      document.querySelectorAll('[data-theme="graph-stat-card"]').forEach((el) => observer.observe(el))
+    }
 
     // cleanup
     return () => {
       window.clearTimeout(initTimeout)
-      observer.disconnect()
+      if (observer) observer.disconnect()
     }
   }, [])
 }

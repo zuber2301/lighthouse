@@ -10,9 +10,12 @@ const items = [
   { label: 'Admin ⚙', href: '/admin' },
 ]
 
+import { useTheme } from '../themes/templatemo_602_graph_page/ThemeProvider'
+
 export default function Sidebar() {
+  const themed = useTheme()
   return (
-    <aside className="w-64 min-h-screen bg-surface border-r border-slate-800 text-slate-100">
+    <aside className={`w-64 min-h-screen bg-surface border-r border-slate-800 text-slate-100 ${themed ? '': ''}`}>
       <div className="p-6">
         <div className="text-xl font-semibold mb-6">LightHouse</div>
         <nav className="flex flex-col gap-1" role="navigation" aria-label="Main navigation">

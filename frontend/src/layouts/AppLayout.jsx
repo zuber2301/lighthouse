@@ -2,6 +2,7 @@ import React from 'react'
 import { Outlet } from 'react-router-dom'
 import Sidebar from '../components/Sidebar'
 import Header from '../components/Header'
+import { ThemeProvider } from '../themes/templatemo_602_graph_page/ThemeProvider'
 
 export default function AppLayout() {
   return (
@@ -11,7 +12,9 @@ export default function AppLayout() {
         <Header />
         <main className="p-6">
           <div className="max-w-full">
-            <Outlet />
+            <ThemeProvider>
+              <Outlet />
+            </ThemeProvider>
           </div>
         </main>
       </div>
