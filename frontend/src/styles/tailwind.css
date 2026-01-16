@@ -1,0 +1,25 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --lh-bg: theme('colors.surface');
+}
+
+html, body, #root {
+  height: 100%;
+}
+
+body {
+  @apply bg-slate-950 text-slate-100 font-sans;
+}
+
+.lh-card {
+  @apply bg-card rounded-xl p-6 shadow-sm;
+}
+
+/* Focus rings are provided via Tailwind utilities.
+   Use `focus-visible:ring-3 focus-visible:ring-primary` for the baseline ring,
+   or `focus-visible:ring-2 focus-visible:ring-indigo-500` for alternative styles.
+   This keeps styles purge-safe and consistent.
+*/

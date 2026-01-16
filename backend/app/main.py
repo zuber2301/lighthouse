@@ -1,0 +1,46 @@
+from fastapi import FastAPI, Request
+from starlette.middleware.base import BaseHTTPMiddleware
+
+from app.core import tenancy
+from app.api import auth, recognition, rewards, platform_admin, tenant_admin, analytics
+from app.db.base import Base
+from app.db.session import engine
+import asyncio
+
+
+app = FastAPI(title="lighthouse-backend")
+
+
+@app.on_event("startup")
+async def create_tables():
+    async with engine.begin() as conn:
+        await conn.run_sync(Base.metadata.create_all)
+
+
+class TenantMiddleware(BaseHTTPMiddleware):
+    async def dispatch(self, request: Request, call_next):
+        # Resolve tenant and attach to request.state before any route handling
+        # pass header explicitly to avoid FastAPI `Header` default object
+        tenant_id = tenancy.get_current_tenant(request, request.headers.get("X-Tenant-ID"))
+        request.state.tenant_id = tenant_id
+        # set context var so DB sessions can pick it up for automatic scoping
+        token = tenancy.CURRENT_TENANT.set(tenant_id)
+        try:
+            return await call_next(request)
+        finally:
+            tenancy.CURRENT_TENANT.reset(token)
+
+
+app.add_middleware(TenantMiddleware)
+
+app.include_router(auth.router)
+app.include_router(recognition.router)
+app.include_router(rewards.router)
+app.include_router(platform_admin.router)
+app.include_router(tenant_admin.router)
+app.include_router(analytics.router)
+
+
+@app.get("/")
+async def root(request: Request):
+    return {"message": "Lighthouse backend running", "tenant": getattr(request.state, "tenant_id", None)}
