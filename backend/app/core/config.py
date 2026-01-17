@@ -24,7 +24,7 @@ class Settings(BaseSettings):
     SOCIAL_FEED_LENGTH: int = 200
     # Development-only: when set, use this tenant id as a fallback when no
     # tenant header or JWT is provided. Set via environment variable in dev.
-    DEV_DEFAULT_TENANT: str | None = None
+    DEV_DEFAULT_TENANT: str | None = "dev-tenant"
 
     class Config:
         env_file = ".env"

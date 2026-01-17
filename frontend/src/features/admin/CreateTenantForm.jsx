@@ -20,8 +20,13 @@ export default function CreateTenantForm() {
 
   const fetchSubscriptionPlans = async () => {
     try {
+      const token = localStorage.getItem('auth_token')
+      const headers = {}
+      if (token) {
+        headers['Authorization'] = `Bearer ${token}`
+      }
       const response = await fetch('http://localhost:18000/platform/subscription-plans', {
-        credentials: 'include'
+        headers
       })
       if (response.ok) {
         const plans = await response.json()

@@ -39,7 +39,8 @@ export default function LoginPage() {
         // Fetch the Google OAuth authorization URL from backend
         const response = await fetch('http://localhost:18000/auth/google')
         if (!response.ok) {
-          throw new Error('Failed to get authorization URL')
+          const errorData = await response.json().catch(() => ({}))
+          throw new Error(errorData.detail || `Server error: ${response.status}`)
         }
         const data = await response.json()
         
@@ -47,7 +48,13 @@ export default function LoginPage() {
         window.location.href = data.authorization_url
       } catch (error) {
         console.error('Google login failed:', error)
-        alert('Failed to initiate Google login. Please try again.')
+        if (error.message.includes('Failed to fetch') || error.message.includes('NetworkError')) {
+          alert('Unable to connect to server. Please ensure the backend is running on port 18000.')
+        } else if (error.message.includes('Google OAuth not configured')) {
+          alert('Google OAuth is not configured. Please check the backend .env file and GOOGLE_OAUTH_SETUP.md.')
+        } else {
+          alert(`Failed to initiate Google login: ${error.message}`)
+        }
       }
     } else {
       console.log(`Login with ${provider}`)

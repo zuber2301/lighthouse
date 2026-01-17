@@ -18,7 +18,7 @@ To enable Google authentication, you need to set up OAuth credentials in Google 
 3. Configure OAuth consent screen if prompted
 4. Select "Web application" as application type
 5. Add authorized redirect URIs:
-   - `http://localhost:18000/auth/google/callback` (for development)
+   - `http://localhost:18000/auth/callback` (for development)
    - Add your production domain when deploying
 6. Save and copy the Client ID and Client Secret
 
@@ -26,9 +26,9 @@ To enable Google authentication, you need to set up OAuth credentials in Google 
 Update your `.env` file in the backend directory:
 
 ```env
-GOOGLE_CLIENT_ID=your-actual-google-client-id
-GOOGLE_CLIENT_SECRET=your-actual-google-client-secret
-GOOGLE_REDIRECT_URI=http://localhost:18000/auth/google/callback
+google_oidc_client_id=your-actual-google-client-id
+google_oidc_client_secret=your-actual-google-client-secret
+google_oidc_redirect_uri=http://localhost:18000/auth/callback
 ```
 
 ### 5. Platform Admin Setup

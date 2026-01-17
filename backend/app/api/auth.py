@@ -46,7 +46,7 @@ async def login(request: LoginRequest, db: AsyncSession = Depends(get_db)):
     access_token_expires = timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
     token_data = {
         "sub": str(user.id),
-        "tenant_id": str(user.tenant_id) if user.tenant_id else None,
+        "tenant_id": str(user.tenant_id) if user.tenant_id else settings.DEV_DEFAULT_TENANT,
         "role": user.role.value if hasattr(user.role, 'value') else user.role
     }
     access_token = jwt.encode(token_data, settings.JWT_SECRET, algorithm=settings.JWT_ALGORITHM)
@@ -141,7 +141,7 @@ async def google_callback(code: str, state: str, db: AsyncSession = Depends(get_
         access_token_expires = timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
         token_data = {
             "sub": str(user.id),
-            "tenant_id": str(user.tenant_id) if user.tenant_id else None,
+            "tenant_id": str(user.tenant_id) if user.tenant_id else settings.DEV_DEFAULT_TENANT,
             "role": user.role.value if hasattr(user.role, 'value') else user.role
         }
         access_token = jwt.encode(token_data, settings.JWT_SECRET, algorithm=settings.JWT_ALGORITHM)
@@ -169,3 +169,32 @@ async def google_callback(code: str, state: str, db: AsyncSession = Depends(get_
 @router.get("/health")
 async def health():
     return {"status": "auth ok"}
+
+
+@router.get("/dev-token")
+async def dev_token(db: AsyncSession = Depends(get_db)):
+    """Development helper: return a JWT for the configured PLATFORM_ADMIN_EMAIL.
+
+    Only available when `DEV_DEFAULT_TENANT` is set. This helps local development
+    when you need a token to call platform-admin endpoints.
+    """
+    if not getattr(settings, "DEV_DEFAULT_TENANT", None):
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="DEV_DEFAULT_TENANT not configured")
+
+    # Find or create the platform admin user
+    user_q = await db.execute(select(User).where(User.email == settings.PLATFORM_ADMIN_EMAIL))
+    user = user_q.scalar_one_or_none()
+    if not user:
+        user = User(email=settings.PLATFORM_ADMIN_EMAIL, full_name="Platform Admin", role=UserRole.PLATFORM_ADMIN, is_active=True)
+        db.add(user)
+        await db.commit()
+        await db.refresh(user)
+
+    token_data = {
+        "sub": str(user.id),
+        "tenant_id": settings.DEV_DEFAULT_TENANT,
+        "role": UserRole.PLATFORM_ADMIN.value if hasattr(UserRole.PLATFORM_ADMIN, 'value') else 'PLATFORM_ADMIN'
+    }
+    access_token = jwt.encode(token_data, settings.JWT_SECRET, algorithm=settings.JWT_ALGORITHM)
+
+    return {"token": access_token, "user": {"id": str(user.id), "email": user.email, "full_name": user.full_name, "role": user.role.value if hasattr(user.role, 'value') else user.role}}

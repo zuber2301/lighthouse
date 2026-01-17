@@ -5,6 +5,8 @@ import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import { BrowserRouter } from 'react-router-dom'
 import App from './App'
 import './styles/tailwind.css'
+// Ensure Authorization header is injected for platform API calls
+import './lib/fetchAuth'
 import { LiveAnnouncerProvider } from './components/LiveAnnouncer'
 import { ToastProvider } from './components/ToastProvider'
 
