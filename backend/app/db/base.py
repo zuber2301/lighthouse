@@ -1,5 +1,5 @@
-from sqlalchemy import MetaData, Column, DateTime, func, Boolean
-from sqlalchemy.orm import DeclarativeBase
+from sqlalchemy import MetaData, Column, DateTime, func, Boolean, String
+from sqlalchemy.orm import declarative_base
 from sqlalchemy.dialects.postgresql import UUID
 import uuid
 
@@ -8,21 +8,20 @@ import uuid
 metadata = MetaData()
 
 
-class Base(DeclarativeBase):
-	metadata = metadata
+Base = declarative_base(metadata=metadata)
 
 
 class TenantMixin:
 	"""Adds `tenant_id` UUID column to models for row-level isolation."""
 
-	tenant_id = Column(UUID(as_uuid=True), nullable=False, index=True)
+	tenant_id = Column(String(36), nullable=False, index=True)
 
 
 class TimestampMixin:
 	"""Common immutable audit columns."""
 
 	created_at = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
-	created_by = Column(UUID(as_uuid=True), nullable=True)
+	created_by = Column(String(36), nullable=True)
 
 
 class SoftDeleteMixin:

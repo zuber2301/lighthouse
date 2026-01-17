@@ -1,8 +1,9 @@
 from fastapi import FastAPI, Request
+from fastapi.middleware.cors import CORSMiddleware
 from starlette.middleware.base import BaseHTTPMiddleware
 
 from app.core import tenancy
-from app.api import auth, recognition, rewards, platform_admin, tenant_admin, analytics
+from app.api import auth, recognition, rewards, platform_admin, tenant_admin, analytics, tenant_lead, corporate_user
 from app.db.base import Base
 from app.db.session import engine
 import asyncio
@@ -10,15 +11,44 @@ import asyncio
 
 app = FastAPI(title="lighthouse-backend")
 
+# Add CORS middleware
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:3000", "http://localhost:3001", "http://localhost:3002", "http://localhost:3003", "http://localhost:3004"],  # Frontend origins
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 
 @app.on_event("startup")
 async def create_tables():
-    async with engine.begin() as conn:
-        await conn.run_sync(Base.metadata.create_all)
+    # Temporarily bypass tenant checking during table creation
+    from app.core import tenancy
+    token = tenancy._BYPASS_TENANT.set(True)
+    try:
+        async with engine.begin() as conn:
+            await conn.run_sync(Base.metadata.create_all)
+    finally:
+        tenancy._BYPASS_TENANT.reset(token)
 
 
 class TenantMiddleware(BaseHTTPMiddleware):
     async def dispatch(self, request: Request, call_next):
+        # Skip tenant resolution for platform admin routes, auth routes, and root/docs routes
+        if (request.url.path.startswith("/platform") or 
+            request.url.path.startswith("/auth") or 
+            request.url.path in ["/", "/docs", "/redoc", "/openapi.json"] or
+            request.url.path.startswith("/favicon")):
+            request.state.tenant_id = None
+            token = tenancy.CURRENT_TENANT.set(None)
+            bypass_token = tenancy._BYPASS_TENANT.set(True)
+            try:
+                return await call_next(request)
+            finally:
+                tenancy.CURRENT_TENANT.reset(token)
+                tenancy._BYPASS_TENANT.reset(bypass_token)
+        
         # Resolve tenant and attach to request.state before any route handling
         # pass header explicitly to avoid FastAPI `Header` default object
         tenant_id = tenancy.get_current_tenant(request, request.headers.get("X-Tenant-ID"))
@@ -38,6 +68,8 @@ app.include_router(recognition.router)
 app.include_router(rewards.router)
 app.include_router(platform_admin.router)
 app.include_router(tenant_admin.router)
+app.include_router(tenant_lead.router)
+app.include_router(corporate_user.router)
 app.include_router(analytics.router)
 
 

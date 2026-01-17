@@ -1,4 +1,5 @@
-from pydantic import BaseSettings
+import os
+from pydantic_settings import BaseSettings
 
 
 class Settings(BaseSettings):
@@ -8,6 +9,15 @@ class Settings(BaseSettings):
     # JWT settings for tenant extraction
     JWT_SECRET: str = "changeme"
     JWT_ALGORITHM: str = "HS256"
+    ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
+
+    # Google OAuth settings
+    google_oidc_client_id: str = ""
+    google_oidc_client_secret: str = ""
+    google_oidc_redirect_uri: str = "http://localhost:18000/auth/callback"
+
+    # Platform admin email
+    PLATFORM_ADMIN_EMAIL: str = "mohammed.zuber@gmail.com"
     # Optional Redis URL for caching, social feed, rate limiting, etc.
     REDIS_URL: str | None = None
     # Social feed length cap

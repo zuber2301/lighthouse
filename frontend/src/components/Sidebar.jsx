@@ -8,6 +8,10 @@ const items = [
   { label: 'Rewards', href: '/rewards' },
   { label: 'Analytics', href: '/analytics' },
   { label: 'Admin ⚙', href: '/admin' },
+  { label: '🏢 Platform Admin', href: '/platform-admin' },
+  { label: '💼 Tenant Admin', href: '/tenant-admin' },
+  { label: '👔 Tenant Lead', href: '/tenant-lead' },
+  { label: '👤 Corporate User', href: '/corporate-user' },
 ]
 
 import { useTheme } from '../themes/templatemo_602_graph_page/ThemeProvider'
