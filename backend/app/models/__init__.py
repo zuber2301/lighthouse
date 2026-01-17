@@ -9,6 +9,7 @@ from .budgets import BudgetPool, DepartmentBudget, BudgetLedger
 from .subscriptions import SubscriptionPlan, TenantSubscription
 from .global_rewards import GlobalReward
 from .audit_logs import PlatformAuditLog
+from .transactions import Transaction, TransactionType
 
 __all__ = [
     "Tenant",
@@ -28,4 +29,6 @@ __all__ = [
     "TenantSubscription",
     "GlobalReward",
     "PlatformAuditLog",
+    "Transaction",
+    "TransactionType",
 ]

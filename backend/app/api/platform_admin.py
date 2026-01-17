@@ -5,11 +5,13 @@ from app.db.session import get_db
 from app.core.rbac import require_role
 from app.core.auth import get_current_user, User as CurrentUser
 from app.models.tenants import Tenant
+from app.models.users import User, UserRole
 from app.models.platform import PlatformSettings
 from app.models.budgets import BudgetPool
 from app.models.subscriptions import SubscriptionPlan, TenantSubscription
 from app.models.global_rewards import GlobalReward
 from app.models.audit_logs import PlatformAuditLog
+from app.models.transactions import Transaction, TransactionType
 from typing import Optional, List
 import datetime
 import uuid
@@ -21,6 +23,12 @@ class OnboardTenantRequest(BaseModel):
     subdomain: str
     admin_email: Optional[str] = None
     plan_id: int
+
+
+class CreateTenantAdminRequest(BaseModel):
+    tenant_id: str
+    email: str
+    full_name: str
 
 
 class GlobalRewardRequest(BaseModel):
@@ -99,6 +107,46 @@ async def onboard_tenant(request: OnboardTenantRequest, db: AsyncSession = Depen
     await db.commit()
     
     return {"id": str(tenant.id), "subdomain": tenant.subdomain}
+
+
+@router.post("/tenants/{tenant_id}/init-admin")
+async def create_tenant_admin(tenant_id: str, request: CreateTenantAdminRequest, db: AsyncSession = Depends(get_db), user: CurrentUser = Depends(require_role("PLATFORM_ADMIN"))):
+    # Verify tenant exists
+    tenant_q = await db.execute(select(Tenant).where(Tenant.id == tenant_id))
+    tenant = tenant_q.scalar_one_or_none()
+    if not tenant:
+        raise HTTPException(status_code=404, detail="Tenant not found")
+    
+    # Check if admin already exists for this tenant
+    existing_admin_q = await db.execute(
+        select(User).where(User.tenant_id == tenant_id, User.role == UserRole.TENANT_ADMIN)
+    )
+    if existing_admin_q.scalar_one_or_none():
+        raise HTTPException(status_code=400, detail="Tenant admin already exists")
+    
+    # Create tenant admin user
+    tenant_admin = User(
+        tenant_id=tenant_id,
+        email=request.email,
+        full_name=request.full_name,
+        role=UserRole.TENANT_ADMIN,
+        is_active=True
+    )
+    db.add(tenant_admin)
+    await db.commit()
+    await db.refresh(tenant_admin)
+    
+    # Log audit
+    audit = PlatformAuditLog(
+        admin_id=user.id,
+        action="TENANT_ADMIN_CREATED",
+        target_tenant_id=tenant_id,
+        details={"admin_email": request.email, "admin_id": str(tenant_admin.id)}
+    )
+    db.add(audit)
+    await db.commit()
+    
+    return {"id": str(tenant_admin.id), "email": tenant_admin.email, "role": tenant_admin.role.value}
 
 
 @router.patch("/tenants/{tenant_id}")

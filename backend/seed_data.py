@@ -9,7 +9,8 @@ from sqlalchemy import select
 from app.db.base import Base
 from app.models.subscriptions import SubscriptionPlan
 from app.models.global_rewards import GlobalReward
-from app.models.users import User
+from app.models.users import User, UserRole
+from app.models.tenants import Tenant
 from app.models.platform import PlatformSettings
 from app.core.security import get_password_hash
 from app.core.config import settings
@@ -72,8 +73,79 @@ async def seed_data():
             session.add(settings_obj)
             print("Created platform settings")
         
-        await session.commit()
-        print("Seeded initial data")
+        # Create a test tenant
+        test_tenant = Tenant(
+            name="Acme Corporation",
+            subdomain="acme",
+            master_budget_balance=10000000,  # 1 lakh rupees in paise
+            status="active"
+        )
+        result = await session.execute(select(Tenant).where(Tenant.subdomain == "acme"))
+        if not result.scalar():
+            session.add(test_tenant)
+            await session.commit()
+            await session.refresh(test_tenant)
+            print("Created test tenant: Acme Corporation")
+
+            # Create tenant admin
+            tenant_admin = User(
+                tenant_id=test_tenant.id,
+                email="admin@acme.com",
+                hashed_password=get_password_hash("password"),
+                full_name="John Admin",
+                role=UserRole.TENANT_ADMIN,
+                is_active=True
+            )
+            session.add(tenant_admin)
+
+            # Create tenant leads
+            lead1 = User(
+                tenant_id=test_tenant.id,
+                email="rajesh@acme.com",
+                hashed_password=get_password_hash("password"),
+                full_name="Rajesh Kumar",
+                role=UserRole.TENANT_LEAD,
+                lead_budget_balance=200000,  # 2000 rupees in paise
+                is_active=True
+            )
+            session.add(lead1)
+
+            lead2 = User(
+                tenant_id=test_tenant.id,
+                email="anita@acme.com",
+                hashed_password=get_password_hash("password"),
+                full_name="Anita Sharma",
+                role=UserRole.TENANT_LEAD,
+                lead_budget_balance=200000,  # 2000 rupees in paise
+                is_active=True
+            )
+            session.add(lead2)
+
+            # Create corporate users
+            user1 = User(
+                tenant_id=test_tenant.id,
+                email="suresh@acme.com",
+                hashed_password=get_password_hash("password"),
+                full_name="Suresh Patel",
+                role=UserRole.CORPORATE_USER,
+                points_balance=500,
+                is_active=True
+            )
+            session.add(user1)
+
+            user2 = User(
+                tenant_id=test_tenant.id,
+                email="priya@acme.com",
+                hashed_password=get_password_hash("password"),
+                full_name="Priya Singh",
+                role=UserRole.CORPORATE_USER,
+                points_balance=750,
+                is_active=True
+            )
+            session.add(user2)
+
+            await session.commit()
+            print("Created test users for Acme Corporation")
 
 if __name__ == "__main__":
     asyncio.run(seed_data())

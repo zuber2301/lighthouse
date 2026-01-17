@@ -2,7 +2,7 @@ from fastapi import FastAPI, Request
 from starlette.middleware.base import BaseHTTPMiddleware
 
 from app.core import tenancy
-from app.api import auth, recognition, rewards, platform_admin, tenant_admin, analytics
+from app.api import auth, recognition, rewards, platform_admin, tenant_admin, analytics, tenant_lead, corporate_user
 from app.db.base import Base
 from app.db.session import engine
 import asyncio
@@ -19,8 +19,11 @@ async def create_tables():
 
 class TenantMiddleware(BaseHTTPMiddleware):
     async def dispatch(self, request: Request, call_next):
-        # Skip tenant resolution for platform admin routes
-        if request.url.path.startswith("/platform"):
+        # Skip tenant resolution for platform admin routes, auth routes, and root/docs routes
+        if (request.url.path.startswith("/platform") or 
+            request.url.path.startswith("/auth") or 
+            request.url.path in ["/", "/docs", "/redoc", "/openapi.json"] or
+            request.url.path.startswith("/favicon")):
             request.state.tenant_id = None
             token = tenancy.CURRENT_TENANT.set(None)
             bypass_token = tenancy._BYPASS_TENANT.set(True)
@@ -49,6 +52,8 @@ app.include_router(recognition.router)
 app.include_router(rewards.router)
 app.include_router(platform_admin.router)
 app.include_router(tenant_admin.router)
+app.include_router(tenant_lead.router)
+app.include_router(corporate_user.router)
 app.include_router(analytics.router)
 
 

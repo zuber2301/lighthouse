@@ -26,6 +26,10 @@ def get_current_tenant(request: Request, x_tenant_id: Optional[str] = Header(Non
     In development, if no header or JWT is present and `settings.DEV_DEFAULT_TENANT`
     is set, it will be returned as a fallback tenant. Otherwise raises 401.
     """
+    # If bypassing tenant filter, return None
+    if is_bypass_enabled():
+        return None
+    
     auth: str = request.headers.get("Authorization", "")
     if auth.startswith("Bearer "):
         token = auth.split(" ", 1)[1]

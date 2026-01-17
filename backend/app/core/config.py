@@ -8,6 +8,7 @@ class Settings(BaseSettings):
     # JWT settings for tenant extraction
     JWT_SECRET: str = "changeme"
     JWT_ALGORITHM: str = "HS256"
+    ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
     # Optional Redis URL for caching, social feed, rate limiting, etc.
     REDIS_URL: str | None = None
     # Social feed length cap
