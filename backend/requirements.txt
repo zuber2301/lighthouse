@@ -10,3 +10,7 @@ aioredis==2.0.1
 pydantic-settings
 authlib==1.2.1
 httpx==0.25.0
+pytest==7.4.0
+pytest-asyncio==0.21.1
+pytest-cov==4.1.0
+faker==20.1.0

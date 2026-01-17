@@ -31,6 +31,11 @@ async def seed_data():
         # Seed subscription plans
         plans = [
             SubscriptionPlan(
+                name="Basic",
+                monthly_price_in_paise=0,  # Free
+                features={"max_users": 10, "max_recognitions_per_month": 100, "description": "Free recognition platform", "features": ["Basic recognition", "Email notifications"]}
+            ),
+            SubscriptionPlan(
                 name="Starter",
                 monthly_price_in_paise=2900,  # $29 in paise
                 features={"max_users": 50, "max_recognitions_per_month": 1000, "description": "Basic recognition platform", "features": ["Basic recognition", "Email notifications", "Standard reports"]}

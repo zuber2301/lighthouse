@@ -21,7 +21,8 @@ from pydantic import BaseModel
 class OnboardTenantRequest(BaseModel):
     name: str
     subdomain: str
-    admin_email: Optional[str] = None
+    admin_email: str
+    admin_name: str
     plan_id: int
 
 
@@ -40,9 +41,20 @@ class GlobalRewardRequest(BaseModel):
 router = APIRouter(prefix="/platform")
 
 
-@router.get("/status")
-async def status():
-    return {"status": "platform admin ok"}
+@router.get("/subscription-plans")
+async def get_subscription_plans(db: AsyncSession = Depends(get_db), user: CurrentUser = Depends(require_role("PLATFORM_ADMIN"))):
+    result = await db.execute(select(SubscriptionPlan))
+    plans = result.scalars().all()
+    
+    return [
+        {
+            "id": plan.id,
+            "name": plan.name,
+            "monthly_price_in_paise": plan.monthly_price_in_paise,
+            "features": plan.features
+        }
+        for plan in plans
+    ]
 
 
 @router.get("/tenants")
@@ -71,11 +83,16 @@ async def list_tenants(db: AsyncSession = Depends(get_db), user: CurrentUser = D
 
 
 @router.post("/tenants")
-async def onboard_tenant(request: OnboardTenantRequest, db: AsyncSession = Depends(get_db), user: CurrentUser = Depends(require_role("SUPER_ADMIN"))):
+async def onboard_tenant(request: OnboardTenantRequest, db: AsyncSession = Depends(get_db), user: CurrentUser = Depends(require_role("PLATFORM_ADMIN"))):
     # Check if subdomain exists
     existing = await db.execute(select(Tenant).where(Tenant.subdomain == request.subdomain))
     if existing.scalar_one_or_none():
         raise HTTPException(status_code=400, detail="Subdomain already exists")
+    
+    # Check if admin email already exists
+    existing_user = await db.execute(select(User).where(User.email == request.admin_email))
+    if existing_user.scalar_one_or_none():
+        raise HTTPException(status_code=400, detail="Admin email already exists")
     
     tenant = Tenant(
         name=request.name,
@@ -86,6 +103,16 @@ async def onboard_tenant(request: OnboardTenantRequest, db: AsyncSession = Depen
     await db.commit()
     await db.refresh(tenant)
     
+    # Create tenant admin user
+    admin_user = User(
+        email=request.admin_email,
+        full_name=request.admin_name,
+        role=UserRole.TENANT_ADMIN,
+        tenant_id=tenant.id,
+        is_active=True
+    )
+    db.add(admin_user)
+    
     # Assign subscription
     sub = TenantSubscription(
         tenant_id=tenant.id,
@@ -94,6 +121,17 @@ async def onboard_tenant(request: OnboardTenantRequest, db: AsyncSession = Depen
         is_active=True
     )
     db.add(sub)
+    
+    # Create initial budget pool for the tenant
+    budget_pool = BudgetPool(
+        tenant_id=tenant.id,
+        name="Company Budget",
+        allocated_points=10000,  # Initial budget
+        remaining_points=10000,
+        is_active=True
+    )
+    db.add(budget_pool)
+    
     await db.commit()
     
     # Log audit
@@ -101,12 +139,22 @@ async def onboard_tenant(request: OnboardTenantRequest, db: AsyncSession = Depen
         admin_id=user.id,
         action="TENANT_CREATED",
         target_tenant_id=tenant.id,
-        details={"subdomain": request.subdomain, "plan_id": request.plan_id}
+        details={
+            "subdomain": request.subdomain,
+            "plan_id": request.plan_id,
+            "admin_email": request.admin_email,
+            "admin_name": request.admin_name
+        }
     )
     db.add(audit)
     await db.commit()
     
-    return {"id": str(tenant.id), "subdomain": tenant.subdomain}
+    return {
+        "id": str(tenant.id),
+        "subdomain": tenant.subdomain,
+        "admin_email": request.admin_email,
+        "status": "created"
+    }
 
 
 @router.post("/tenants/{tenant_id}/init-admin")
