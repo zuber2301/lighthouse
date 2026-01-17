@@ -22,6 +22,9 @@ async_session = sessionmaker(engine, class_=AsyncSession, expire_on_commit=False
 
 async def seed_data():
     async with async_session() as session:
+        # Create all tables
+        async with engine.begin() as conn:
+            await conn.run_sync(Base.metadata.create_all)
         # Note: Super admin user creation skipped - authentication is SSO-based
         # Platform admin access is handled through middleware bypass for /platform routes
         
@@ -49,6 +52,19 @@ async def seed_data():
             if not result.scalar():
                 session.add(plan)
                 print(f"Created subscription plan: {plan.name}")
+        
+        # Create platform admin user
+        platform_admin_email = settings.PLATFORM_ADMIN_EMAIL
+        result = await session.execute(select(User).where(User.email == platform_admin_email))
+        if not result.scalar():
+            platform_admin = User(
+                email=platform_admin_email,
+                full_name="Platform Administrator",
+                role=UserRole.PLATFORM_ADMIN,
+                is_active=True
+            )
+            session.add(platform_admin)
+            print(f"Created platform admin: {platform_admin_email}")
         
         # Seed global rewards
         rewards = [

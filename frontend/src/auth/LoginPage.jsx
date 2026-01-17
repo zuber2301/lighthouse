@@ -33,9 +33,26 @@ export default function LoginPage() {
     }
   }
 
-  const handleSocialLogin = (provider) => {
-    console.log(`Login with ${provider}`)
-    // TODO: Implement social login
+  const handleSocialLogin = async (provider) => {
+    if (provider === 'Google') {
+      try {
+        // Fetch the Google OAuth authorization URL from backend
+        const response = await fetch('http://localhost:18000/auth/google')
+        if (!response.ok) {
+          throw new Error('Failed to get authorization URL')
+        }
+        const data = await response.json()
+        
+        // Redirect to Google OAuth
+        window.location.href = data.authorization_url
+      } catch (error) {
+        console.error('Google login failed:', error)
+        alert('Failed to initiate Google login. Please try again.')
+      }
+    } else {
+      console.log(`Login with ${provider}`)
+      // TODO: Implement other social logins
+    }
   }
 
   return (

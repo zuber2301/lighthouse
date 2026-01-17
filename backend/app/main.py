@@ -1,4 +1,5 @@
 from fastapi import FastAPI, Request
+from fastapi.middleware.cors import CORSMiddleware
 from starlette.middleware.base import BaseHTTPMiddleware
 
 from app.core import tenancy
@@ -10,11 +11,26 @@ import asyncio
 
 app = FastAPI(title="lighthouse-backend")
 
+# Add CORS middleware
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:3000", "http://localhost:3001", "http://localhost:3002", "http://localhost:3003", "http://localhost:3004"],  # Frontend origins
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 
 @app.on_event("startup")
 async def create_tables():
-    async with engine.begin() as conn:
-        await conn.run_sync(Base.metadata.create_all)
+    # Temporarily bypass tenant checking during table creation
+    from app.core import tenancy
+    token = tenancy._BYPASS_TENANT.set(True)
+    try:
+        async with engine.begin() as conn:
+            await conn.run_sync(Base.metadata.create_all)
+    finally:
+        tenancy._BYPASS_TENANT.reset(token)
 
 
 class TenantMiddleware(BaseHTTPMiddleware):
