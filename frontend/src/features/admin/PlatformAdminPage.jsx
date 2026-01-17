@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
 import Card from '../../components/Card'
 import PageHeader from '../../components/PageHeader'
-import OnboardTenantModal from '../../components/OnboardTenantModal'
 import TenantManager from '../../components/TenantManager'
 
 export default function PlatformAdminPage() {
-  const [showModal, setShowModal] = useState(false)
+  const navigate = useNavigate()
   const [tenants, setTenants] = useState([])
   const [stats, setStats] = useState({})
 
@@ -16,9 +16,13 @@ export default function PlatformAdminPage() {
 
   const fetchTenants = async () => {
     try {
-      const response = await fetch('/api/platform/tenants')
-      const data = await response.json()
-      setTenants(data)
+      const response = await fetch('http://localhost:18000/platform/tenants', {
+        credentials: 'include'
+      })
+      if (response.ok) {
+        const data = await response.json()
+        setTenants(data)
+      }
     } catch (error) {
       console.error('Failed to fetch tenants:', error)
     }
@@ -26,29 +30,20 @@ export default function PlatformAdminPage() {
 
   const fetchStats = async () => {
     try {
-      const response = await fetch('/api/platform/stats')
-      const data = await response.json()
-      setStats(data)
+      const response = await fetch('http://localhost:18000/platform/stats', {
+        credentials: 'include'
+      })
+      if (response.ok) {
+        const data = await response.json()
+        setStats(data)
+      }
     } catch (error) {
       console.error('Failed to fetch stats:', error)
     }
   }
 
-  const handleOnboardTenant = async (tenantData) => {
-    try {
-      const response = await fetch('/api/platform/tenants', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(tenantData)
-      })
-      if (response.ok) {
-        fetchTenants()
-        fetchStats()
-        setShowModal(false)
-      }
-    } catch (error) {
-      console.error('Failed to onboard tenant:', error)
-    }
+  const handleAddTenant = () => {
+    navigate('/platform-admin/create-tenant')
   }
 
   return (
@@ -77,13 +72,7 @@ export default function PlatformAdminPage() {
       <TenantManager 
         tenants={tenants} 
         onRefresh={fetchTenants}
-        onAddTenant={() => setShowModal(true)}
-      />
-
-      <OnboardTenantModal 
-        isOpen={showModal} 
-        onClose={() => setShowModal(false)} 
-        onSave={handleOnboardTenant}
+        onAddTenant={handleAddTenant}
       />
     </div>
   )
