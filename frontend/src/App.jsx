@@ -6,6 +6,7 @@ import RecognitionPage from './features/recognition/RecognitionPage'
 import RewardsPage from './features/rewards/RewardsPage'
 import AnalyticsPage from './features/analytics/AnalyticsPage'
 import AdminPage from './features/admin/AdminPage'
+import PlatformAdminPage from './features/admin/PlatformAdminPage'
 import ThemeDemo from './pages/ThemeDemo'
 
 export default function App() {
@@ -18,6 +19,7 @@ export default function App() {
         <Route path="rewards" element={<RewardsPage />} />
         <Route path="analytics" element={<AnalyticsPage />} />
         <Route path="admin" element={<AdminPage />} />
+        <Route path="platform-admin" element={<PlatformAdminPage />} />
         <Route path="theme-demo" element={<ThemeDemo />} />
       </Route>
       <Route path="*" element={<Navigate to="/dashboard" replace />} />

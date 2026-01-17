@@ -19,6 +19,17 @@ async def create_tables():
 
 class TenantMiddleware(BaseHTTPMiddleware):
     async def dispatch(self, request: Request, call_next):
+        # Skip tenant resolution for platform admin routes
+        if request.url.path.startswith("/platform"):
+            request.state.tenant_id = None
+            token = tenancy.CURRENT_TENANT.set(None)
+            bypass_token = tenancy._BYPASS_TENANT.set(True)
+            try:
+                return await call_next(request)
+            finally:
+                tenancy.CURRENT_TENANT.reset(token)
+                tenancy._BYPASS_TENANT.reset(bypass_token)
+        
         # Resolve tenant and attach to request.state before any route handling
         # pass header explicitly to avoid FastAPI `Header` default object
         tenant_id = tenancy.get_current_tenant(request, request.headers.get("X-Tenant-ID"))

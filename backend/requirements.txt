@@ -7,3 +7,4 @@ passlib[bcrypt]==1.7.4
 asyncpg==0.29.0
 redis==5.3.1
 aioredis==2.0.1
+pydantic-settings

@@ -6,6 +6,9 @@ from .rewards import Reward
 from .redemptions import Redemption, RedemptionStatus
 from .platform import PlatformSettings
 from .budgets import BudgetPool, DepartmentBudget, BudgetLedger
+from .subscriptions import SubscriptionPlan, TenantSubscription
+from .global_rewards import GlobalReward
+from .audit_logs import PlatformAuditLog
 
 __all__ = [
     "Tenant",
@@ -21,4 +24,8 @@ __all__ = [
     "BudgetPool",
     "DepartmentBudget",
     "BudgetLedger",
+    "SubscriptionPlan",
+    "TenantSubscription",
+    "GlobalReward",
+    "PlatformAuditLog",
 ]

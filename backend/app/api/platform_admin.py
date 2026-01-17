@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException, status, Request
-from sqlalchemy import select
+from sqlalchemy import select, func
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.db.session import get_db
 from app.core.rbac import require_role
@@ -7,11 +7,29 @@ from app.core.auth import get_current_user, User as CurrentUser
 from app.models.tenants import Tenant
 from app.models.platform import PlatformSettings
 from app.models.budgets import BudgetPool
-from typing import Optional
+from app.models.subscriptions import SubscriptionPlan, TenantSubscription
+from app.models.global_rewards import GlobalReward
+from app.models.audit_logs import PlatformAuditLog
+from typing import Optional, List
 import datetime
 import uuid
+from pydantic import BaseModel
 
-router = APIRouter(prefix="/platform-admin")
+
+class OnboardTenantRequest(BaseModel):
+    name: str
+    subdomain: str
+    admin_email: Optional[str] = None
+    plan_id: int
+
+
+class GlobalRewardRequest(BaseModel):
+    title: str
+    provider: Optional[str] = None
+    points_cost: int
+
+
+router = APIRouter(prefix="/platform")
 
 
 @router.get("/status")
@@ -23,7 +41,152 @@ async def status():
 async def list_tenants(db: AsyncSession = Depends(get_db), user: CurrentUser = Depends(require_role("SUPER_ADMIN"))):
     q = await db.execute(select(Tenant))
     rows = q.scalars().all()
-    return rows
+    tenants = []
+    for t in rows:
+        # Get subscription info
+        sub_q = await db.execute(
+            select(TenantSubscription, SubscriptionPlan)
+            .join(SubscriptionPlan)
+            .where(TenantSubscription.tenant_id == t.id, TenantSubscription.is_active == True)
+        )
+        sub = sub_q.first()
+        plan_name = sub[1].name if sub else "None"
+        tenants.append({
+            "id": str(t.id),
+            "name": t.name,
+            "subdomain": t.subdomain,
+            "status": t.status,
+            "plan": plan_name,
+            "created_at": t.created_at.isoformat() if t.created_at else None
+        })
+    return tenants
+
+
+@router.post("/tenants")
+async def onboard_tenant(request: OnboardTenantRequest, db: AsyncSession = Depends(get_db), user: CurrentUser = Depends(require_role("SUPER_ADMIN"))):
+    # Check if subdomain exists
+    existing = await db.execute(select(Tenant).where(Tenant.subdomain == request.subdomain))
+    if existing.scalar_one_or_none():
+        raise HTTPException(status_code=400, detail="Subdomain already exists")
+    
+    tenant = Tenant(
+        name=request.name,
+        subdomain=request.subdomain,
+        status="active"
+    )
+    db.add(tenant)
+    await db.commit()
+    await db.refresh(tenant)
+    
+    # Assign subscription
+    sub = TenantSubscription(
+        tenant_id=tenant.id,
+        plan_id=request.plan_id,
+        start_date=datetime.date.today(),
+        is_active=True
+    )
+    db.add(sub)
+    await db.commit()
+    
+    # Log audit
+    audit = PlatformAuditLog(
+        admin_id=user.id,
+        action="TENANT_CREATED",
+        target_tenant_id=tenant.id,
+        details={"subdomain": request.subdomain, "plan_id": request.plan_id}
+    )
+    db.add(audit)
+    await db.commit()
+    
+    return {"id": str(tenant.id), "subdomain": tenant.subdomain}
+
+
+@router.patch("/tenants/{tenant_id}")
+async def update_tenant(tenant_id: str, status: Optional[str] = None, subdomain: Optional[str] = None, db: AsyncSession = Depends(get_db), user: CurrentUser = Depends(require_role("SUPER_ADMIN"))):
+    q = await db.execute(select(Tenant).where(Tenant.id == tenant_id))
+    t = q.scalar_one_or_none()
+    if not t:
+        raise HTTPException(status_code=404, detail="Tenant not found")
+    
+    if status:
+        t.status = status
+    if subdomain:
+        # Check uniqueness
+        existing = await db.execute(select(Tenant).where(Tenant.subdomain == subdomain, Tenant.id != tenant_id))
+        if existing.scalar_one_or_none():
+            raise HTTPException(status_code=400, detail="Subdomain already exists")
+        t.subdomain = subdomain
+    
+    db.add(t)
+    await db.commit()
+    
+    # Log audit
+    audit = PlatformAuditLog(
+        admin_id=user.id,
+        action="TENANT_UPDATED",
+        target_tenant_id=t.id,
+        details={"status": status, "subdomain": subdomain}
+    )
+    db.add(audit)
+    await db.commit()
+    
+    return {"id": tenant_id, "status": t.status, "subdomain": t.subdomain}
+
+
+@router.get("/stats")
+async def get_platform_stats(db: AsyncSession = Depends(get_db), user: CurrentUser = Depends(require_role("SUPER_ADMIN"))):
+    # Total tenants
+    tenant_count = await db.execute(select(func.count(Tenant.id)))
+    total_tenants = tenant_count.scalar()
+    
+    # Active tenants
+    active_count = await db.execute(select(func.count(Tenant.id)).where(Tenant.status == "active"))
+    active_tenants = active_count.scalar()
+    
+    # Total revenue (simplified - sum of active subscriptions)
+    revenue_q = await db.execute(
+        select(func.sum(SubscriptionPlan.monthly_price_in_paise))
+        .join(TenantSubscription)
+        .where(TenantSubscription.is_active == True)
+    )
+    total_revenue = revenue_q.scalar() or 0
+    
+    return {
+        "total_tenants": total_tenants,
+        "active_tenants": active_tenants,
+        "total_revenue_paise": total_revenue
+    }
+
+
+@router.post("/rewards")
+async def add_global_reward(request: GlobalRewardRequest, db: AsyncSession = Depends(get_db), user: CurrentUser = Depends(require_role("SUPER_ADMIN"))):
+    reward = GlobalReward(
+        title=request.title,
+        provider=request.provider,
+        points_cost=request.points_cost,
+        is_enabled=True
+    )
+    db.add(reward)
+    await db.commit()
+    await db.refresh(reward)
+    
+    # Log audit
+    audit = PlatformAuditLog(
+        admin_id=user.id,
+        action="GLOBAL_REWARD_ADDED",
+        details={"reward_id": str(reward.id), "title": request.title}
+    )
+    db.add(audit)
+    await db.commit()
+    
+    return {"id": str(reward.id), "title": reward.title}
+
+
+@router.get("/rewards")
+async def list_global_rewards(db: AsyncSession = Depends(get_db), user: CurrentUser = Depends(require_role("SUPER_ADMIN"))):
+    q = await db.execute(select(GlobalReward))
+    rewards = q.scalars().all()
+    return [{"id": str(r.id), "title": r.title, "provider": r.provider, "points_cost": r.points_cost, "is_enabled": r.is_enabled} for r in rewards]
 
 
 @router.post("/tenants/{tenant_id}/suspend")

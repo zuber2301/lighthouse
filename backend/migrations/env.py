@@ -9,8 +9,8 @@ import asyncio
 
 # Interpret the config file for Python logging.
 # This line sets up loggers basically.
-if config.config_file_name is not None:
-    fileConfig(config.config_file_name)
+if context.config.config_file_name is not None:
+    fileConfig(context.config.config_file_name)
 
 # add your model's MetaData object here
 # for 'autogenerate' support
@@ -37,7 +37,7 @@ def run_migrations_offline() -> None:
     script output.
 
     """
-    url = config.get_main_option("sqlalchemy.url")
+    url = context.config.get_main_option("sqlalchemy.url")
     context.configure(
         url=url,
         target_metadata=target_metadata,
@@ -49,7 +49,7 @@ def run_migrations_offline() -> None:
         context.run_migrations()
 
 
-async def run_migrations_online():
+def run_migrations_online():
     """Run migrations in 'online' mode.
 
     In this scenario we need to create an Engine
@@ -57,13 +57,13 @@ async def run_migrations_online():
 
     """
     connectable = engine_from_config(
-        config.get_section(config.config_ini_section, {}),
+        context.config.get_section(context.config.config_ini_section, {}),
         prefix="sqlalchemy.",
         poolclass=pool.NullPool,
     )
 
-    async with connectable.connect() as connection:
-        await connection.run_sync(do_run_migrations)
+    with connectable.connect() as connection:
+        do_run_migrations(connection)
 
 
 def do_run_migrations(connection):
@@ -78,4 +78,4 @@ def do_run_migrations(connection):
 if context.is_offline_mode():
     run_migrations_offline()
 else:
-    asyncio.run(run_migrations_online())
+    run_migrations_online()
