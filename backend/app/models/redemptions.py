@@ -19,3 +19,8 @@ class Redemption(Base, TenantMixin, TimestampMixin):
     points_used = Column(Integer, nullable=False)
     status = Column(SAEnum(RedemptionStatus, name="redemptionstatus"), nullable=False, default=RedemptionStatus.PENDING)
     completed_at = Column(DateTime(timezone=True), nullable=True)
+    # Monetary settlement fields (paise)
+    gross_value_paise = Column(BigInteger, nullable=True)
+    margin_paise = Column(BigInteger, nullable=True)
+    vendor_cost_paise = Column(BigInteger, nullable=True)
+    provider_name = Column(String(100), nullable=True)

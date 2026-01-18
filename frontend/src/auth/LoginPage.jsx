@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { API_BASE } from '../lib/api'
+import { useAuth } from '../lib/AuthContext'
 
 export default function LoginPage() {
   const [formData, setFormData] = useState({
@@ -9,6 +10,7 @@ export default function LoginPage() {
   })
   const [isLoading, setIsLoading] = useState(false)
   const navigate = useNavigate()
+  const { login } = useAuth()
 
   const handleInputChange = (e) => {
     setFormData({
@@ -22,13 +24,28 @@ export default function LoginPage() {
     setIsLoading(true)
 
     try {
-      // TODO: Implement login API call
-      console.log('Login attempt:', formData)
+      const response = await fetch(`${API_BASE}/auth/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData)
+      })
 
-      // For now, just navigate to dashboard
+      if (!response.ok) {
+        const err = await response.json().catch(() => ({ detail: 'Login failed' }))
+        throw new Error(err.detail || 'Login failed')
+      }
+
+      const data = await response.json()
+      const token = data.access_token
+      const user = data.user
+
+      // Persist token under existing key so fetch wrappers work
+      localStorage.setItem('auth_token', token)
+      login(token, user)
       navigate('/dashboard')
     } catch (error) {
       console.error('Login failed:', error)
+      alert(error.message || 'Login failed')
     } finally {
       setIsLoading(false)
     }
@@ -60,6 +77,26 @@ export default function LoginPage() {
     } else {
       console.log(`Login with ${provider}`)
       // TODO: Implement other social logins
+    }
+  }
+
+  const handleDevToken = async () => {
+    try {
+      const res = await fetch(`${API_BASE}/auth/dev-token`, { credentials: 'include' })
+      if (!res.ok) {
+        const j = await res.json().catch(() => ({}))
+        throw new Error(j.detail || 'Dev token not available')
+      }
+      const j = await res.json()
+      const token = j.token || j.token
+      const user = j.user || j.user
+      if (token) {
+        localStorage.setItem('auth_token', token)
+        login(token, user)
+        navigate('/dashboard')
+      }
+    } catch (e) {
+      alert('Dev token unavailable: ' + (e.message || e))
     }
   }
 
@@ -127,6 +164,9 @@ export default function LoginPage() {
         >
           {isLoading ? 'Signing in...' : 'Sign In'}
         </button>
+        <div className="mt-3 text-center">
+          <button type="button" onClick={handleDevToken} className="text-xs text-slate-400 underline">Use dev token (dev only)</button>
+        </div>
       </form>
 
       <div className="mt-8">

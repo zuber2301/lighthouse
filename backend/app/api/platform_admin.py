@@ -10,6 +10,7 @@ from app.models.platform import PlatformSettings
 from app.models.budgets import BudgetPool
 from app.models.subscriptions import SubscriptionPlan, TenantSubscription
 from app.models.global_rewards import GlobalReward
+from app.models.global_providers import GlobalProvider
 from app.models.audit_logs import PlatformAuditLog
 from app.models.transactions import Transaction, TransactionType
 from app.models.recognition import Recognition
@@ -370,6 +371,52 @@ async def add_global_reward(request: GlobalRewardRequest, db: AsyncSession = Dep
     return {"id": str(reward.id), "title": reward.title}
 
 
+@router.get("/catalog")
+async def get_platform_catalog(db: AsyncSession = Depends(get_db), user: CurrentUser = Depends(require_role("PLATFORM_ADMIN"))):
+    q = await db.execute(select(GlobalProvider))
+    providers = q.scalars().all()
+    return [
+        {
+            "id": p.id,
+            "name": p.name,
+            "enabled": bool(p.enabled),
+            "min_plan": p.min_plan,
+            "margin_paise": int(p.margin_paise or 0)
+        }
+        for p in providers
+    ]
+
+
+@router.patch("/catalog/{provider_id}")
+async def update_provider(provider_id: str, payload: dict, db: AsyncSession = Depends(get_db), user: CurrentUser = Depends(require_role("PLATFORM_ADMIN"))):
+    q = await db.execute(select(GlobalProvider).where(GlobalProvider.id == provider_id))
+    p = q.scalar_one_or_none()
+    if not p:
+        raise HTTPException(status_code=404, detail="Provider not found")
+    # allow updating enabled, min_plan, margin_paise
+    if 'enabled' in payload:
+        p.enabled = bool(payload['enabled'])
+    if 'min_plan' in payload:
+        p.min_plan = payload.get('min_plan')
+    if 'margin_paise' in payload:
+        try:
+            p.margin_paise = int(payload.get('margin_paise') or 0)
+        except Exception:
+            p.margin_paise = 0
+    db.add(p)
+    await db.commit()
+    await db.refresh(p)
+    # audit
+    audit = PlatformAuditLog(
+        admin_id=user.id,
+        action="PROVIDER_UPDATED",
+        details={"provider_id": p.id, "changes": payload}
+    )
+    db.add(audit)
+    await db.commit()
+    return {"id": p.id, "name": p.name, "enabled": p.enabled, "min_plan": p.min_plan, "margin_paise": p.margin_paise}
+
+
 @router.get("/rewards")
 async def list_global_rewards(db: AsyncSession = Depends(get_db), user: CurrentUser = Depends(require_role("SUPER_ADMIN"))):
     q = await db.execute(select(GlobalReward))
@@ -460,3 +507,37 @@ async def create_budget_pool(tenant_id: str, payload: dict, db: AsyncSession = D
     await db.commit()
     await db.refresh(pool)
     return {"id": pool.id, "period": pool.period, "total_amount": str(pool.total_amount)}
+
+
+@router.get('/logs')
+async def list_platform_logs(limit: int = 50, offset: int = 0, db: AsyncSession = Depends(get_db), user: CurrentUser = Depends(require_role("PLATFORM_ADMIN"))):
+    """Return audit logs for platform admins. Paginated."""
+    q = await db.execute(select(PlatformAuditLog).order_by(PlatformAuditLog.created_at.desc()).limit(limit).offset(offset))
+    rows = q.scalars().all()
+    return [
+        {
+            "id": r.id,
+            "admin_id": r.admin_id,
+            "action": r.action,
+            "target_tenant_id": r.target_tenant_id,
+            "details": r.details,
+            "created_at": r.created_at.isoformat() if r.created_at else None
+        }
+        for r in rows
+    ]
+
+
+@router.get('/logs/{log_id}')
+async def get_platform_log(log_id: int, db: AsyncSession = Depends(get_db), user: CurrentUser = Depends(require_role("PLATFORM_ADMIN"))):
+    q = await db.execute(select(PlatformAuditLog).where(PlatformAuditLog.id == log_id))
+    r = q.scalar_one_or_none()
+    if not r:
+        raise HTTPException(status_code=404, detail='Log not found')
+    return {
+        "id": r.id,
+        "admin_id": r.admin_id,
+        "action": r.action,
+        "target_tenant_id": r.target_tenant_id,
+        "details": r.details,
+        "created_at": r.created_at.isoformat() if r.created_at else None
+    }
