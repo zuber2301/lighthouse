@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { API_BASE } from '../../lib/api'
 
 export default function CreateTenantForm() {
   const navigate = useNavigate()
@@ -23,7 +24,7 @@ export default function CreateTenantForm() {
       const token = localStorage.getItem('auth_token')
       const headers = {}
       if (token) headers['Authorization'] = `Bearer ${token}`
-      const response = await fetch('/api/platform/subscription-plans', { headers })
+      const response = await fetch(`${API_BASE}/platform/subscription-plans`, { headers })
       if (response.ok) {
         const plans = await response.json()
         setSubscriptionPlans(plans)
@@ -66,7 +67,7 @@ export default function CreateTenantForm() {
       const headers = { 'Content-Type': 'application/json' }
       if (token) headers['Authorization'] = `Bearer ${token}`
 
-      const response = await fetch('/api/platform/tenants', {
+      const response = await fetch(`${API_BASE}/platform/tenants`, {
         method: 'POST',
         headers,
         body: JSON.stringify({
