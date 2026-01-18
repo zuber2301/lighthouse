@@ -12,10 +12,12 @@ from app.models.subscriptions import SubscriptionPlan, TenantSubscription
 from app.models.global_rewards import GlobalReward
 from app.models.audit_logs import PlatformAuditLog
 from app.models.transactions import Transaction, TransactionType
+from app.models.recognition import Recognition
 from typing import Optional, List
 import datetime
 import uuid
 from pydantic import BaseModel
+from sqlalchemy import desc
 
 
 class OnboardTenantRequest(BaseModel):
@@ -251,6 +253,47 @@ async def get_platform_stats(db: AsyncSession = Depends(get_db), user: CurrentUs
         "total_tenants": total_tenants,
         "active_tenants": active_tenants,
         "total_revenue_paise": total_revenue
+    }
+
+
+@router.get("/overview")
+async def get_platform_overview(request: Request, db: AsyncSession = Depends(get_db), user: CurrentUser = Depends(require_role("PLATFORM_ADMIN"))):
+    # MRR (sum of active subscriptions)
+    mrr_q = await db.execute(
+        select(func.sum(SubscriptionPlan.monthly_price_in_paise))
+        .join(TenantSubscription)
+        .where(TenantSubscription.is_active == True)
+    )
+    mrr = mrr_q.scalar() or 0
+
+    # Total active users (exclude platform admins)
+    users_q = await db.execute(select(func.count(User.id)).where(User.is_active == True, User.tenant_id != None))
+    total_active_users = users_q.scalar() or 0
+
+    # System uptime (based on app start time recorded in app state)
+    start_time = getattr(request.app.state, 'start_time', None)
+    if start_time:
+        uptime_seconds = int((datetime.datetime.utcnow() - start_time).total_seconds())
+    else:
+        uptime_seconds = 0
+
+    # Top performing tenants by recognitions (last 30 days)
+    since = datetime.datetime.utcnow() - datetime.timedelta(days=30)
+    rec_q = await db.execute(
+        select(Tenant.id, Tenant.name, func.count(Recognition.id).label('rec_count'))
+        .join(Recognition, Recognition.tenant_id == Tenant.id)
+        .where(Recognition.created_at >= since)
+        .group_by(Tenant.id)
+        .order_by(desc('rec_count'))
+        .limit(5)
+    )
+    top = [ { 'id': str(r[0]), 'name': r[1], 'recognitions': int(r[2]) } for r in rec_q.fetchall() ]
+
+    return {
+        'mrr_paise': mrr,
+        'total_active_users': total_active_users,
+        'uptime_seconds': uptime_seconds,
+        'top_tenants': top
     }
 
 

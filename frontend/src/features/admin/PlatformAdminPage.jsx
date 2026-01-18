@@ -10,6 +10,14 @@ export default function PlatformAdminPage() {
   const [tenants, setTenants] = useState([])
   const [stats, setStats] = useState({})
 
+  const formatUptime = (secs) => {
+    if (!secs) return '—'
+    const d = Math.floor(secs / 86400)
+    const h = Math.floor((secs % 86400) / 3600)
+    const m = Math.floor((secs % 3600) / 60)
+    return `${d}d ${h}h ${m}m`
+  }
+
   useEffect(() => {
     fetchTenants()
     fetchStats()
@@ -31,7 +39,7 @@ export default function PlatformAdminPage() {
 
   const fetchStats = async () => {
     try {
-      const response = await fetch(`${API_BASE}/platform/stats`, {
+      const response = await fetch(`${API_BASE}/platform/overview`, {
         credentials: 'include'
       })
       if (response.ok) {
@@ -53,18 +61,29 @@ export default function PlatformAdminPage() {
         <PageHeader title="Platform Admin" subtitle="Global SaaS control plane" />
 
         {/* Stats Cards */}
-        <div className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="mt-6 grid grid-cols-1 md:grid-cols-4 gap-6">
           <Card>
-            <h3 className="text-2xl font-bold text-indigo-400">{stats.total_tenants || 0}</h3>
-            <p className="text-slate-400">Total Tenants</p>
+            <h3 className="text-2xl font-bold text-indigo-400">₹{((stats.mrr_paise || 0) / 100).toLocaleString()}</h3>
+            <p className="text-slate-400">Aggregated MRR</p>
           </Card>
           <Card>
-            <h3 className="text-2xl font-bold text-emerald-400">{stats.active_tenants || 0}</h3>
-            <p className="text-slate-400">Active Tenants</p>
+            <h3 className="text-2xl font-bold text-emerald-400">{stats.total_active_users || 0}</h3>
+            <p className="text-slate-400">Total Active Users</p>
           </Card>
           <Card>
-            <h3 className="text-2xl font-bold text-amber-400">₹{(stats.total_revenue_paise || 0) / 100}</h3>
-            <p className="text-slate-400">Monthly Revenue</p>
+            <h3 className="text-2xl font-bold text-amber-400">{formatUptime(stats.uptime_seconds)}</h3>
+            <p className="text-slate-400">System Uptime</p>
+          </Card>
+          <Card>
+            <h3 className="text-2xl font-bold text-pink-400">Top Tenants</h3>
+            <ul className="mt-2 text-sm text-slate-300 space-y-1">
+              {(stats.top_tenants || []).map(t => (
+                <li key={t.id} className="flex justify-between">
+                  <span>{t.name}</span>
+                  <span className="text-slate-400">{t.recognitions} recs</span>
+                </li>
+              ))}
+            </ul>
           </Card>
         </div>
       </div>

@@ -33,10 +33,13 @@ app.add_middleware(
 async def create_tables():
     # Temporarily bypass tenant checking during table creation
     from app.core import tenancy
+    import datetime
     token = tenancy._BYPASS_TENANT.set(True)
     try:
         async with engine.begin() as conn:
             await conn.run_sync(Base.metadata.create_all)
+        # record start time for basic uptime reporting
+        app.state.start_time = datetime.datetime.utcnow()
     finally:
         tenancy._BYPASS_TENANT.reset(token)
 

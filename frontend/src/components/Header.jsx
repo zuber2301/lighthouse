@@ -1,15 +1,19 @@
 import React, { useState, useRef, useEffect } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { useAuth } from '../lib/AuthContext'
+import { useTenant } from '../lib/TenantContext'
 import TenantSelector from './TenantSelector'
 
-const tabs = [
+const baseTabs = [
   { name: 'Dashboard', path: '/' },
   { name: 'Tenants', path: '/tenants' },
+  { name: 'Admin', path: '/admin', role: 'PLATFORM_ADMIN' },
+]
+
+const tenantTabs = [
   { name: 'Recognition', path: '/recognition' },
   { name: 'Rewards', path: '/rewards' },
   { name: 'Analytics', path: '/analytics' },
-  { name: 'Admin', path: '/admin', role: 'PLATFORM_ADMIN' },
 ]
 
 export default function Header() {
@@ -27,6 +31,7 @@ export default function Header() {
   const userRole = user?.role || 'CORPORATE_USER'
   const displayName = user?.full_name || user?.email || 'User'
   const firstLetter = displayName.charAt(0).toUpperCase()
+  const { selectedTenant } = useTenant()
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -53,24 +58,59 @@ export default function Header() {
         </div>
       </div>
 
-      <nav className="flex items-center gap-6">
-        {tabs.filter(tab => !tab.role || tab.role === userRole).map(tab => (
-          <Link
-            key={tab.path}
-            to={tab.path}
-            className={`px-3 py-2 rounded-md text-sm font-medium ${
-              location.pathname === tab.path
-                ? 'bg-indigo-600 text-white transition-colors duration-150 focus:outline-none focus-visible:ring-2 focus-visible:ring-tm-teal'
-                : 'text-slate-300 hover:text-white hover:bg-slate-700 transition-colors duration-150 focus:outline-none focus-visible:ring-2 focus-visible:ring-tm-teal'
-            }`}
-          >
-            {tab.name}
-          </Link>
-        ))}
-      </nav>
+      {userRole === 'PLATFORM_ADMIN' ? (
+        // Platform Admin: no primary nav here — sidebar owns navigation
+        <div />
+      ) : (
+        <nav className="flex items-center gap-6">
+          {baseTabs.filter(tab => !tab.role || tab.role === userRole).map(tab => (
+            <Link
+              key={tab.path}
+              to={tab.path}
+              className={`px-3 py-2 rounded-md text-sm font-medium ${
+                location.pathname === tab.path
+                  ? 'bg-indigo-600 text-white transition-colors duration-150 focus:outline-none focus-visible:ring-2 focus-visible:ring-tm-teal'
+                  : 'text-slate-300 hover:text-white hover:bg-slate-700 transition-colors duration-150 focus:outline-none focus-visible:ring-2 focus-visible:ring-tm-teal'
+              }`}
+            >
+              {tab.name}
+            </Link>
+          ))}
+
+          {/* show tenant-level tabs only when not a pure platform admin view or when impersonating a tenant */}
+          {(userRole !== 'PLATFORM_ADMIN' || selectedTenant) && tenantTabs.map(tab => (
+            <Link
+              key={tab.path}
+              to={tab.path}
+              className={`px-3 py-2 rounded-md text-sm font-medium ${
+                location.pathname === tab.path
+                  ? 'bg-indigo-600 text-white transition-colors duration-150 focus:outline-none focus-visible:ring-2 focus-visible:ring-tm-teal'
+                  : 'text-slate-300 hover:text-white hover:bg-slate-700 transition-colors duration-150 focus:outline-none focus-visible:ring-2 focus-visible:ring-tm-teal'
+              }`}
+            >
+              {tab.name}
+            </Link>
+          ))}
+        </nav>
+      )}
 
       <div className="flex items-center gap-4">
-        <button className="px-3 py-1 rounded-md text-sm bg-indigo-600 hover:bg-indigo-500 transition-colors duration-150 focus:outline-none focus-visible:ring-3 focus-visible:ring-tm-teal">New Recognition</button>
+        {/* New Recognition only for tenant-scoped users or when a platform admin is impersonating a tenant */}
+        {(userRole !== 'PLATFORM_ADMIN' || selectedTenant) && (
+          <button className="px-3 py-1 rounded-md text-sm bg-indigo-600 hover:bg-indigo-500 transition-colors duration-150 focus:outline-none focus-visible:ring-3 focus-visible:ring-tm-teal">New Recognition</button>
+        )}
+
+        {/* Platform admin header controls */}
+        {userRole === 'PLATFORM_ADMIN' && (
+          <div className="flex items-center gap-3">
+            <input
+              aria-label="Global search"
+              placeholder="Search tenants or admin email..."
+              className="text-sm px-3 py-2 rounded-md bg-slate-700 text-slate-100 placeholder-slate-400"
+            />
+            <div className="px-2 py-1 text-xs font-semibold bg-rose-600 text-white rounded-md">PLATFORM CONTROL PLANE</div>
+          </div>
+        )}
         
         {/* User Avatar and Dropdown */}
         <div className="relative" ref={dropdownRef}>
