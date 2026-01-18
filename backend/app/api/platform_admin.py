@@ -510,9 +510,40 @@ async def create_budget_pool(tenant_id: str, payload: dict, db: AsyncSession = D
 
 
 @router.get('/logs')
-async def list_platform_logs(limit: int = 50, offset: int = 0, db: AsyncSession = Depends(get_db), user: CurrentUser = Depends(require_role("PLATFORM_ADMIN"))):
-    """Return audit logs for platform admins. Paginated."""
-    q = await db.execute(select(PlatformAuditLog).order_by(PlatformAuditLog.created_at.desc()).limit(limit).offset(offset))
+async def list_platform_logs(
+    limit: int = 50,
+    offset: int = 0,
+    action: Optional[str] = None,
+    admin_id: Optional[str] = None,
+    target_tenant_id: Optional[str] = None,
+    start_date: Optional[datetime.date] = None,
+    end_date: Optional[datetime.date] = None,
+    db: AsyncSession = Depends(get_db),
+    user: CurrentUser = Depends(require_role("PLATFORM_ADMIN"))
+):
+    """Return audit logs for platform admins. Paginated. Supports optional filters:
+    `action`, `admin_id`, `target_tenant_id`, `start_date`, `end_date`.
+    """
+    filters = []
+    if action:
+        filters.append(PlatformAuditLog.action == action)
+    if admin_id:
+        filters.append(PlatformAuditLog.admin_id == admin_id)
+    if target_tenant_id:
+        filters.append(PlatformAuditLog.target_tenant_id == target_tenant_id)
+    if start_date:
+        start_dt = datetime.datetime.combine(start_date, datetime.time.min)
+        filters.append(PlatformAuditLog.created_at >= start_dt)
+    if end_date:
+        end_dt = datetime.datetime.combine(end_date, datetime.time.max)
+        filters.append(PlatformAuditLog.created_at <= end_dt)
+
+    stmt = select(PlatformAuditLog)
+    if filters:
+        stmt = stmt.where(*filters)
+    stmt = stmt.order_by(PlatformAuditLog.created_at.desc()).limit(limit).offset(offset)
+
+    q = await db.execute(stmt)
     rows = q.scalars().all()
     return [
         {

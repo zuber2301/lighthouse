@@ -34,13 +34,26 @@ async def login(request: LoginRequest, db: AsyncSession = Depends(get_db)):
     # Find user by email
     user_q = await db.execute(select(User).where(User.email == request.email))
     user = user_q.scalar_one_or_none()
-    
+
+    # Development fallback: if DEV_DEFAULT_TENANT is configured, allow creating a dev user
+    # when the account doesn't exist (makes local testing easier).
     if not user:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid credentials")
-    
-    # Verify password (assuming password is hashed)
-    if not verify_password(request.password, user.hashed_password):
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid credentials")
+        if getattr(settings, 'DEV_DEFAULT_TENANT', None):
+            # create a simple dev user (platform admin if email matches PLATFORM_ADMIN_EMAIL)
+            is_platform_admin = request.email == settings.PLATFORM_ADMIN_EMAIL
+            role = UserRole.PLATFORM_ADMIN if is_platform_admin else UserRole.CORPORATE_USER
+            # Do not assign a non-existent tenant id; leave tenant_id NULL for dev-created users.
+            user = User(email=request.email, full_name=request.email.split('@')[0], role=role, is_active=True, tenant_id=None)
+            db.add(user)
+            await db.commit()
+            await db.refresh(user)
+        else:
+            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid credentials")
+
+    # Verify password when a hashed password exists; otherwise accept for dev users
+    if getattr(user, 'hashed_password', None):
+        if not verify_password(request.password, user.hashed_password):
+            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid credentials")
     
     # Create JWT token
     access_token_expires = timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
@@ -200,13 +213,17 @@ async def dev_token(role: str = Query("PLATFORM_ADMIN"), tenant_id: str | None =
             await db.commit()
             await db.refresh(user)
     else:
-        # Create or find a tenant-scoped user for dev
-        # Use a deterministic email for ease of testing
+        # Create or find a tenant-scoped user for dev. Only attach `tenant_id` if the tenant exists.
         dev_email = f"dev+{role.lower()}@example.local"
         user_q = await db.execute(select(User).where(User.email == dev_email, User.tenant_id == tenant_id))
         user = user_q.scalar_one_or_none()
         if not user:
-            user = User(email=dev_email, full_name=f"Dev {role.title().replace('_',' ')}", role=requested_role, is_active=True, tenant_id=tenant_id)
+            # check tenant existence
+            from app.models.tenants import Tenant
+            t_q = await db.execute(select(Tenant).where(Tenant.id == tenant_id))
+            t_exists = t_q.scalar_one_or_none()
+            attach_tenant = tenant_id if t_exists else None
+            user = User(email=dev_email, full_name=f"Dev {role.title().replace('_',' ')}", role=requested_role, is_active=True, tenant_id=attach_tenant)
             db.add(user)
             await db.commit()
             await db.refresh(user)

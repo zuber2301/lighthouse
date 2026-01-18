@@ -1,5 +1,5 @@
 from enum import Enum as PyEnum
-from sqlalchemy import Column, Integer, Enum as SAEnum, ForeignKey, DateTime, String
+from sqlalchemy import Column, Integer, Enum as SAEnum, ForeignKey, DateTime, String, BigInteger
 import uuid
 
 from app.db.base import Base, TenantMixin, TimestampMixin
