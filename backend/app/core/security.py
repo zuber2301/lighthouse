@@ -1,6 +1,8 @@
 from passlib.context import CryptContext
 
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+# Use bcrypt_sha256 to avoid bcrypt's 72-byte input limitation for long passwords.
+# bcrypt_sha256 hashes the input with SHA-256 before applying bcrypt.
+pwd_context = CryptContext(schemes=["bcrypt_sha256"], deprecated="auto")
 
 def verify_password(plain, hashed):
     return pwd_context.verify(plain, hashed)

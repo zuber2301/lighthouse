@@ -7,6 +7,20 @@ import App from './App'
 import './styles/tailwind.css'
 // Ensure Authorization header is injected for platform API calls
 import './lib/fetchAuth'
+// Dev helper: if VITE_DEV_TOKEN is provided at build/runtime, store it in localStorage
+try {
+  const devToken = import.meta.env.VITE_DEV_TOKEN
+  if (devToken) {
+    try {
+      localStorage.setItem('auth_token', devToken)
+      console.info('Dev token injected into localStorage')
+    } catch (e) {
+      // ignore storage errors
+    }
+  }
+} catch (e) {
+  // import.meta may not be available in some test runners; ignore
+}
 import { LiveAnnouncerProvider } from './components/LiveAnnouncer'
 import { ToastProvider } from './components/ToastProvider'
 
