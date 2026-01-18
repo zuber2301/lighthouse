@@ -7,10 +7,11 @@ export default defineConfig({
     port: 3001,
     proxy: {
       '/api': {
-        target: process.env.BACKEND_URL || 'http://localhost:18000',
+        target: process.env.VITE_API_BASE || process.env.BACKEND_URL || 'http://localhost:18000',
         changeOrigin: true,
         secure: false,
         followRedirects: true,
+        rewrite: (path) => path.replace(/^\/api/, ''),
       },
     },
   },

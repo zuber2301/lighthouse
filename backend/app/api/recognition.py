@@ -15,7 +15,7 @@ from app.services.recognition_service import create_recognition, approve_recogni
 from app.schemas.recognition import RecognitionCreate, RecognitionOut
 
 
-router = APIRouter(prefix="/recognition")
+router = APIRouter(prefix="/recognitions")
 
 
 @router.get("/", response_model=List[RecognitionOut])

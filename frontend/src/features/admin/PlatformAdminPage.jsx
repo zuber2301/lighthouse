@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import Card from '../../components/Card'
 import PageHeader from '../../components/PageHeader'
 import TenantManager from '../../components/TenantManager'
+import { API_BASE } from '../../lib/api'
 
 export default function PlatformAdminPage() {
   const navigate = useNavigate()
@@ -16,7 +17,7 @@ export default function PlatformAdminPage() {
 
   const fetchTenants = async () => {
     try {
-      const response = await fetch('http://localhost:18000/platform/tenants', {
+      const response = await fetch(`${API_BASE}/platform/tenants`, {
         credentials: 'include'
       })
       if (response.ok) {
@@ -30,7 +31,7 @@ export default function PlatformAdminPage() {
 
   const fetchStats = async () => {
     try {
-      const response = await fetch('http://localhost:18000/platform/stats', {
+      const response = await fetch(`${API_BASE}/platform/stats`, {
         credentials: 'include'
       })
       if (response.ok) {

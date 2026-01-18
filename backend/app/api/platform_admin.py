@@ -122,13 +122,13 @@ async def onboard_tenant(request: OnboardTenantRequest, db: AsyncSession = Depen
     )
     db.add(sub)
     
-    # Create initial budget pool for the tenant
+    # Create initial budget pool for the tenant (adapted to current BudgetPool model)
+    # BudgetPool currently expects: tenant_id, period, total_amount, created_by
     budget_pool = BudgetPool(
         tenant_id=tenant.id,
-        name="Company Budget",
-        allocated_points=10000,  # Initial budget
-        remaining_points=10000,
-        is_active=True
+        period="initial",
+        total_amount=10000.00,
+        created_by=user.id
     )
     db.add(budget_pool)
     

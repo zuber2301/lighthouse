@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
+import { API_BASE } from '../lib/api'
 
 export default function LoginPage() {
   const [formData, setFormData] = useState({
@@ -37,7 +38,7 @@ export default function LoginPage() {
     if (provider === 'Google') {
       try {
         // Fetch the Google OAuth authorization URL from backend
-        const response = await fetch('http://localhost:18000/auth/google')
+        const response = await fetch(`${API_BASE}/auth/google`)
         if (!response.ok) {
           const errorData = await response.json().catch(() => ({}))
           throw new Error(errorData.detail || `Server error: ${response.status}`)

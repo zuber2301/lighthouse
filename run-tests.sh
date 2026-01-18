@@ -51,6 +51,14 @@ source venv/bin/activate
 pip install -r requirements.txt
 
 # Run backend tests
+print_status "Running integration test (quick) - backend/tests/test_integration_onboard.py..."
+if pytest -q tests/test_integration_onboard.py::test_onboard_tenant_end_to_end; then
+    print_success "Integration test passed!"
+else
+    print_error "Integration test failed!"
+    exit 1
+fi
+
 print_status "Running pytest..."
 if pytest --tb=short --cov=app --cov-report=term-missing; then
     print_success "Backend tests passed!"

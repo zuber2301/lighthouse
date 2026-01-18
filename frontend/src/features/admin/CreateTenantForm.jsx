@@ -22,12 +22,8 @@ export default function CreateTenantForm() {
     try {
       const token = localStorage.getItem('auth_token')
       const headers = {}
-      if (token) {
-        headers['Authorization'] = `Bearer ${token}`
-      }
-      const response = await fetch('http://localhost:18000/platform/subscription-plans', {
-        headers
-      })
+      if (token) headers['Authorization'] = `Bearer ${token}`
+      const response = await fetch('/api/platform/subscription-plans', { headers })
       if (response.ok) {
         const plans = await response.json()
         setSubscriptionPlans(plans)
@@ -66,12 +62,13 @@ export default function CreateTenantForm() {
     setIsLoading(true)
 
     try {
-      const response = await fetch('http://localhost:18000/platform/tenants', {
+      const token = localStorage.getItem('auth_token')
+      const headers = { 'Content-Type': 'application/json' }
+      if (token) headers['Authorization'] = `Bearer ${token}`
+
+      const response = await fetch('/api/platform/tenants', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        credentials: 'include',
+        headers,
         body: JSON.stringify({
           name: formData.name,
           subdomain: formData.subdomain,
@@ -86,8 +83,22 @@ export default function CreateTenantForm() {
         alert(`Tenant "${formData.name}" created successfully! Subdomain: ${result.subdomain}.lighthouse.com`)
         navigate('/platform-admin')
       } else {
-        const error = await response.json()
-        alert(`Error: ${error.detail}`)
+        const status = response.status
+        let text
+        try {
+          const j = await response.json()
+          text = j.detail || JSON.stringify(j)
+        } catch (err) {
+          text = await response.text().catch(() => '')
+        }
+        console.error('Create tenant failed', { status, text })
+        if (status === 401) {
+          alert('Unauthorized. Please sign in as a platform admin.')
+        } else if (status === 403) {
+          alert('Forbidden. Your account lacks platform admin permissions.')
+        } else {
+          alert(`Error creating tenant (${status}): ${text || 'unknown error'}`)
+        }
       }
     } catch (error) {
       console.error('Failed to create tenant:', error)

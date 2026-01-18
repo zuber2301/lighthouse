@@ -1,5 +1,8 @@
 import os
-from pydantic_settings import BaseSettings
+try:
+    from pydantic_settings import BaseSettings
+except Exception:
+    from pydantic import BaseSettings
 
 
 class Settings(BaseSettings):
@@ -15,6 +18,9 @@ class Settings(BaseSettings):
     google_oidc_client_id: str = ""
     google_oidc_client_secret: str = ""
     google_oidc_redirect_uri: str = "http://localhost:18000/auth/callback"
+
+    # Frontend URL for OAuth redirects
+    FRONTEND_URL: str = "http://localhost:5173"
 
     # Platform admin email
     PLATFORM_ADMIN_EMAIL: str = "mohammed.zuber@gmail.com"

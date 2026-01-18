@@ -147,7 +147,7 @@ async def google_callback(code: str, state: str, db: AsyncSession = Depends(get_
         access_token = jwt.encode(token_data, settings.JWT_SECRET, algorithm=settings.JWT_ALGORITHM)
 
         # Redirect to frontend with token
-        frontend_url = "http://localhost:3004"
+        frontend_url = getattr(settings, 'FRONTEND_URL', 'http://localhost:5173')
         user_data_encoded = urllib.parse.quote(json.dumps({
             "id": str(user.id),
             "email": user.email,

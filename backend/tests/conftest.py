@@ -1,9 +1,23 @@
+import os
+import sys
 import asyncio
 import pytest
 import uuid
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker, Session
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
+from sqlalchemy.orm import sessionmaker
+
+# Ensure backend package is importable when tests run from repo root
+HERE = os.path.dirname(__file__)
+BACKEND_DIR = os.path.abspath(os.path.join(HERE, '..'))
+if BACKEND_DIR not in sys.path:
+    sys.path.insert(0, BACKEND_DIR)
+
+# Provide sensible defaults for settings used during tests
+os.environ.setdefault('DEV_DEFAULT_TENANT', 'dev-tenant')
+os.environ.setdefault('JWT_SECRET', 'test_secret_key_for_testing_only')
+os.environ.setdefault('JWT_ALGORITHM', 'HS256')
+os.environ.setdefault('DATABASE_URL', 'sqlite+aiosqlite:///:memory:')
+
 from app.db.base import Base
 from app.core import tenancy
 from app.models.users import User, UserRole
@@ -11,23 +25,6 @@ from app.models.tenants import Tenant
 from app.models.subscriptions import SubscriptionPlan
 from app.models.budgets import BudgetPool
 from app.core.config import settings
-import sys
-import types
-
-# Mock external dependencies for testing
-jose_stub = types.SimpleNamespace(
-    jwt=types.SimpleNamespace(decode=lambda *a, **k: {"sub": "test@example.com"}),
-    JWTError=Exception
-)
-sys.modules.setdefault("jose", jose_stub)
-
-fake_settings = types.SimpleNamespace(
-    DEV_DEFAULT_TENANT=None,
-    JWT_SECRET="test_secret_key_for_testing_only",
-    JWT_ALGORITHM="HS256",
-    DATABASE_URL="sqlite+aiosqlite:///:memory:"
-)
-sys.modules.setdefault("app.core.config", types.SimpleNamespace(settings=fake_settings))
 
 
 @pytest.fixture(scope="session")
@@ -41,10 +38,9 @@ def event_loop():
 @pytest.fixture(scope="session")
 async def test_engine():
     """Create a test database engine."""
-    engine = create_async_engine(
-        "sqlite+aiosqlite:///:memory:",
-        echo=False,
-    )
+    # Use in-memory DB for fast tests; DATABASE_URL env var can override
+    db_url = os.environ.get('DATABASE_URL', 'sqlite+aiosqlite:///:memory:')
+    engine = create_async_engine(db_url, echo=False)
     yield engine
     await engine.dispose()
 
@@ -59,11 +55,7 @@ async def create_tables(test_engine):
 @pytest.fixture
 async def db_session(test_engine, create_tables):
     """Create a test database session."""
-    async_session = sessionmaker(
-        bind=test_engine,
-        class_=AsyncSession,
-        expire_on_commit=False
-    )
+    async_session = sessionmaker(bind=test_engine, class_=AsyncSession, expire_on_commit=False)
 
     async with async_session() as session:
         # Set up tenant scoping for tests
@@ -139,11 +131,8 @@ async def subscription_plan(db_session):
     """Create a test subscription plan."""
     plan = SubscriptionPlan(
         name="Basic",
-        description="Basic plan for testing",
-        monthly_price=0,
-        annual_price=0,
-        max_users=50,
-        features=["recognition", "rewards"]
+        monthly_price_in_paise=0,
+        features={"description": "Basic plan for testing", "max_users": 50}
     )
     db_session.add(plan)
     await db_session.commit()
@@ -152,14 +141,13 @@ async def subscription_plan(db_session):
 
 
 @pytest.fixture
-async def budget_pool(db_session, test_tenant):
-    """Create a test budget pool."""
+async def budget_pool(db_session, test_tenant, platform_admin_user):
+    """Create a test budget pool using current BudgetPool model fields."""
     pool = BudgetPool(
         tenant_id=test_tenant.id,
-        name="Test Budget",
-        allocated_points=5000,
-        remaining_points=5000,
-        is_active=True
+        period="initial",
+        total_amount=5000.00,
+        created_by=platform_admin_user.id
     )
     db_session.add(pool)
     await db_session.commit()
