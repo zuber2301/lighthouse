@@ -1,21 +1,46 @@
 import React from 'react'
 import Card from './Card'
+import { useNavigate } from 'react-router-dom'
+import { useTenant } from '../lib/TenantContext'
 
 const TenantManager = ({ tenants, onRefresh, onAddTenant }) => {
+  const navigate = useNavigate()
+  const { setSelectedTenantId } = useTenant()
+
   const handleStatusToggle = async (tenantId, currentStatus) => {
-    const newStatus = currentStatus === 'active' ? 'suspended' : 'active'
     try {
-      const response = await fetch(`/api/platform/tenants/${tenantId}`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ status: newStatus })
-      })
-      if (response.ok) {
-        onRefresh()
+      if (currentStatus === 'active') {
+        const response = await fetch(`/api/platform/tenants/${tenantId}/suspend`, { method: 'POST' })
+        if (response.ok) onRefresh()
+      } else {
+        const response = await fetch(`/api/platform/tenants/${tenantId}/unsuspend`, { method: 'POST' })
+        if (response.ok) onRefresh()
       }
     } catch (error) {
       console.error('Failed to update tenant status:', error)
     }
+  }
+
+  const handleImpersonate = (tenantId) => {
+    try {
+      setSelectedTenantId(tenantId)
+      navigate('/tenant-dashboard')
+    } catch (e) {
+      console.error('Failed to impersonate tenant', e)
+    }
+  }
+
+  const renderSparkline = (data = []) => {
+    const w = 80
+    const h = 24
+    const max = Math.max(...data, 1)
+    const step = data.length > 1 ? w / (data.length - 1) : w
+    const points = data.map((v, i) => `${i * step},${h - (v / max) * h}`).join(' ')
+    return (
+      <svg width={w} height={h} viewBox={`0 0 ${w} ${h}`} className="inline-block align-middle">
+        <polyline points={points} fill="none" stroke="#60a5fa" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+      </svg>
+    )
   }
 
   return (
@@ -57,16 +82,19 @@ const TenantManager = ({ tenants, onRefresh, onAddTenant }) => {
                   </a>
                 </td>
                 <td className="p-5">
-                  <span className="px-3 py-1 bg-slate-800 rounded-full text-xs font-medium">
-                    {tenant.plan}
-                  </span>
+                  <div className="text-sm">{tenant.plan}</div>
+                  <div className="text-xs text-slate-400">Users: {tenant.user_count ?? '—'}</div>
                 </td>
                 <td className="p-5">
-                  <span className={`px-3 py-1 rounded-full text-xs font-bold ${
+                  <div className={`px-3 py-1 rounded-full text-xs font-bold ${
                     tenant.status === 'active' ? 'bg-emerald-900/50 text-emerald-400' : 'bg-rose-900/50 text-rose-400'
                   }`}>
                     {tenant.status}
-                  </span>
+                  </div>
+                  <div className="text-xs text-slate-400 mt-1">Billing: {tenant.last_billing_date || '—'}</div>
+                </td>
+                <td className="p-5">
+                  {renderSparkline(tenant.activity_last_7_days)}
                 </td>
                 <td className="p-5 text-slate-400 text-sm">
                   {new Date(tenant.created_at).toLocaleDateString()}
@@ -81,6 +109,14 @@ const TenantManager = ({ tenants, onRefresh, onAddTenant }) => {
                     } transition`}
                   >
                     {tenant.status === 'active' ? 'Suspend' : 'Activate'}
+                  </button>
+
+                  <button
+                    onClick={() => handleImpersonate(tenant.id)}
+                    title="Impersonate tenant"
+                    className="text-sm px-3 py-1 rounded text-slate-300 hover:bg-slate-800/40 transition"
+                  >
+                    👁️
                   </button>
                 </td>
               </tr>

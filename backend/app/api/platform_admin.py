@@ -25,7 +25,9 @@ class OnboardTenantRequest(BaseModel):
     subdomain: str
     admin_email: str
     admin_name: str
-    plan_id: int
+    plan_id: Optional[int] = None
+    industry: Optional[str] = None
+    credit_limit: Optional[int] = 0
 
 
 class CreateTenantAdminRequest(BaseModel):
@@ -73,12 +75,30 @@ async def list_tenants(db: AsyncSession = Depends(get_db), user: CurrentUser = D
         )
         sub = sub_q.first()
         plan_name = sub[1].name if sub else "None"
+        # user count
+        user_q = await db.execute(select(func.count(User.id)).where(User.tenant_id == t.id, User.is_active == True))
+        user_count = user_q.scalar() or 0
+
+        # last 7 days activity (recognitions per day)
+        today = datetime.datetime.utcnow().date()
+        dates = [today - datetime.timedelta(days=i) for i in range(6, -1, -1)]
+        activity = []
+        for d in dates:
+            start = datetime.datetime.combine(d, datetime.time.min)
+            end = datetime.datetime.combine(d, datetime.time.max)
+            a_q = await db.execute(select(func.count(Recognition.id)).where(Recognition.tenant_id == t.id, Recognition.created_at >= start, Recognition.created_at <= end))
+            activity.append(int(a_q.scalar() or 0))
+
         tenants.append({
             "id": str(t.id),
             "name": t.name,
             "subdomain": t.subdomain,
             "status": t.status,
             "plan": plan_name,
+            "user_count": int(user_count),
+            "last_billing_date": t.last_billing_date.isoformat() if getattr(t, 'last_billing_date', None) else None,
+            "credit_limit": int(getattr(t, 'credit_limit', 0) or 0),
+            "activity_last_7_days": activity,
             "created_at": t.created_at.isoformat() if t.created_at else None
         })
     return tenants
@@ -99,7 +119,10 @@ async def onboard_tenant(request: OnboardTenantRequest, db: AsyncSession = Depen
     tenant = Tenant(
         name=request.name,
         subdomain=request.subdomain,
-        status="active"
+        status="active",
+        industry=request.industry,
+        credit_limit=request.credit_limit or 0,
+        last_billing_date=datetime.date.today()
     )
     db.add(tenant)
     await db.commit()
@@ -115,14 +138,25 @@ async def onboard_tenant(request: OnboardTenantRequest, db: AsyncSession = Depen
     )
     db.add(admin_user)
     
-    # Assign subscription
-    sub = TenantSubscription(
-        tenant_id=tenant.id,
-        plan_id=request.plan_id,
-        start_date=datetime.date.today(),
-        is_active=True
-    )
-    db.add(sub)
+    # Assign subscription: if plan_id not provided, assign Basic plan
+    plan_id = request.plan_id
+    if not plan_id:
+        plan_q = await db.execute(select(SubscriptionPlan).where(func.lower(SubscriptionPlan.name) == 'basic'))
+        plan = plan_q.scalar_one_or_none()
+        if not plan:
+            # fallback to first available plan
+            plan_q2 = await db.execute(select(SubscriptionPlan).limit(1))
+            plan = plan_q2.scalar_one_or_none()
+        plan_id = plan.id if plan else None
+
+    if plan_id:
+        sub = TenantSubscription(
+            tenant_id=tenant.id,
+            plan_id=plan_id,
+            start_date=datetime.date.today(),
+            is_active=True
+        )
+        db.add(sub)
     
     # Create initial budget pool for the tenant (adapted to current BudgetPool model)
     # BudgetPool currently expects: tenant_id, period, total_amount, created_by
@@ -136,19 +170,34 @@ async def onboard_tenant(request: OnboardTenantRequest, db: AsyncSession = Depen
     
     await db.commit()
     
-    # Log audit
+    # Log audit for tenant creation
     audit = PlatformAuditLog(
         admin_id=user.id,
         action="TENANT_CREATED",
         target_tenant_id=tenant.id,
         details={
             "subdomain": request.subdomain,
-            "plan_id": request.plan_id,
+            "plan_id": plan_id,
             "admin_email": request.admin_email,
-            "admin_name": request.admin_name
+            "admin_name": request.admin_name,
+            "industry": request.industry,
+            "credit_limit": request.credit_limit
         }
     )
     db.add(audit)
+    await db.commit()
+
+    # Simulate sending welcome email by creating an audit log entry (email delivery integration can replace this)
+    email_audit = PlatformAuditLog(
+        admin_id=user.id,
+        action="WELCOME_EMAIL_SENT",
+        target_tenant_id=tenant.id,
+        details={
+            "to": request.admin_email,
+            "subject": "Welcome to LightHouse - Set your password",
+        }
+    )
+    db.add(email_audit)
     await db.commit()
     
     return {
