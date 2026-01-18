@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react'
 import Card from '../../components/Card'
 import PageHeader from '../../components/PageHeader'
+import { useTenant } from '../../lib/TenantContext'
 
 export default function TenantAdminBudget() {
+  const { selectedTenant } = useTenant()
   const [masterBalance, setMasterBalance] = useState(0)
   const [leads, setLeads] = useState([])
   const [loading, setLoading] = useState(true)
@@ -74,7 +76,7 @@ export default function TenantAdminBudget() {
 
   return (
     <div className="p-6">
-      <PageHeader title="Budget Management" subtitle="Load funds and allocate to department leads" />
+      <PageHeader title="Budget Management" subtitle={`Load funds and allocate to department leads${selectedTenant ? ` — ${selectedTenant.name}` : ''}`} />
 
       {/* Load Budget Section */}
       <Card className="mb-6">

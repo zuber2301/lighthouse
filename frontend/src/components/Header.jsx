@@ -1,9 +1,11 @@
 import React, { useState, useRef, useEffect } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { useAuth } from '../lib/AuthContext'
+import TenantSelector from './TenantSelector'
 
 const tabs = [
   { name: 'Dashboard', path: '/' },
+  { name: 'Tenants', path: '/tenants' },
   { name: 'Recognition', path: '/recognition' },
   { name: 'Rewards', path: '/rewards' },
   { name: 'Analytics', path: '/analytics' },
@@ -46,7 +48,9 @@ export default function Header() {
     <header className={`flex items-center justify-between px-6 py-3 border-b border-white/10 bg-[rgba(10,14,39,0.95)] backdrop-blur-md`}>
       <div className="flex items-center gap-4">
         <div className="text-lg font-semibold">LightHouse</div>
-        <div className="text-sm text-slate-400">Tenant: ACME Corp ▾</div>
+        <div>
+          <TenantSelector />
+        </div>
       </div>
 
       <nav className="flex items-center gap-6">

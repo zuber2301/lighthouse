@@ -58,7 +58,7 @@ async def get_subscription_plans(db: AsyncSession = Depends(get_db), user: Curre
 
 
 @router.get("/tenants")
-async def list_tenants(db: AsyncSession = Depends(get_db), user: CurrentUser = Depends(require_role("SUPER_ADMIN"))):
+async def list_tenants(db: AsyncSession = Depends(get_db), user: CurrentUser = Depends(require_role("SUPER_ADMIN", "PLATFORM_ADMIN"))):
     q = await db.execute(select(Tenant))
     rows = q.scalars().all()
     tenants = []

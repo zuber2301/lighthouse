@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { API_BASE } from '../../lib/api'
+import { useTenant } from '../../lib/TenantContext'
 
 export default function CreateTenantForm() {
   const navigate = useNavigate()
+  const { addTenant } = useTenant()
   const [formData, setFormData] = useState({
     name: '',
     subdomain: '',
@@ -81,8 +83,17 @@ export default function CreateTenantForm() {
 
       if (response.ok) {
         const result = await response.json()
+        try {
+          // Add to tenant context so tenant grids update immediately
+          if (addTenant) addTenant(result)
+        } catch (e) {
+          // ignore
+        }
+        try {
+          if (addTenant) addTenant(result)
+        } catch (e) {}
         alert(`Tenant "${formData.name}" created successfully! Subdomain: ${result.subdomain}.lighthouse.com`)
-        navigate('/platform-admin')
+        navigate(`/tenants?open=${result.id}`)
       } else {
         const status = response.status
         let text

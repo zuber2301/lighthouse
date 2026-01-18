@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react'
 import Card from '../../components/Card'
 import PageHeader from '../../components/PageHeader'
+import { useTenant } from '../../lib/TenantContext'
 
 export default function TenantLeadDashboard() {
+  const { selectedTenant } = useTenant()
   const [team, setTeam] = useState([])
   const [budget, setBudget] = useState(0)
   const [loading, setLoading] = useState(true)
@@ -84,7 +86,7 @@ export default function TenantLeadDashboard() {
 
   return (
     <div className="p-6">
-      <PageHeader title="Team Recognition" subtitle="Give points to your team members" />
+      <PageHeader title="Team Recognition" subtitle={`Give points to your team members${selectedTenant ? ` — ${selectedTenant.name}` : ''}`} />
 
       {/* Budget Display */}
       <Card className="mb-6">

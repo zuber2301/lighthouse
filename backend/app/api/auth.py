@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status, Query
 from fastapi.responses import RedirectResponse
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
@@ -172,7 +172,7 @@ async def health():
 
 
 @router.get("/dev-token")
-async def dev_token(db: AsyncSession = Depends(get_db)):
+async def dev_token(role: str = Query("PLATFORM_ADMIN"), tenant_id: str | None = None, db: AsyncSession = Depends(get_db)):
     """Development helper: return a JWT for the configured PLATFORM_ADMIN_EMAIL.
 
     Only available when `DEV_DEFAULT_TENANT` is set. This helps local development
@@ -181,20 +181,41 @@ async def dev_token(db: AsyncSession = Depends(get_db)):
     if not getattr(settings, "DEV_DEFAULT_TENANT", None):
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="DEV_DEFAULT_TENANT not configured")
 
-    # Find or create the platform admin user
-    user_q = await db.execute(select(User).where(User.email == settings.PLATFORM_ADMIN_EMAIL))
-    user = user_q.scalar_one_or_none()
-    if not user:
-        user = User(email=settings.PLATFORM_ADMIN_EMAIL, full_name="Platform Admin", role=UserRole.PLATFORM_ADMIN, is_active=True)
-        db.add(user)
-        await db.commit()
-        await db.refresh(user)
+    # Normalize tenant_id to provided value or DEV_DEFAULT_TENANT
+    tenant_id = tenant_id or settings.DEV_DEFAULT_TENANT
+
+    # Validate requested role
+    try:
+        requested_role = UserRole[role]
+    except Exception:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"Invalid role: {role}")
+
+    # For PLATFORM_ADMIN, use PLATFORM_ADMIN_EMAIL; otherwise create/find a user with the requested role
+    if requested_role == UserRole.PLATFORM_ADMIN:
+        user_q = await db.execute(select(User).where(User.email == settings.PLATFORM_ADMIN_EMAIL))
+        user = user_q.scalar_one_or_none()
+        if not user:
+            user = User(email=settings.PLATFORM_ADMIN_EMAIL, full_name="Platform Admin", role=UserRole.PLATFORM_ADMIN, is_active=True)
+            db.add(user)
+            await db.commit()
+            await db.refresh(user)
+    else:
+        # Create or find a tenant-scoped user for dev
+        # Use a deterministic email for ease of testing
+        dev_email = f"dev+{role.lower()}@example.local"
+        user_q = await db.execute(select(User).where(User.email == dev_email, User.tenant_id == tenant_id))
+        user = user_q.scalar_one_or_none()
+        if not user:
+            user = User(email=dev_email, full_name=f"Dev {role.title().replace('_',' ')}", role=requested_role, is_active=True, tenant_id=tenant_id)
+            db.add(user)
+            await db.commit()
+            await db.refresh(user)
 
     token_data = {
         "sub": str(user.id),
-        "tenant_id": settings.DEV_DEFAULT_TENANT,
-        "role": UserRole.PLATFORM_ADMIN.value if hasattr(UserRole.PLATFORM_ADMIN, 'value') else 'PLATFORM_ADMIN'
+        "tenant_id": tenant_id,
+        "role": user.role.value if hasattr(user.role, 'value') else str(user.role)
     }
     access_token = jwt.encode(token_data, settings.JWT_SECRET, algorithm=settings.JWT_ALGORITHM)
 
-    return {"token": access_token, "user": {"id": str(user.id), "email": user.email, "full_name": user.full_name, "role": user.role.value if hasattr(user.role, 'value') else user.role}}
+    return {"token": access_token, "user": {"id": str(user.id), "email": user.email, "full_name": user.full_name, "role": user.role.value if hasattr(user.role, 'value') else user.role, "tenant_id": tenant_id}}

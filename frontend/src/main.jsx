@@ -23,6 +23,7 @@ try {
 }
 import { LiveAnnouncerProvider } from './components/LiveAnnouncer'
 import { ToastProvider } from './components/ToastProvider'
+import { TenantProvider } from './lib/TenantContext'
 
 const queryClient = new QueryClient()
 
@@ -36,7 +37,9 @@ root.render(
       <QueryClientProvider client={queryClient}>
         <LiveAnnouncerProvider>
           <ToastProvider>
-            <App />
+            <TenantProvider>
+              <App />
+            </TenantProvider>
           </ToastProvider>
         </LiveAnnouncerProvider>
         <ReactQueryDevtools initialIsOpen={false} />

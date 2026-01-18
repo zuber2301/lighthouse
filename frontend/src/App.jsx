@@ -17,6 +17,8 @@ import CreateTenantForm from './features/admin/CreateTenantForm'
 import TenantAdminBudget from './features/admin/TenantAdminBudget'
 import TenantLeadDashboard from './features/admin/TenantLeadDashboard'
 import CorporateUserDashboard from './features/admin/CorporateUserDashboard'
+import TenantDashboard from './features/tenant/TenantDashboard'
+import TenantsPage from './features/tenant/TenantsPage'
 import ThemeDemo from './pages/ThemeDemo'
 
 export default function App() {
@@ -42,8 +44,12 @@ export default function App() {
           <Route path="rewards" element={<RewardsPage />} />
           <Route path="analytics" element={<AnalyticsPage />} />
           <Route path="admin" element={<AdminPage />} />
-          <Route path="platform-admin" element={<PlatformAdminPage />} />        <Route path="platform-admin/create-tenant" element={<CreateTenantForm />} />          <Route path="tenant-admin" element={<TenantAdminBudget />} />
+          <Route path="platform-admin" element={<PlatformAdminPage />} />
+        <Route path="platform-admin/create-tenant" element={<CreateTenantForm />} />
+          <Route path="tenant-admin" element={<TenantAdminBudget />} />
           <Route path="tenant-lead" element={<TenantLeadDashboard />} />
+          <Route path="tenant-dashboard" element={<TenantDashboard />} />
+          <Route path="tenants" element={<TenantsPage />} />
           <Route path="corporate-user" element={<CorporateUserDashboard />} />
           <Route path="theme-demo" element={<ThemeDemo />} />
         </Route>

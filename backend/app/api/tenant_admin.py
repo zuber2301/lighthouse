@@ -7,7 +7,9 @@ from app.core.auth import get_current_user, User as CurrentUser
 from app.models.tenants import Tenant
 from app.models.users import User, UserRole
 from app.models.transactions import Transaction, TransactionType
+from app.models.redemptions import Redemption
 from typing import Optional, List
+from app.schemas.tenant_dashboard import TenantDashboardResponse
 import datetime
 from pydantic import BaseModel
 
@@ -171,6 +173,82 @@ async def get_budget_status(db: AsyncSession = Depends(get_db), user: CurrentUse
             }
             for lead in leads
         ]
+    }
+
+
+@router.get("/dashboard", response_model=TenantDashboardResponse)
+async def get_tenant_dashboard(db: AsyncSession = Depends(get_db), user: CurrentUser = Depends(require_role("TENANT_ADMIN", "TENANT_LEAD"))):
+    """Aggregate tenant-specific metrics for dashboard"""
+    tenant_id = user.tenant_id
+    now = datetime.datetime.utcnow()
+    days_30 = now - datetime.timedelta(days=30)
+
+    # Active users
+    active_q = await db.execute(select(func.count(User.id)).where(User.tenant_id == tenant_id, User.is_active == True))
+    active_users = active_q.scalar() or 0
+
+    # Recognitions in last 30 days (count and points)
+    recog_q = await db.execute(
+        select(func.count(Transaction.id), func.coalesce(func.sum(Transaction.amount), 0))
+        .where(Transaction.tenant_id == tenant_id, Transaction.type == TransactionType.RECOGNITION, Transaction.created_at >= days_30)
+    )
+    recog_count, recog_sum = recog_q.first() or (0, 0)
+    # convert paise to points (assuming 100 paise == 1 point)
+    points_distributed = int(recog_sum // 100) if recog_sum else 0
+
+    # Redemptions last 30 days
+    red_q = await db.execute(
+        select(func.count(Redemption.id), func.coalesce(func.sum(Redemption.points_used), 0))
+        .where(Redemption.tenant_id == tenant_id, Redemption.created_at >= days_30)
+    )
+    red_count, red_points = red_q.first() or (0, 0)
+
+    # Lead / master budget
+    tenant_q = await db.execute(select(Tenant).where(Tenant.id == tenant_id))
+    tenant = tenant_q.scalar_one()
+    leads_q = await db.execute(select(User).where(User.tenant_id == tenant_id, User.role == UserRole.TENANT_LEAD))
+    leads = leads_q.scalars().all()
+    lead_balances = [{"id": str(l.id), "name": l.full_name, "amount_paise": l.lead_budget_balance} for l in leads]
+
+    # Top employees by recognition received (sum of amounts)
+    top_q = await db.execute(
+        select(User.id, User.full_name, func.coalesce(func.sum(Transaction.amount), 0).label('points'))
+        .join(Transaction, Transaction.receiver_id == User.id)
+        .where(User.tenant_id == tenant_id, Transaction.type == TransactionType.RECOGNITION)
+        .group_by(User.id)
+        .order_by(func.sum(Transaction.amount).desc())
+        .limit(5)
+    )
+    top = []
+    for row in top_q.all():
+        uid, name, pts = row
+        top.append({"id": str(uid), "name": name, "points": int(pts // 100)})
+
+    # Simple time-series: recognitions per day for last 7 days
+    days_7 = now - datetime.timedelta(days=7)
+    ts_q = await db.execute(
+        select(func.date_trunc('day', Transaction.created_at).label('day'), func.count(Transaction.id))
+        .where(Transaction.tenant_id == tenant_id, Transaction.type == TransactionType.RECOGNITION, Transaction.created_at >= days_7)
+        .group_by('day')
+        .order_by('day')
+    )
+    ts = {r[0].date().isoformat(): r[1] for r in ts_q.all()}
+    labels = []
+    values = []
+    for i in range(7, 0, -1):
+        d = (now - datetime.timedelta(days=i-1)).date()
+        labels.append(d.isoformat())
+        values.append(ts.get(d.isoformat(), 0))
+
+    return {
+        "tenant": {"id": str(tenant.id), "name": tenant.name, "subdomain": tenant.subdomain},
+        "active_users": int(active_users),
+        "recognitions_30d": int(recog_count or 0),
+        "points_distributed_30d": int(points_distributed),
+        "redemptions_30d": {"count": int(red_count or 0), "points_spent": int(red_points or 0)},
+        "lead_budget": {"master_balance_paise": tenant.master_budget_balance, "leads": lead_balances},
+        "top_employees": top,
+        "time_series": {"labels": labels, "recognitions": values}
     }
 
 
