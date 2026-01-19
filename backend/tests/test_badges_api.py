@@ -1,5 +1,6 @@
 import pytest
 import pytest_asyncio
+import uuid
 from httpx import AsyncClient
 from app.core.auth import create_access_token
 from app.main import app
@@ -14,7 +15,11 @@ async def client():
 class TestBadgesAPI:
     @pytest.mark.asyncio
     async def test_create_and_get_badge(self, client, tenant_admin_user):
-        token = create_access_token({"sub": tenant_admin_user.email, "role": tenant_admin_user.role.value})
+        token = create_access_token({
+            "sub": str(tenant_admin_user.id),
+            "role": tenant_admin_user.role.value,
+            "tenant_id": str(tenant_admin_user.tenant_id)
+        })
         headers = {"Authorization": f"Bearer {token}"}
 
         badge_payload = {
@@ -43,7 +48,7 @@ class TestBadgesAPI:
         from app.models.users import User, UserRole
 
         nominee = User(
-            email="testnominee@example.com",
+            email=f"testnominee_{uuid.uuid4().hex}@example.com",
             full_name="Test Nominee",
             role=UserRole.CORPORATE_USER,
             tenant_id=tenant_admin_user.tenant_id,
@@ -65,7 +70,11 @@ class TestBadgesAPI:
         await db_session.commit()
         await db_session.refresh(badge)
 
-        token = create_access_token({"sub": tenant_admin_user.email, "role": tenant_admin_user.role.value})
+        token = create_access_token({
+            "sub": str(tenant_admin_user.id),
+            "role": tenant_admin_user.role.value,
+            "tenant_id": str(tenant_admin_user.tenant_id)
+        })
         headers = {"Authorization": f"Bearer {token}"}
 
         recognition_payload = {
@@ -76,7 +85,7 @@ class TestBadgesAPI:
             "is_public": True,
         }
 
-        resp = await client.post("/recognitions/", json=recognition_payload, headers=headers)
+        resp = await client.post("/recognition/", json=recognition_payload, headers=headers)
         assert resp.status_code == 201
         data = resp.json()
         assert data["nominee_id"] == nominee.id

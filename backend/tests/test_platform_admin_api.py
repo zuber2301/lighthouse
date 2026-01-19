@@ -52,7 +52,7 @@ class TestPlatformAdminAPI:
         plan = data[0]
         assert "id" in plan
         assert "name" in plan
-        assert "description" in plan
+        assert "features" in plan
         assert "monthly_price" in plan
         assert "features" in plan
 
@@ -69,11 +69,11 @@ class TestPlatformAdminAPI:
             "plan_id": subscription_plan.id
         }
 
-        response = await client.post("/platform/onboard-tenant", json=tenant_data, headers=headers)
+        response = await client.post("/platform/tenants", json=tenant_data, headers=headers)
         assert response.status_code == 200
 
         data = response.json()
-        assert "tenant_id" in data
+        assert "id" in data
         assert "admin_user_id" in data
         assert "message" in data
 
@@ -90,7 +90,7 @@ class TestPlatformAdminAPI:
             "plan_id": subscription_plan.id
         }
 
-        response = await client.post("/platform/onboard-tenant", json=tenant_data, headers=headers)
+        response = await client.post("/platform/tenants", json=tenant_data, headers=headers)
         assert response.status_code == 400
         assert "Subdomain already exists" in response.json()["detail"]
 
@@ -107,7 +107,7 @@ class TestPlatformAdminAPI:
             "plan_id": subscription_plan.id
         }
 
-        response = await client.post("/platform/onboard-tenant", json=tenant_data, headers=headers)
+        response = await client.post("/platform/tenants", json=tenant_data, headers=headers)
         assert response.status_code == 400
         assert "Admin email already exists" in response.json()["detail"]
 

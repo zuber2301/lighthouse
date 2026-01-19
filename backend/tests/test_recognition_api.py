@@ -1,4 +1,5 @@
 import pytest
+import uuid
 from httpx import AsyncClient
 from app.core.auth import create_access_token
 from app.models.users import UserRole
@@ -15,7 +16,11 @@ class TestRecognitionAPI:
     @pytest.mark.asyncio
     async def test_list_recognitions_empty(self, client, tenant_admin_user):
         """Test listing recognitions when none exist."""
-        token = create_access_token({"sub": tenant_admin_user.email, "role": tenant_admin_user.role.value})
+        token = create_access_token({
+            "sub": str(tenant_admin_user.id),
+            "role": tenant_admin_user.role.value,
+            "tenant_id": str(tenant_admin_user.tenant_id)
+        })
         headers = {"Authorization": f"Bearer {token}"}
 
         response = await client.get("/recognition/", headers=headers)
@@ -32,7 +37,7 @@ class TestRecognitionAPI:
 
         # Create another user to recognize
         nominee = User(
-            email="nominee@testcompany.com",
+            email=f"nominee_{uuid.uuid4().hex}@testcompany.com",
             full_name="Test Nominee",
             role=UserRole.CORPORATE_USER,
             tenant_id=tenant_admin_user.tenant_id,
@@ -42,7 +47,7 @@ class TestRecognitionAPI:
         await db_session.commit()
         await db_session.refresh(nominee)
 
-        token = create_access_token({"sub": tenant_admin_user.email, "role": tenant_admin_user.role.value})
+        token = create_access_token({"sub": str(tenant_admin_user.id), "role": tenant_admin_user.role.value, "tenant_id": str(tenant_admin_user.tenant_id)})
         headers = {"Authorization": f"Bearer {token}"}
 
         recognition_data = {
@@ -63,7 +68,7 @@ class TestRecognitionAPI:
     @pytest.mark.asyncio
     async def test_create_recognition_invalid_nominee(self, client, tenant_admin_user):
         """Test creating recognition with invalid nominee ID."""
-        token = create_access_token({"sub": tenant_admin_user.email, "role": tenant_admin_user.role.value})
+        token = create_access_token({"sub": str(tenant_admin_user.id), "role": tenant_admin_user.role.value, "tenant_id": str(tenant_admin_user.tenant_id)})
         headers = {"Authorization": f"Bearer {token}"}
 
         recognition_data = {
@@ -79,6 +84,28 @@ class TestRecognitionAPI:
     async def test_approve_recognition_success(self, client, tenant_admin_user, db_session):
         """Test approving a recognition."""
         from app.models.recognition import Recognition
+        from app.models.budgets import BudgetPool, DepartmentBudget
+
+        # Setup budget
+        pool = BudgetPool(
+            tenant_id=tenant_admin_user.tenant_id,
+            period="2026",
+            total_amount=1000,
+            created_by=tenant_admin_user.id
+        )
+        db_session.add(pool)
+        await db_session.commit()
+        await db_session.refresh(pool)
+
+        dept_budget = DepartmentBudget(
+            tenant_id=tenant_admin_user.tenant_id,
+            budget_pool_id=pool.id,
+            department_id="Engineering",
+            allocated_amount=500,
+            used_amount=0
+        )
+        db_session.add(dept_budget)
+        await db_session.commit()
 
         # Create a pending recognition
         recognition = Recognition(
@@ -92,7 +119,7 @@ class TestRecognitionAPI:
         await db_session.commit()
         await db_session.refresh(recognition)
 
-        token = create_access_token({"sub": tenant_admin_user.email, "role": tenant_admin_user.role.value})
+        token = create_access_token({"sub": str(tenant_admin_user.id), "role": tenant_admin_user.role.value, "tenant_id": str(tenant_admin_user.tenant_id)})
         headers = {"Authorization": f"Bearer {token}"}
 
         response = await client.post(f"/recognition/{recognition.id}/approve", headers=headers)
@@ -106,7 +133,7 @@ class TestRecognitionAPI:
     async def test_approve_recognition_not_found(self, client, tenant_admin_user):
         """Test approving a non-existent recognition."""
         import uuid
-        token = create_access_token({"sub": tenant_admin_user.email, "role": tenant_admin_user.role.value})
+        token = create_access_token({"sub": str(tenant_admin_user.id), "role": tenant_admin_user.role.value, "tenant_id": str(tenant_admin_user.tenant_id)})
         headers = {"Authorization": f"Bearer {token}"}
 
         fake_id = str(uuid.uuid4())
@@ -138,7 +165,7 @@ class TestRecognitionAPI:
         db_session.add_all([recognition1, recognition2])
         await db_session.commit()
 
-        token = create_access_token({"sub": tenant_admin_user.email, "role": tenant_admin_user.role.value})
+        token = create_access_token({"sub": str(tenant_admin_user.id), "role": tenant_admin_user.role.value, "tenant_id": str(tenant_admin_user.tenant_id)})
         headers = {"Authorization": f"Bearer {token}"}
 
         response = await client.get("/recognition/", headers=headers)
@@ -176,7 +203,7 @@ class TestRecognitionAPI:
         db_session.add_all(recognitions)
         await db_session.commit()
 
-        token = create_access_token({"sub": tenant_admin_user.email, "role": tenant_admin_user.role.value})
+        token = create_access_token({"sub": str(tenant_admin_user.id), "role": tenant_admin_user.role.value, "tenant_id": str(tenant_admin_user.tenant_id)})
         headers = {"Authorization": f"Bearer {token}"}
 
         # Test limit

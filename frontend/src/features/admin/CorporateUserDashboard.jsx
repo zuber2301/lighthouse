@@ -3,6 +3,7 @@ import Card from '../../components/Card'
 import PageHeader from '../../components/PageHeader'
 import confetti from 'canvas-confetti'
 import api from '../../lib/api'
+import RedemptionModal from '../rewards/RedemptionModal'
 
 export default function CorporateUserDashboard() {
   const [pointsBalance, setPointsBalance] = useState(0)
@@ -10,6 +11,8 @@ export default function CorporateUserDashboard() {
   const [availableRewards, setAvailableRewards] = useState([])
   const [redemptionHistory, setRedemptionHistory] = useState([])
   const [loading, setLoading] = useState(true)
+  const [selectedReward, setSelectedReward] = useState(null)
+  const [isModalOpen, setIsModalOpen] = useState(false)
 
   useEffect(() => {
     fetchPointsData()
@@ -51,23 +54,20 @@ export default function CorporateUserDashboard() {
   }
 
   const redeemReward = async (rewardId) => {
-    try {
-      const response = await api.post('/user/redeem', { reward_id: rewardId })
-      const data = response?.data
-      if (response.status >= 200 && response.status < 300) {
-        setPointsBalance(data.points_remaining)
-        // celebration
-        try { confetti({ particleCount: 120, spread: 70, origin: { y: 0.6 } }) } catch (e) {}
-        alert(`Successfully redeemed ${data.reward_title}!`)
-        fetchRedemptions()
-      } else {
-        const err = response?.data || {}
-        alert(err.detail || 'Redemption failed')
-      }
-    } catch (error) {
-      console.error('Failed to redeem reward:', error)
-      alert('Redemption failed')
+    const response = await api.post('/user/redeem', { reward_id: rewardId })
+    const data = response?.data
+    if (response.status >= 200 && response.status < 300) {
+      setPointsBalance(data.points_remaining)
+      fetchRedemptions()
+    } else {
+      const err = response?.data || {}
+      throw new Error(err.detail || 'Redemption failed')
     }
+  }
+
+  const handleOpenRedemption = (reward) => {
+    setSelectedReward(reward)
+    setIsModalOpen(true)
   }
 
   if (loading) {
@@ -123,7 +123,7 @@ export default function CorporateUserDashboard() {
                   <p className="text-sm font-bold text-blue-600">{reward.points_cost} points</p>
                 </div>
                 <button
-                  onClick={() => redeemReward(reward.id)}
+                  onClick={() => handleOpenRedemption(reward)}
                   disabled={!reward.can_afford}
                   className={`px-4 py-2 rounded-lg text-sm font-medium ${
                     reward.can_afford
@@ -165,6 +165,18 @@ export default function CorporateUserDashboard() {
           )}
         </div>
       </Card>
+
+      <RedemptionModal 
+        isOpen={isModalOpen}
+        onClose={() => {
+          setIsModalOpen(false)
+          setSelectedReward(null)
+          fetchPointsData() // Refresh balance
+        }}
+        reward={selectedReward}
+        currentBalance={pointsBalance}
+        onConfirm={redeemReward}
+      />
     </div>
   )
 }

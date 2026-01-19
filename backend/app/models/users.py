@@ -22,6 +22,7 @@ class User(Base, TimestampMixin):
     hashed_password = Column(String(255), nullable=True)  # NULL for OAuth users
     full_name = Column(String(100), nullable=True)
     role = Column(SAEnum(UserRole, name="userrole"), nullable=False)
+    department = Column(String(50), nullable=True)  # Added for department-based budgeting
     points_balance = Column(Integer, nullable=False, default=0)  # For Corporate Users to redeem
     lead_budget_balance = Column(BigInteger, nullable=False, default=0)  # For Tenant Leads to distribute
     is_active = Column(Boolean, nullable=False, default=True)

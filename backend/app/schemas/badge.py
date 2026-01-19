@@ -1,8 +1,6 @@
 from pydantic import BaseModel
-from typing import Optional
+from typing import Optional, Union
 from uuid import UUID
-
-
 class BadgeCreate(BaseModel):
     name: str
     icon_url: Optional[str] = None
@@ -12,7 +10,7 @@ class BadgeCreate(BaseModel):
 
 class BadgeOut(BaseModel):
     id: UUID
-    tenant_id: Optional[UUID]
+    tenant_id: Optional[Union[UUID, str]]
     name: str
     icon_url: Optional[str]
     points_value: int

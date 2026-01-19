@@ -86,7 +86,8 @@ async def redeem_points(request: RedeemPointsRequest, db: AsyncSession = Depends
         user_id=user.id,
         reward_id=request.reward_id,
         points_spent=reward.points_cost,
-        status=RedemptionStatus.PENDING
+        status=RedemptionStatus.PENDING,
+        tenant_id=user.tenant_id
     )
     db.add(redemption)
     await db.commit()

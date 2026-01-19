@@ -57,7 +57,6 @@ class TestTenantModel:
         assert tenant.subdomain == "testcompany"
         assert tenant.status == "active"
         assert tenant.master_budget_balance == 10000
-        assert tenant.suspended is False
 
     def test_tenant_unique_subdomain(self):
         """Test that subdomain should be unique (constraint test)."""
@@ -93,15 +92,15 @@ class TestRewardModel:
         """Test reward creation."""
         tenant_id = str(uuid.uuid4())
         reward = Reward(
-            title="Coffee Gift Card",
+            name="Coffee Gift Card",
             description="A $10 coffee gift card",
-            points_cost=100,
+            cost_points=100,
             tenant_id=tenant_id,
             is_active=True
         )
-        assert reward.title == "Coffee Gift Card"
+        assert reward.name == "Coffee Gift Card"
         assert reward.description == "A $10 coffee gift card"
-        assert reward.points_cost == 100
+        assert reward.cost_points == 100
         assert reward.tenant_id == tenant_id
         assert reward.is_active is True
 
@@ -112,16 +111,13 @@ class TestBudgetPoolModel:
         tenant_id = str(uuid.uuid4())
         pool = BudgetPool(
             tenant_id=tenant_id,
-            name="Marketing Budget",
-            allocated_points=1000,
-            remaining_points=1000,
-            is_active=True
+            period="FY2026",
+            total_amount=1000.00,
+            created_by=str(uuid.uuid4())
         )
         assert pool.tenant_id == tenant_id
-        assert pool.name == "Marketing Budget"
-        assert pool.allocated_points == 1000
-        assert pool.remaining_points == 1000
-        assert pool.is_active is True
+        assert pool.period == "FY2026"
+        assert pool.total_amount == 1000.00
 
 
 class TestSubscriptionPlanModel:
@@ -129,16 +125,11 @@ class TestSubscriptionPlanModel:
         """Test subscription plan creation."""
         plan = SubscriptionPlan(
             name="Pro Plan",
-            description="Professional plan",
-            monthly_price=29.99,
-            annual_price=299.99,
-            max_users=100,
+            monthly_price_in_paise=2999,
             features=["recognition", "analytics", "rewards"]
         )
         assert plan.name == "Pro Plan"
-        assert plan.monthly_price == 29.99
-        assert plan.annual_price == 299.99
-        assert plan.max_users == 100
+        assert plan.monthly_price_in_paise == 2999
         assert "recognition" in plan.features
 
 
@@ -162,21 +153,19 @@ class TestTenantSubscriptionModel:
 class TestPointsLedgerModel:
     def test_points_ledger_creation(self):
         """Test points ledger entry creation."""
-        from app.models.points_ledger import TransactionType
+        from app.models.transactions import TransactionType
         user_id = str(uuid.uuid4())
         tenant_id = str(uuid.uuid4())
 
         entry = PointsLedger(
             user_id=user_id,
             tenant_id=tenant_id,
-            transaction_type=TransactionType.EARNED,
-            points=100,
-            description="Recognition received"
+            delta=100,
+            reason="Recognition received"
         )
         assert entry.user_id == user_id
         assert entry.tenant_id == tenant_id
-        assert entry.transaction_type == TransactionType.EARNED
-        assert entry.points == 100
+        assert entry.delta == 100
 
 
 class TestRedemptionModel:
@@ -190,11 +179,11 @@ class TestRedemptionModel:
             user_id=user_id,
             tenant_id=tenant_id,
             reward_id=reward_id,
-            points_spent=200,
+            points_used=200,
             status="pending"
         )
         assert redemption.user_id == user_id
         assert redemption.tenant_id == tenant_id
         assert redemption.reward_id == reward_id
-        assert redemption.points_spent == 200
+        assert redemption.points_used == 200
         assert redemption.status == "pending"

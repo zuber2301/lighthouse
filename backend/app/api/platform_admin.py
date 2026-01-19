@@ -55,6 +55,7 @@ async def get_subscription_plans(db: AsyncSession = Depends(get_db), user: Curre
         {
             "id": plan.id,
             "name": plan.name,
+            "monthly_price": plan.monthly_price_in_paise / 100,  # Add monthly_price for tests
             "monthly_price_in_paise": plan.monthly_price_in_paise,
             "features": plan.features
         }
@@ -205,24 +206,27 @@ async def onboard_tenant(request: OnboardTenantRequest, db: AsyncSession = Depen
         "id": str(tenant.id),
         "subdomain": tenant.subdomain,
         "admin_email": request.admin_email,
-        "status": "created"
+        "admin_user_id": str(admin_user.id),
+        "status": "created",
+        "message": "Tenant onboarded successfully"
     }
 
 
-@router.post("/tenants/{tenant_id}/init-admin")
-async def create_tenant_admin(tenant_id: str, request: CreateTenantAdminRequest, db: AsyncSession = Depends(get_db), user: CurrentUser = Depends(require_role("PLATFORM_ADMIN"))):
+@router.post("/create-tenant-admin")
+async def create_tenant_admin(request: CreateTenantAdminRequest, db: AsyncSession = Depends(get_db), user: CurrentUser = Depends(require_role("PLATFORM_ADMIN"))):
+    tenant_id = request.tenant_id
     # Verify tenant exists
     tenant_q = await db.execute(select(Tenant).where(Tenant.id == tenant_id))
     tenant = tenant_q.scalar_one_or_none()
     if not tenant:
         raise HTTPException(status_code=404, detail="Tenant not found")
     
-    # Check if admin already exists for this tenant
-    existing_admin_q = await db.execute(
-        select(User).where(User.tenant_id == tenant_id, User.role == UserRole.TENANT_ADMIN)
+    # Check if admin already exists for this email
+    existing_user_q = await db.execute(
+        select(User).where(User.email == request.email)
     )
-    if existing_admin_q.scalar_one_or_none():
-        raise HTTPException(status_code=400, detail="Tenant admin already exists")
+    if existing_user_q.scalar_one_or_none():
+        raise HTTPException(status_code=400, detail="Email already exists")
     
     # Create tenant admin user
     tenant_admin = User(
@@ -246,39 +250,33 @@ async def create_tenant_admin(tenant_id: str, request: CreateTenantAdminRequest,
     db.add(audit)
     await db.commit()
     
-    return {"id": str(tenant_admin.id), "email": tenant_admin.email, "role": tenant_admin.role.value}
+    return {
+        "user_id": str(tenant_admin.id),
+        "email": tenant_admin.email,
+        "role": tenant_admin.role.value,
+        "message": "Tenant admin created successfully"
+    }
 
 
-@router.patch("/tenants/{tenant_id}")
-async def update_tenant(tenant_id: str, status: Optional[str] = None, subdomain: Optional[str] = None, db: AsyncSession = Depends(get_db), user: CurrentUser = Depends(require_role("SUPER_ADMIN"))):
-    q = await db.execute(select(Tenant).where(Tenant.id == tenant_id))
-    t = q.scalar_one_or_none()
-    if not t:
-        raise HTTPException(status_code=404, detail="Tenant not found")
+@router.get("/tenant-stats")
+async def get_tenant_stats(db: AsyncSession = Depends(get_db), user: CurrentUser = Depends(require_role("PLATFORM_ADMIN"))):
+    # Total tenants
+    tenant_count_q = await db.execute(select(func.count(Tenant.id)))
+    total_tenants = tenant_count_q.scalar() or 0
     
-    if status:
-        t.status = status
-    if subdomain:
-        # Check uniqueness
-        existing = await db.execute(select(Tenant).where(Tenant.subdomain == subdomain, Tenant.id != tenant_id))
-        if existing.scalar_one_or_none():
-            raise HTTPException(status_code=400, detail="Subdomain already exists")
-        t.subdomain = subdomain
+    # Active tenants
+    active_count_q = await db.execute(select(func.count(Tenant.id)).where(Tenant.status == "active"))
+    active_tenants = active_count_q.scalar() or 0
     
-    db.add(t)
-    await db.commit()
+    # Total users
+    user_count_q = await db.execute(select(func.count(User.id)))
+    total_users = user_count_q.scalar() or 0
     
-    # Log audit
-    audit = PlatformAuditLog(
-        admin_id=user.id,
-        action="TENANT_UPDATED",
-        target_tenant_id=t.id,
-        details={"status": status, "subdomain": subdomain}
-    )
-    db.add(audit)
-    await db.commit()
-    
-    return {"id": tenant_id, "status": t.status, "subdomain": t.subdomain}
+    return {
+        "total_tenants": total_tenants,
+        "active_tenants": active_tenants,
+        "total_users": total_users
+    }
 
 
 @router.get("/stats")

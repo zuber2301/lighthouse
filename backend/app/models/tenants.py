@@ -14,7 +14,7 @@ class Tenant(Base, TimestampMixin):
     logo_url = Column(String, nullable=True)
     status = Column(String(20), nullable=False, server_default='active')
     # platform controls
-    suspended = Column(Boolean, nullable=False, server_default='false')
+    suspended = Column(Boolean, nullable=False, default=False, server_default='false')
     suspended_at = Column(DateTime(timezone=True), nullable=True)
     suspended_reason = Column(String(500), nullable=True)
     # optional metadata

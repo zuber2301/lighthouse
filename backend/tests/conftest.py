@@ -23,7 +23,7 @@ os.environ.setdefault('DATABASE_URL', 'sqlite+aiosqlite:///:memory:')
 # Prefer in-memory SQLite for tests by default unless explicitly opting into Postgres.
 # Set `USE_PG_FOR_TESTS=1` in the environment to use the external DATABASE_URL instead.
 if not os.environ.get('USE_PG_FOR_TESTS'):
-    os.environ['DATABASE_URL'] = 'sqlite+aiosqlite:///:memory:'
+    os.environ['DATABASE_URL'] = 'sqlite+aiosqlite:////tmp/test_lighthouse.db'
 
 # Ensure sqlite can accept Python UUID objects by registering an adapter.
 # This lets tests create models with uuid.UUID values when using SQLite.
@@ -44,6 +44,14 @@ from app.models.tenants import Tenant
 from app.models.subscriptions import SubscriptionPlan
 from app.models.budgets import BudgetPool
 from app.core.config import settings
+from httpx import AsyncClient
+from app.main import app
+
+
+@pytest_asyncio.fixture
+async def client():
+    async with AsyncClient(app=app, base_url="http://testserver") as client:
+        yield client
 
 
 @pytest.fixture(scope="session")
@@ -69,6 +77,18 @@ async def create_tables(test_engine):
     """Create all database tables."""
     async with test_engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
+    
+    # Seed subscription plans for tests
+    from app.models.subscriptions import SubscriptionPlan
+    async_session = sessionmaker(bind=test_engine, class_=AsyncSession, expire_on_commit=False)
+    async with async_session() as session:
+        plans = [
+            SubscriptionPlan(name="Basic", monthly_price_in_paise=0, features=["basic"]),
+            SubscriptionPlan(name="Pro", monthly_price_in_paise=2999, features=["pro"]),
+        ]
+        for plan in plans:
+            session.add(plan)
+        await session.commit()
 
 
 @pytest_asyncio.fixture
@@ -119,7 +139,7 @@ async def test_tenant(db_session):
     """Create a test tenant."""
     tenant = Tenant(
         name="Test Company",
-        subdomain="testcompany",
+        subdomain=f"testcompany_{uuid.uuid4().hex}",
         status="active",
         master_budget_balance=10000
     )
@@ -137,6 +157,7 @@ async def tenant_admin_user(db_session, test_tenant):
         full_name="Tenant Admin",
         role=UserRole.TENANT_ADMIN,
         tenant_id=test_tenant.id,
+        department="Engineering",
         is_active=True
     )
     db_session.add(user)

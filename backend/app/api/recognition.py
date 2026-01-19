@@ -20,7 +20,7 @@ from app.core.redis_client import get_social_feed, push_social_feed
 import datetime
 
 
-router = APIRouter(prefix="/recognitions")
+router = APIRouter(prefix="/recognition")
 
 
 @router.get("/", response_model=List[RecognitionOut])
@@ -29,8 +29,9 @@ async def list_recognitions(
     offset: int = Query(0, ge=0),
     limit: int = Query(20, ge=1, le=100),
     db: AsyncSession = Depends(get_db),
+    user: CurrentUser = Depends(get_current_user),
 ):
-    tenant = getattr(request.state, "tenant_id", None)
+    tenant = getattr(request.state, "tenant_id", None) or user.tenant_id
     stmt = (
         select(Recognition)
         .where(Recognition.tenant_id == tenant)

@@ -43,7 +43,7 @@ async def login(request: LoginRequest, db: AsyncSession = Depends(get_db)):
             is_platform_admin = request.email == settings.PLATFORM_ADMIN_EMAIL
             role = UserRole.PLATFORM_ADMIN if is_platform_admin else UserRole.CORPORATE_USER
             # Do not assign a non-existent tenant id; leave tenant_id NULL for dev-created users.
-            user = User(email=request.email, full_name=request.email.split('@')[0], role=role, is_active=True, tenant_id=None)
+            user = User(email=request.email, full_name=request.email.split('@')[0], role=role, is_active=True, tenant_id=settings.DEV_DEFAULT_TENANT)
             db.add(user)
             await db.commit()
             await db.refresh(user)
@@ -144,7 +144,8 @@ async def google_callback(code: str, state: str, db: AsyncSession = Depends(get_
                 email=email,
                 full_name=name,
                 role=role,
-                is_active=True
+                is_active=True,
+                tenant_id=settings.DEV_DEFAULT_TENANT
             )
             db.add(user)
             await db.commit()
