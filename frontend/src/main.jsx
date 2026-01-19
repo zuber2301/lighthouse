@@ -13,7 +13,8 @@ try {
   if (devToken) {
     try {
       localStorage.setItem('auth_token', devToken)
-      console.info('Dev token injected into localStorage')
+      localStorage.setItem('tenant_id', '00000000-0000-0000-0000-000000000000')
+      console.info('Dev token and tenant injected into localStorage')
     } catch (e) {
       // ignore storage errors
     }
@@ -34,7 +35,7 @@ const root = createRoot(container)
 
 root.render(
   <React.StrictMode>
-    <BrowserRouter>
+    <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
       <QueryClientProvider client={queryClient}>
         <LiveAnnouncerProvider>
           <ToastProvider>

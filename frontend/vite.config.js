@@ -20,6 +20,16 @@ export default defineConfig({
         secure: false,
         followRedirects: true,
         rewrite: (path) => path.replace(/^\/api/, ''),
+        configure: (proxy, options) => {
+          proxy.on('proxyReq', (proxyReq, req, res) => {
+            if (req.headers.authorization) {
+              proxyReq.setHeader('Authorization', req.headers.authorization);
+            }
+            if (req.headers['x-tenant-id']) {
+              proxyReq.setHeader('X-Tenant-ID', req.headers['x-tenant-id']);
+            }
+          });
+        }
       },
     },
   },

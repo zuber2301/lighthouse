@@ -47,15 +47,43 @@ export default function App() {
           <Route path="rewards" element={<RewardsPage />} />
           <Route path="analytics" element={<AnalyticsPage />} />
           <Route path="admin" element={<AdminPage />} />
-          <Route path="platform-admin" element={<PlatformAdminPage />} />
-        <Route path="platform-admin/create-tenant" element={<CreateTenantForm />} />
-          <Route path="platform-admin/global-catalog" element={<PlatformCatalog />} />
-          <Route path="platform-admin/logs" element={<PlatformLogs />} />
-          <Route path="tenant-admin" element={<TenantAdminBudget />} />
-          <Route path="tenant-lead" element={<TenantLeadDashboard />} />
+          <Route path="platform-admin" element={
+            <ProtectedRoute allowedRoles={[ 'PLATFORM_ADMIN' ]}>
+              <PlatformAdminPage />
+            </ProtectedRoute>
+          } />
+          <Route path="platform-admin/create-tenant" element={
+            <ProtectedRoute allowedRoles={[ 'PLATFORM_ADMIN' ]}>
+              <CreateTenantForm />
+            </ProtectedRoute>
+          } />
+          <Route path="platform-admin/global-catalog" element={
+            <ProtectedRoute allowedRoles={[ 'PLATFORM_ADMIN' ]}>
+              <PlatformCatalog />
+            </ProtectedRoute>
+          } />
+          <Route path="platform-admin/logs" element={
+            <ProtectedRoute allowedRoles={[ 'PLATFORM_ADMIN' ]}>
+              <PlatformLogs />
+            </ProtectedRoute>
+          } />
+          <Route path="tenant-admin" element={
+            <ProtectedRoute allowedRoles={[ 'TENANT_ADMIN' ]}>
+              <TenantAdminBudget />
+            </ProtectedRoute>
+          } />
+          <Route path="tenant-lead" element={
+            <ProtectedRoute allowedRoles={[ 'TENANT_LEAD' ]}>
+              <TenantLeadDashboard />
+            </ProtectedRoute>
+          } />
           <Route path="tenant-dashboard" element={<TenantDashboard />} />
           <Route path="tenants" element={<TenantsPage />} />
-          <Route path="corporate-user" element={<CorporateUserDashboard />} />
+          <Route path="corporate-user" element={
+            <ProtectedRoute allowedRoles={[ 'CORPORATE_USER' ]}>
+              <CorporateUserDashboard />
+            </ProtectedRoute>
+          } />
           <Route path="feed" element={<RecognitionFeedDemo />} />
           <Route path="theme-demo" element={<ThemeDemo />} />
         </Route>

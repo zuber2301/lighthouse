@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react'
 import Card from '../../components/Card'
 import PageHeader from '../../components/PageHeader'
+import confetti from 'canvas-confetti'
+import api from '../../lib/api'
 
 export default function CorporateUserDashboard() {
   const [pointsBalance, setPointsBalance] = useState(0)
@@ -17,10 +19,10 @@ export default function CorporateUserDashboard() {
 
   const fetchPointsData = async () => {
     try {
-      const response = await fetch('/api/user/points')
-      const data = await response.json()
-      setPointsBalance(data.points_balance)
-      setRecognitionHistory(data.recognition_history)
+      const response = await api.get('/user/points')
+      const data = response?.data || {}
+      setPointsBalance(data?.points_balance ?? 0)
+      setRecognitionHistory(data?.recognition_history || [])
     } catch (error) {
       console.error('Failed to fetch points data:', error)
     }
@@ -28,8 +30,8 @@ export default function CorporateUserDashboard() {
 
   const fetchRewards = async () => {
     try {
-      const response = await fetch('/api/user/rewards')
-      const data = await response.json()
+      const response = await api.get('/user/rewards')
+      const data = response?.data || []
       setAvailableRewards(data)
     } catch (error) {
       console.error('Failed to fetch rewards:', error)
@@ -38,8 +40,8 @@ export default function CorporateUserDashboard() {
 
   const fetchRedemptions = async () => {
     try {
-      const response = await fetch('/api/user/redemptions')
-      const data = await response.json()
+      const response = await api.get('/user/redemptions')
+      const data = response?.data || []
       setRedemptionHistory(data)
     } catch (error) {
       console.error('Failed to fetch redemptions:', error)
@@ -50,20 +52,17 @@ export default function CorporateUserDashboard() {
 
   const redeemReward = async (rewardId) => {
     try {
-      const response = await fetch('/api/user/redeem', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ reward_id: rewardId })
-      })
-
-      if (response.ok) {
-        const data = await response.json()
+      const response = await api.post('/user/redeem', { reward_id: rewardId })
+      const data = response?.data
+      if (response.status >= 200 && response.status < 300) {
         setPointsBalance(data.points_remaining)
+        // celebration
+        try { confetti({ particleCount: 120, spread: 70, origin: { y: 0.6 } }) } catch (e) {}
         alert(`Successfully redeemed ${data.reward_title}!`)
         fetchRedemptions()
       } else {
-        const error = await response.json()
-        alert(error.detail || 'Redemption failed')
+        const err = response?.data || {}
+        alert(err.detail || 'Redemption failed')
       }
     } catch (error) {
       console.error('Failed to redeem reward:', error)

@@ -15,7 +15,7 @@ class Redemption(Base, TenantMixin, TimestampMixin):
     __tablename__ = "redemptions"
     id = Column(String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
     user_id = Column(String(36), ForeignKey("users.id"), nullable=False, index=True)
-    reward_id = Column(String(36), ForeignKey("rewards.id"), nullable=False, index=True)
+    reward_id = Column(String(36), ForeignKey("global_rewards.id"), nullable=False, index=True)
     points_used = Column(Integer, nullable=False)
     status = Column(SAEnum(RedemptionStatus, name="redemptionstatus"), nullable=False, default=RedemptionStatus.PENDING)
     completed_at = Column(DateTime(timezone=True), nullable=True)

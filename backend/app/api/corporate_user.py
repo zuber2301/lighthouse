@@ -23,6 +23,12 @@ router = APIRouter(prefix="/user")
 @router.get("/points")
 async def get_points_balance(db: AsyncSession = Depends(get_db), user: CurrentUser = Depends(require_role("CORPORATE_USER"))):
     """View current points and recognition history"""
+    # Load the ORM User record so we can access and mutate DB-backed balances
+    user_q = await db.execute(select(User).where(User.id == user.id))
+    db_user = user_q.scalar_one_or_none()
+    if not db_user:
+        raise HTTPException(status_code=404, detail="User not found")
+
     # Get recognition history
     recognitions_q = await db.execute(
         select(Transaction)
@@ -34,9 +40,9 @@ async def get_points_balance(db: AsyncSession = Depends(get_db), user: CurrentUs
         .limit(20)
     )
     recognitions = recognitions_q.scalars().all()
-    
+
     return {
-        "points_balance": user.points_balance,
+        "points_balance": db_user.points_balance,
         "recognition_history": [
             {
                 "amount": tx.amount // 100,  # Convert paise to points
@@ -61,12 +67,18 @@ async def redeem_points(request: RedeemPointsRequest, db: AsyncSession = Depends
     if not reward.is_enabled:
         raise HTTPException(status_code=400, detail="Reward not available")
     
+    # Load ORM user and check balance
+    user_q = await db.execute(select(User).where(User.id == user.id))
+    db_user = user_q.scalar_one_or_none()
+    if not db_user:
+        raise HTTPException(status_code=404, detail="User not found")
+
     # Check if user has sufficient points
-    if user.points_balance < reward.points_cost:
+    if db_user.points_balance < reward.points_cost:
         raise HTTPException(status_code=400, detail="Insufficient points")
-    
+
     # Deduct points
-    user.points_balance -= reward.points_cost
+    db_user.points_balance -= reward.points_cost
     await db.commit()
     
     # Create redemption record
@@ -93,7 +105,7 @@ async def redeem_points(request: RedeemPointsRequest, db: AsyncSession = Depends
     
     return {
         "redemption_id": str(redemption.id),
-        "points_remaining": user.points_balance,
+        "points_remaining": db_user.points_balance,
         "reward_title": reward.title,
         "status": redemption.status.value
     }
@@ -102,16 +114,22 @@ async def redeem_points(request: RedeemPointsRequest, db: AsyncSession = Depends
 @router.get("/rewards")
 async def get_available_rewards(db: AsyncSession = Depends(get_db), user: CurrentUser = Depends(require_role("CORPORATE_USER"))):
     """Get available rewards catalog"""
+    # Load ORM user to determine affordability
+    user_q = await db.execute(select(User).where(User.id == user.id))
+    db_user = user_q.scalar_one_or_none()
+    if not db_user:
+        raise HTTPException(status_code=404, detail="User not found")
+
     rewards_q = await db.execute(select(GlobalReward).where(GlobalReward.is_enabled == True))
     rewards = rewards_q.scalars().all()
-    
+
     return [
         {
             "id": str(r.id),
             "title": r.title,
             "provider": r.provider,
             "points_cost": r.points_cost,
-            "can_afford": user.points_balance >= r.points_cost
+            "can_afford": db_user.points_balance >= r.points_cost
         }
         for r in rewards
     ]
@@ -122,7 +140,7 @@ async def get_redemption_history(db: AsyncSession = Depends(get_db), user: Curre
     """Get user's redemption history"""
     redemptions_q = await db.execute(
         select(Redemption, GlobalReward)
-        .join(GlobalReward)
+        .join(GlobalReward, Redemption.reward_id == GlobalReward.id)
         .where(Redemption.user_id == user.id)
         .order_by(Redemption.created_at.desc())
     )

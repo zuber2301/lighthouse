@@ -1,4 +1,6 @@
 import React, { useState } from 'react'
+import { useAuth } from '../../lib/AuthContext'
+import CorporateUserDashboard from '../admin/CorporateUserDashboard'
 import Card from '../../components/Card'
 import PageHeader from '../../components/PageHeader'
 import PointsBalance from './PointsBalance'
@@ -10,6 +12,7 @@ import useTemplatemoTheme from '../../themes/templatemo_602_graph_page/useTempla
 
 export default function DashboardPage() {
   const [open, setOpen] = useState(false)
+  const { user } = useAuth()
 
   const { create } = useRecognitions()
   useTemplatemoTheme()
@@ -17,6 +20,11 @@ export default function DashboardPage() {
   function handleSubmit(item) {
     // Use the shared recognitions mutation so Dashboard nominations appear in Recognition list
     create(item)
+  }
+
+  // If corporate user, render the corporate-focused dashboard
+  if (user?.role === 'CORPORATE_USER') {
+    return <CorporateUserDashboard />
   }
 
   return (

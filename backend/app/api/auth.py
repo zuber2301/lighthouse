@@ -215,7 +215,8 @@ async def dev_token(role: str = Query("PLATFORM_ADMIN"), tenant_id: str | None =
     else:
         # Create or find a tenant-scoped user for dev. Only attach `tenant_id` if the tenant exists.
         dev_email = f"dev+{role.lower()}@example.local"
-        user_q = await db.execute(select(User).where(User.email == dev_email, User.tenant_id == tenant_id))
+        # Search by email first to avoid unique constraint violation
+        user_q = await db.execute(select(User).where(User.email == dev_email))
         user = user_q.scalar_one_or_none()
         if not user:
             # check tenant existence
@@ -227,6 +228,21 @@ async def dev_token(role: str = Query("PLATFORM_ADMIN"), tenant_id: str | None =
             db.add(user)
             await db.commit()
             await db.refresh(user)
+        else:
+            # Update role if it doesn't match
+            if user.role != requested_role:
+                user.role = requested_role
+                await db.commit()
+                await db.refresh(user)
+            # Update tenant_id if needed
+            from app.models.tenants import Tenant
+            t_q = await db.execute(select(Tenant).where(Tenant.id == tenant_id))
+            t_exists = t_q.scalar_one_or_none()
+            attach_tenant = tenant_id if t_exists else None
+            if user.tenant_id != attach_tenant:
+                user.tenant_id = attach_tenant
+                await db.commit()
+                await db.refresh(user)
 
     token_data = {
         "sub": str(user.id),

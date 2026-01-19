@@ -16,10 +16,10 @@ const platformItems = [
 
 const defaultItems = [
   { label: 'Dashboard', href: '/dashboard' },
-  { label: 'Recognition', href: '/recognition' },
-  { label: 'Rewards', href: '/rewards' },
-  { label: 'Analytics', href: '/analytics' },
-  { label: 'Admin ⚙', href: '/admin' },
+  { label: 'Recognition Wall', href: '/recognition' },
+  { label: 'Reward Store', href: '/rewards' },
+  { label: 'My Activity', href: '/activity' },
+  { label: 'Leaderboard', href: '/leaderboard' },
 ]
 
 export default function Sidebar() {
@@ -75,6 +75,7 @@ export default function Sidebar() {
   if (userRole === 'PLATFORM_ADMIN') items = platformItems
   else if (userRole === 'TENANT_ADMIN') items = tenantAdminItems
   else if (userRole === 'TENANT_LEAD') items = tenantLeadItems
+  else if (userRole === 'CORPORATE_USER') items = defaultItems
   else items = defaultItems
 
   return (

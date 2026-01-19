@@ -13,7 +13,9 @@ export default function DevPersonaSwitcher({ onSwitch } = {}) {
 
   const handleSwitch = async (p) => {
     try {
-      const res = await fetch('/auth/dev-login', {
+      // Use the dev proxy (`/api`) so Vite forwards requests to the backend.
+      // Vite proxy rewrites `/api` -> configured backend base (see vite.config.js).
+      const res = await fetch('/api/auth/dev-login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email: p.email }),
