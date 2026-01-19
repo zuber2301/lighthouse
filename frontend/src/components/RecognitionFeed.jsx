@@ -1,26 +1,40 @@
 import React from 'react'
 
 const RecognitionCard = ({ data }) => (
-  <div className="bg-white dark:bg-slate-900 p-5 rounded-2xl border dark:border-slate-800 shadow-sm mb-4">
-    <div className="flex items-start gap-4">
-      <div className="h-12 w-12 rounded-full bg-indigo-100 flex items-center justify-center text-xl">
-        {data.sender_avatar}
-      </div>
-      <div className="flex-1">
-        <p className="text-sm">
-          <span className="font-bold">{data.sender_name}</span> recognized <span className="font-bold">{data.receiver_name}</span>
-        </p>
-        <div className="mt-2 flex items-center gap-2">
-          <span className="px-2 py-1 bg-amber-100 text-amber-700 rounded text-xs font-bold uppercase">
-             🏆 {data.badge_name}
-          </span>
-          <span className="text-emerald-600 font-bold">+{data.points} Points</span>
+  <article role="article" className="w-full max-w-xs">
+    <div className="rounded-2xl bg-gradient-to-r from-indigo-700 via-indigo-600 to-teal-400 p-[1px] h-full">
+      <div className="bg-slate-900/80 dark:bg-slate-900/90 rounded-xl p-4 flex flex-col gap-3 h-full">
+        <div className="flex items-center justify-center">
+          <div className="h-12 w-12 rounded-full bg-gradient-to-br from-indigo-600 to-teal-400 text-white flex items-center justify-center text-base font-semibold">
+            {data.sender_avatar}
+          </div>
         </div>
-        <p className="mt-3 text-slate-600 dark:text-slate-400 italic">"{data.message}"</p>
+
+        <div className="text-center">
+          <p className="text-sm text-slate-100 truncate">
+            <span className="font-semibold">{data.sender_name}</span>
+            <span className="text-slate-400"> {' '} recognized {' '}</span>
+            <span className="font-semibold">{data.receiver_name}</span>
+          </p>
+        </div>
+
+        <div className="flex items-center justify-center gap-2">
+          <span className="px-2 py-0.5 bg-gradient-to-r from-indigo-800/25 to-teal-700/10 text-indigo-100 text-xs rounded font-bold uppercase inline-flex items-center gap-1">
+            <span>🏆</span>
+            <span className="leading-none truncate">{data.badge_name}</span>
+          </span>
+
+          <span className="text-emerald-300 text-sm font-semibold">+{data.points}</span>
+        </div>
+
+        <p className="mt-2 text-sm text-slate-300 italic text-center line-clamp-3">"{data.message}"</p>
+
+        <div className="mt-auto text-right">
+          <span className="text-xs text-slate-400">{data.time_ago}</span>
+        </div>
       </div>
-      <div className="text-xs text-slate-400">{data.time_ago}</div>
     </div>
-  </div>
+  </article>
 )
 
 export const RecognitionFeed = ({ items = [] }) => {
@@ -29,10 +43,12 @@ export const RecognitionFeed = ({ items = [] }) => {
   }
 
   return (
-    <div>
-      {items.map((it) => (
-        <RecognitionCard key={it.id} data={it} />
-      ))}
+    <div className="w-full">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 items-start">
+        {items.map((it) => (
+          <RecognitionCard key={it.id} data={it} />
+        ))}
+      </div>
     </div>
   )
 }
