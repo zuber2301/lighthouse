@@ -35,7 +35,7 @@ find_free_port() {
 
 # Choose backend and frontend ports (avoid killing existing docker-managed listeners)
 PREFERRED_BACKEND_PORT=18000
-PREFERRED_FRONTEND_PORT=3004
+PREFERRED_FRONTEND_PORT=5173
 BACKEND_PORT=$(find_free_port $PREFERRED_BACKEND_PORT)
 FRONTEND_PORT=$(find_free_port $PREFERRED_FRONTEND_PORT)
 

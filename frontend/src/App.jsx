@@ -22,6 +22,7 @@ import CorporateUserDashboard from './features/admin/CorporateUserDashboard'
 import TenantDashboard from './features/tenant/TenantDashboard'
 import TenantsPage from './features/tenant/TenantsPage'
 import ThemeDemo from './pages/ThemeDemo'
+import RecognitionFeedDemo from './pages/RecognitionFeedDemo'
 
 export default function App() {
   return (
@@ -55,6 +56,7 @@ export default function App() {
           <Route path="tenant-dashboard" element={<TenantDashboard />} />
           <Route path="tenants" element={<TenantsPage />} />
           <Route path="corporate-user" element={<CorporateUserDashboard />} />
+          <Route path="feed" element={<RecognitionFeedDemo />} />
           <Route path="theme-demo" element={<ThemeDemo />} />
         </Route>
 

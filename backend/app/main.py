@@ -3,7 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from starlette.middleware.base import BaseHTTPMiddleware
 
 from app.core import tenancy
-from app.api import auth, recognition, rewards, platform_admin, tenant_admin, analytics, tenant_lead, corporate_user
+from app.api import auth, recognition, rewards, platform_admin, tenant_admin, analytics, tenant_lead, corporate_user, badges
 from app.db.base import Base
 from app.db.session import engine
 import asyncio
@@ -77,6 +77,7 @@ app.add_middleware(TenantMiddleware)
 app.include_router(auth.router)
 app.include_router(recognition.router)
 app.include_router(rewards.router)
+app.include_router(badges.router)
 app.include_router(platform_admin.router)
 app.include_router(tenant_admin.router)
 app.include_router(tenant_lead.router)

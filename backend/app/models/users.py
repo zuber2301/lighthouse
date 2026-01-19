@@ -25,3 +25,11 @@ class User(Base, TimestampMixin):
     points_balance = Column(Integer, nullable=False, default=0)  # For Corporate Users to redeem
     lead_budget_balance = Column(BigInteger, nullable=False, default=0)  # For Tenant Leads to distribute
     is_active = Column(Boolean, nullable=False, default=True)
+
+    def __init__(self, **kwargs):
+        # Ensure Python-level defaults are present on plain instances (tests expect this)
+        if 'points_balance' not in kwargs:
+            kwargs['points_balance'] = 0
+        if 'lead_budget_balance' not in kwargs:
+            kwargs['lead_budget_balance'] = 0
+        super().__init__(**kwargs)

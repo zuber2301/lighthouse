@@ -1,7 +1,7 @@
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.exc import NoResultFound
-from app.models import Recognition, User
+from app.models import Recognition, User, Badge
 from app.models.points_ledger import PointsLedger
 from app.models.budgets import DepartmentBudget, BudgetLedger
 from uuid import UUID
@@ -11,7 +11,9 @@ from sqlalchemy import select, func
 
 async def create_recognition(db: AsyncSession, tenant_id: str, nominator_id: str, payload) -> Recognition:
     # validate nominee exists and belongs to tenant
-    res = await db.execute(select(User).where(User.id == payload.nominee_id))
+    # User.id is stored as string; ensure we compare against a string to avoid
+    # Postgres type mismatch when payload.nominee_id is a UUID object.
+    res = await db.execute(select(User).where(User.id == str(payload.nominee_id)))
     nominee = res.scalar_one_or_none()
     if not nominee or str(nominee.tenant_id) != str(tenant_id):
         raise ValueError("Nominee not found or tenant mismatch")
@@ -24,8 +26,21 @@ async def create_recognition(db: AsyncSession, tenant_id: str, nominator_id: str
         value_tag=payload.value_tag,
         points=payload.points,
         message=payload.message,
+        is_public=bool(getattr(payload, "is_public", True)),
+        points_awarded=payload.points,
         status=RecognitionStatus.PENDING,
     )
+
+    # validate badge if provided
+    if getattr(payload, "badge_id", None):
+        badge_res = await db.execute(select(Badge).where(Badge.id == str(payload.badge_id)))
+        badge = badge_res.scalar_one_or_none()
+        if not badge:
+            raise ValueError("Badge not found")
+        if badge.tenant_id and str(badge.tenant_id) != str(tenant_id):
+            raise ValueError("Badge tenant mismatch")
+        rec.badge_id = str(payload.badge_id)
+
     db.add(rec)
     await db.flush()
     return rec

@@ -3,8 +3,10 @@ import sys
 import asyncio
 import pytest
 import uuid
+import sqlite3
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
 from sqlalchemy.orm import sessionmaker
+import pytest_asyncio
 
 # Ensure backend package is importable when tests run from repo root
 HERE = os.path.dirname(__file__)
@@ -18,8 +20,25 @@ os.environ.setdefault('JWT_SECRET', 'test_secret_key_for_testing_only')
 os.environ.setdefault('JWT_ALGORITHM', 'HS256')
 os.environ.setdefault('DATABASE_URL', 'sqlite+aiosqlite:///:memory:')
 
+# Prefer in-memory SQLite for tests by default unless explicitly opting into Postgres.
+# Set `USE_PG_FOR_TESTS=1` in the environment to use the external DATABASE_URL instead.
+if not os.environ.get('USE_PG_FOR_TESTS'):
+    os.environ['DATABASE_URL'] = 'sqlite+aiosqlite:///:memory:'
+
+# Ensure sqlite can accept Python UUID objects by registering an adapter.
+# This lets tests create models with uuid.UUID values when using SQLite.
+try:
+    sqlite3.register_adapter(uuid.UUID, lambda u: str(u))
+except Exception:
+    # If sqlite3 isn't available in the environment this is non-fatal for other DBs
+    pass
+
+# Ensure pytest-asyncio plugin is loaded so async fixtures/tests are awaited.
+pytest_plugins = ("pytest_asyncio",)
+
 from app.db.base import Base
 from app.core import tenancy
+from sqlalchemy import event
 from app.models.users import User, UserRole
 from app.models.tenants import Tenant
 from app.models.subscriptions import SubscriptionPlan
@@ -35,7 +54,7 @@ def event_loop():
     loop.close()
 
 
-@pytest.fixture(scope="session")
+@pytest_asyncio.fixture(scope="session")
 async def test_engine():
     """Create a test database engine."""
     # Use in-memory DB for fast tests; DATABASE_URL env var can override
@@ -45,21 +64,21 @@ async def test_engine():
     await engine.dispose()
 
 
-@pytest.fixture(scope="session")
+@pytest_asyncio.fixture(scope="session")
 async def create_tables(test_engine):
     """Create all database tables."""
     async with test_engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
 
 
-@pytest.fixture
+@pytest_asyncio.fixture
 async def db_session(test_engine, create_tables):
     """Create a test database session."""
     async_session = sessionmaker(bind=test_engine, class_=AsyncSession, expire_on_commit=False)
 
     async with async_session() as session:
         # Set up tenant scoping for tests
-        @tenancy.event.listens_for(session.sync_session, "do_orm_execute")
+        @event.listens_for(session.sync_session, "do_orm_execute")
         def _add_tenant_criteria(execute_state):
             if not execute_state.is_select:
                 return
@@ -80,11 +99,11 @@ async def db_session(test_engine, create_tables):
         yield session
 
 
-@pytest.fixture
+@pytest_asyncio.fixture
 async def platform_admin_user(db_session):
     """Create a platform admin user for testing."""
     user = User(
-        email="platform_admin@test.com",
+        email=f"platform_admin_{uuid.uuid4().hex}@test.com",
         full_name="Platform Admin",
         role=UserRole.PLATFORM_ADMIN,
         is_active=True
@@ -95,7 +114,7 @@ async def platform_admin_user(db_session):
     return user
 
 
-@pytest.fixture
+@pytest_asyncio.fixture
 async def test_tenant(db_session):
     """Create a test tenant."""
     tenant = Tenant(
@@ -110,11 +129,11 @@ async def test_tenant(db_session):
     return tenant
 
 
-@pytest.fixture
+@pytest_asyncio.fixture
 async def tenant_admin_user(db_session, test_tenant):
     """Create a tenant admin user."""
     user = User(
-        email="tenant_admin@testcompany.com",
+        email=f"tenant_admin_{uuid.uuid4().hex}@testcompany.com",
         full_name="Tenant Admin",
         role=UserRole.TENANT_ADMIN,
         tenant_id=test_tenant.id,
@@ -126,7 +145,7 @@ async def tenant_admin_user(db_session, test_tenant):
     return user
 
 
-@pytest.fixture
+@pytest_asyncio.fixture
 async def subscription_plan(db_session):
     """Create a test subscription plan."""
     plan = SubscriptionPlan(
@@ -140,7 +159,7 @@ async def subscription_plan(db_session):
     return plan
 
 
-@pytest.fixture
+@pytest_asyncio.fixture
 async def budget_pool(db_session, test_tenant, platform_admin_user):
     """Create a test budget pool using current BudgetPool model fields."""
     pool = BudgetPool(

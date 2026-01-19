@@ -236,3 +236,33 @@ async def dev_token(role: str = Query("PLATFORM_ADMIN"), tenant_id: str | None =
     access_token = jwt.encode(token_data, settings.JWT_SECRET, algorithm=settings.JWT_ALGORITHM)
 
     return {"token": access_token, "user": {"id": str(user.id), "email": user.email, "full_name": user.full_name, "role": user.role.value if hasattr(user.role, 'value') else user.role, "tenant_id": tenant_id}}
+
+
+class DevLoginRequest(BaseModel):
+    email: str
+
+
+@router.post("/dev-login")
+async def dev_login(request: DevLoginRequest, db: AsyncSession = Depends(get_db)):
+    """Developer helper: find a user by email and return a signed JWT for local testing.
+
+    This endpoint is intended for local development only. It requires the app
+    to be running with `DEV_DEFAULT_TENANT` configured to be available.
+    """
+    if not getattr(settings, 'DEV_DEFAULT_TENANT', None):
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="DEV_DEFAULT_TENANT not configured")
+
+    # Find the user by email
+    user_q = await db.execute(select(User).where(User.email == request.email))
+    user = user_q.scalar_one_or_none()
+    if not user:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
+
+    token_data = {
+        "sub": str(user.id),
+        "tenant_id": str(user.tenant_id) if user.tenant_id else None,
+        "role": user.role.value if hasattr(user.role, 'value') else user.role
+    }
+    access_token = jwt.encode(token_data, settings.JWT_SECRET, algorithm=settings.JWT_ALGORITHM)
+
+    return {"token": access_token, "user": {"id": str(user.id), "email": user.email, "full_name": user.full_name, "role": user.role.value if hasattr(user.role, 'value') else user.role, "tenant_id": str(user.tenant_id) if user.tenant_id else None}}

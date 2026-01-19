@@ -2,6 +2,7 @@ from pydantic import BaseModel
 from fastapi import Request, HTTPException, status
 from jose import jwt, JWTError
 from app.core.config import settings
+from datetime import timedelta
 
 
 class TokenPayload(BaseModel):
@@ -41,3 +42,10 @@ def get_current_user(request: Request) -> User:
     # Allow missing tenant_id for legacy/dev tokens by falling back to DEV_DEFAULT_TENANT
     tenant_id = tp.tenant_id if tp.tenant_id else settings.DEV_DEFAULT_TENANT
     return User(id=tp.sub, tenant_id=tenant_id, role=tp.role)
+
+
+def create_access_token(data: dict) -> str:
+    """Utility to create a JWT access token for tests and dev helpers."""
+    # Allow callers to pass raw payload dict containing sub, tenant_id, role
+    payload = data.copy()
+    return jwt.encode(payload, settings.JWT_SECRET, algorithm=settings.JWT_ALGORITHM)

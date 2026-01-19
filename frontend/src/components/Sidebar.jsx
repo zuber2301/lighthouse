@@ -24,12 +24,58 @@ const defaultItems = [
 
 export default function Sidebar() {
   const themed = useTheme()
-  const { user } = useAuth()
+  const { user: authUser } = useAuth()
   const { selectedTenant } = useTenant()
 
-  const userRole = user?.role || 'CORPORATE_USER'
+  const getRoleFromToken = () => {
+    try {
+      const token = localStorage.getItem('auth_token')
+      if (token) {
+        const parts = token.split('.')
+        if (parts.length >= 2) {
+          const payload = JSON.parse(atob(parts[1].replace(/-/g, '+').replace(/_/g, '/')))
+          if (payload.role) return payload.role
+        }
+      }
+    } catch (err) {
+      // ignore and fall back
+    }
+    try {
+      const userStr = localStorage.getItem('user')
+      if (userStr) {
+        const u = JSON.parse(userStr)
+        if (u?.role) return u.role
+      }
+    } catch (err) {
+      // ignore
+    }
+    return authUser?.role || 'CORPORATE_USER'
+  }
 
-  const items = userRole === 'PLATFORM_ADMIN' ? platformItems : defaultItems
+  const userRole = getRoleFromToken()
+
+  // Role-specific nav
+  const tenantAdminItems = [
+    { label: 'Dashboard', href: '/dashboard' },
+    { label: 'Recognition', href: '/recognition' },
+    { label: 'Rewards', href: '/rewards' },
+    { label: 'Analytics', href: '/analytics' },
+    { label: 'Admin', href: '/admin' },
+    { label: 'Budgets', href: '/admin/budgets' },
+  ]
+
+  const tenantLeadItems = [
+    { label: 'Dashboard', href: '/dashboard' },
+    { label: 'Recognition', href: '/recognition' },
+    { label: 'Rewards', href: '/rewards' },
+    { label: 'Analytics', href: '/analytics' },
+  ]
+
+  let items = defaultItems
+  if (userRole === 'PLATFORM_ADMIN') items = platformItems
+  else if (userRole === 'TENANT_ADMIN') items = tenantAdminItems
+  else if (userRole === 'TENANT_LEAD') items = tenantLeadItems
+  else items = defaultItems
 
   return (
     <aside className={`w-64 min-h-screen bg-surface border-r border-slate-800 text-slate-100 ${themed ? '': ''}`}>

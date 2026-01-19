@@ -24,6 +24,7 @@ try {
 import { LiveAnnouncerProvider } from './components/LiveAnnouncer'
 import { ToastProvider } from './components/ToastProvider'
 import { TenantProvider } from './lib/TenantContext'
+import DevPersonaSwitcher from './components/DevPersonaSwitcher'
 
 const queryClient = new QueryClient()
 
@@ -42,6 +43,7 @@ root.render(
             </TenantProvider>
           </ToastProvider>
         </LiveAnnouncerProvider>
+        <DevPersonaSwitcher />
         <ReactQueryDevtools initialIsOpen={false} />
       </QueryClientProvider>
     </BrowserRouter>

@@ -1,4 +1,5 @@
 import pytest
+import pytest_asyncio
 from httpx import AsyncClient
 from fastapi import FastAPI
 from app.main import app
@@ -6,7 +7,7 @@ from app.core.auth import create_access_token
 from app.models.users import UserRole
 
 
-@pytest.fixture
+@pytest_asyncio.fixture
 async def client():
     """Create a test client for the FastAPI app."""
     async with AsyncClient(app=app, base_url="http://testserver") as client:
