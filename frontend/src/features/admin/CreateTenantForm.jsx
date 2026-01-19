@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { API_BASE } from '../../lib/api'
 import TenantContext from '../../lib/TenantContext'
 
-export default function CreateTenantForm() {
+export default function CreateTenantForm({ fetchFn = fetch, onCreated = null, redirectOnSuccess = '/platform-admin', alertOnSuccess = true }) {
   const navigate = useNavigate()
   const tenantCtx = useContext(TenantContext) || {}
   const addTenant = tenantCtx.addTenant
@@ -28,7 +28,7 @@ export default function CreateTenantForm() {
       const token = localStorage.getItem('auth_token')
       const headers = {}
       if (token) headers['Authorization'] = `Bearer ${token}`
-      const response = await fetch(`${API_BASE}/platform/subscription-plans`, { headers })
+      const response = await fetchFn(`${API_BASE}/platform/subscription-plans`, { headers })
       if (response.ok) {
         const plans = await response.json()
         const normalizedPlans = Array.isArray(plans) ? plans : (plans && plans.data && Array.isArray(plans.data) ? plans.data : [])
@@ -61,7 +61,7 @@ export default function CreateTenantForm() {
       const token = localStorage.getItem('auth_token')
       const headers = { 'Content-Type': 'application/json' }
       if (token) headers['Authorization'] = `Bearer ${token}`
-      const response = await fetch(`${API_BASE}/platform/tenants`, {
+      const response = await fetchFn(`${API_BASE}/platform/tenants`, {
         method: 'POST',
         headers,
         body: JSON.stringify({
@@ -76,27 +76,31 @@ export default function CreateTenantForm() {
         const result = await response.json()
         try { if (addTenant) addTenant(result) } catch (e) {}
         setErrorMessage('')
-        alert(`Tenant "${formData.name}" created successfully! Subdomain: ${result.subdomain}.lighthouse.com`)
-        navigate('/platform-admin')
+        if (onCreated) {
+          try { onCreated(result) } catch (e) {}
+        } else {
+          if (alertOnSuccess) alert(`Tenant "${formData.name}" created successfully! Subdomain: ${result.subdomain}.lighthouse.com`)
+          if (redirectOnSuccess) navigate(redirectOnSuccess)
+        }
       } else {
         const status = response.status
         let text
         try { const j = await response.json(); text = j.detail || JSON.stringify(j) } catch (err) { text = await response.text().catch(() => '') }
         console.error('Create tenant failed', { status, text })
         if (status === 401) {
-          alert('Unauthorized. Please sign in as a platform admin.')
+          if (alertOnSuccess) alert('Unauthorized. Please sign in as a platform admin.')
           setErrorMessage('Unauthorized. Please sign in as a platform admin.')
         } else if (status === 403) {
-          alert('Forbidden. Your account lacks platform admin permissions.')
+          if (alertOnSuccess) alert('Forbidden. Your account lacks platform admin permissions.')
           setErrorMessage('Forbidden. Your account lacks platform admin permissions.')
         } else {
-          alert(`Error creating tenant (${status}): ${text || 'unknown error'}`)
+          if (alertOnSuccess) alert(`Error creating tenant (${status}): ${text || 'unknown error'}`)
           setErrorMessage(text || 'Error creating tenant')
         }
       }
     } catch (error) {
       console.error('Failed to create tenant:', error)
-      alert('Failed to create tenant. Please try again.')
+      if (alertOnSuccess) alert('Failed to create tenant. Please try again.')
       setErrorMessage('Failed to create tenant. Please try again.')
     } finally {
       setIsLoading(false)
