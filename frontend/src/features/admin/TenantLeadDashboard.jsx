@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react'
+import api from '../../lib/api'
 import Card from '../../components/Card'
 import PageHeader from '../../components/PageHeader'
 import { useTenant } from '../../lib/TenantContext'
@@ -21,9 +22,9 @@ export default function TenantLeadDashboard() {
 
   const fetchTeamData = async () => {
     try {
-      const response = await fetch('/api/lead/team')
-      const data = await response.json()
-      setTeam(data.team_members)
+      const response = await api.get('/lead/team')
+      const data = response.data || {}
+      setTeam(data.team_members || [])
     } catch (error) {
       console.error('Failed to fetch team data:', error)
     }
@@ -31,9 +32,9 @@ export default function TenantLeadDashboard() {
 
   const fetchBudget = async () => {
     try {
-      const response = await fetch('/api/lead/budget')
-      const data = await response.json()
-      setBudget(data.budget_balance / 100) // Convert paise to rupees
+      const response = await api.get('/lead/budget')
+      const data = response.data || {}
+      setBudget((data.budget_balance || 0) / 100) // Convert paise to rupees
     } catch (error) {
       console.error('Failed to fetch budget:', error)
     } finally {
@@ -53,18 +54,14 @@ export default function TenantLeadDashboard() {
     }
 
     try {
-      const response = await fetch('/api/lead/recognize', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          user_id: recognitionData.userId,
-          amount: parseInt(recognitionData.amount),
-          note: recognitionData.note
-        })
+      const response = await api.post('/lead/recognize', {
+        user_id: recognitionData.userId,
+        amount: parseInt(recognitionData.amount),
+        note: recognitionData.note
       })
 
-      if (response.ok) {
-        const data = await response.json()
+      if (response.status === 200 || response.status === 201) {
+        const data = response.data
         // Update local state
         setTeam(team.map(member =>
           member.id === recognitionData.userId

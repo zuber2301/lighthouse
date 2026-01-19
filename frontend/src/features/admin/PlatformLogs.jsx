@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import Card from '../../components/Card'
-import { API_BASE } from '../../lib/api'
+import api from '../../lib/api'
 
 export default function PlatformLogs() {
   const [logs, setLogs] = useState([])
@@ -11,8 +11,8 @@ export default function PlatformLogs() {
   const fetchLogs = async () => {
     setLoading(true)
     try {
-      const res = await fetch(`${API_BASE}/platform/logs?limit=100`, { credentials: 'include' })
-      if (res.ok) setLogs(await res.json())
+      const res = await api.get('/platform/logs', { params: { limit: 100 } })
+      setLogs(res.data || [])
     } catch (e) { console.error(e) }
     setLoading(false)
   }

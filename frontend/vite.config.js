@@ -22,13 +22,19 @@ export default defineConfig({
         rewrite: (path) => path.replace(/^\/api/, ''),
         configure: (proxy, options) => {
           proxy.on('proxyReq', (proxyReq, req, res) => {
-            if (req.headers.authorization) {
-              proxyReq.setHeader('Authorization', req.headers.authorization);
+            // Avoid attempting to set headers after the response has started
+            if (res && res.headersSent) return
+            try {
+              if (req.headers.authorization) {
+                proxyReq.setHeader('Authorization', req.headers.authorization)
+              }
+              if (req.headers['x-tenant-id']) {
+                proxyReq.setHeader('X-Tenant-ID', req.headers['x-tenant-id'])
+              }
+            } catch (e) {
+              // ignore header set errors during proxying
             }
-            if (req.headers['x-tenant-id']) {
-              proxyReq.setHeader('X-Tenant-ID', req.headers['x-tenant-id']);
-            }
-          });
+          })
         }
       },
     },

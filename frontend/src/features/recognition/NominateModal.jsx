@@ -12,7 +12,14 @@ export default function NominateModal({ open, onClose, onSubmit }) {
   function handleSubmit(e) {
     e.preventDefault()
     if (!nominee || points <= 0) return
-    onSubmit({ actor: 'You', nominee, points, tag, message })
+    const payload = {
+      nominee_id: nominee,
+      points: Number(points),
+      value_tag: tag || undefined,
+      message: message || undefined,
+      is_public: true,
+    }
+    onSubmit(payload)
     // reset minimal fields and close
     setPoints(50)
     setTag('')

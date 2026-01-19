@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import PageHeader from '../../components/PageHeader'
 import Card from '../../components/Card'
-import { API_BASE } from '../../lib/api'
+import api from '../../api/axiosClient'
 import { useTenant } from '../../lib/TenantContext'
 
 export default function TenantDashboard() {
@@ -14,18 +14,13 @@ export default function TenantDashboard() {
     ;(async () => {
       setLoading(true)
       try {
-        const headers = {}
-        if (selectedTenant && selectedTenant.id) headers['X-Tenant-ID'] = selectedTenant.id
-        const resp = await fetch(`${API_BASE}/tenant/dashboard`, { headers })
-        if (!resp.ok) {
-          console.error('dashboard fetch failed', resp.status)
-          if (mounted) setData(null)
-          return
-        }
-        const j = await resp.json()
-        if (mounted) setData(j)
+        const cfg = {}
+        if (selectedTenant && selectedTenant.id) cfg.headers = { 'X-Tenant-ID': selectedTenant.id }
+        const resp = await api.get('/tenant/dashboard', cfg)
+        if (mounted) setData(resp.data)
       } catch (e) {
-        console.error(e)
+        console.error('dashboard fetch failed', e)
+        if (mounted) setData(null)
       } finally {
         if (mounted) setLoading(false)
       }

@@ -1,4 +1,5 @@
 import React from 'react'
+import api from '../api/axiosClient'
 
 const personas = [
   { name: 'Platform Admin', email: 'super@lighthouse.com', role: 'PLATFORM_ADMIN' },
@@ -13,26 +14,19 @@ export default function DevPersonaSwitcher({ onSwitch } = {}) {
 
   const handleSwitch = async (p) => {
     try {
-      // Use the dev proxy (`/api`) so Vite forwards requests to the backend.
-      // Vite proxy rewrites `/api` -> configured backend base (see vite.config.js).
-      const res = await fetch('/api/auth/dev-login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: p.email }),
-      })
-      if (!res.ok) {
-        const text = await res.text()
-        throw new Error(text || `Status ${res.status}`)
-      }
-      const data = await res.json()
+      const res = await api.post('/auth/dev-login', { email: p.email })
+      const data = res.data
+      // store token under multiple keys for compatibility
       try { localStorage.setItem('auth_token', data.token) } catch (e) {}
+      try { localStorage.setItem('lighthouse_token', data.token) } catch (e) {}
+      try { localStorage.setItem('VITE_DEV_TOKEN', data.token) } catch (e) {}
       try { localStorage.setItem('user', JSON.stringify(data.user)) } catch (e) {}
+      try { if (data.user && data.user.tenant_id) localStorage.setItem('tenant_id', data.user.tenant_id) } catch (e) {}
       if (onSwitch) onSwitch(data.user)
-      // reload to let auth-aware components pick up the new token
       window.location.reload()
     } catch (err) {
       console.error('Dev persona switch failed', err)
-      alert('Dev persona login failed: ' + (err.message || err))
+      alert('Dev persona login failed: ' + (err.response?.data || err.message || err))
     }
   }
 

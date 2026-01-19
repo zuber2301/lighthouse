@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { API_BASE } from '../lib/api'
+import api from '../lib/api'
 import { useAuth } from '../lib/AuthContext'
 
 export default function LoginPage() {
@@ -24,18 +24,8 @@ export default function LoginPage() {
     setIsLoading(true)
 
     try {
-      const response = await fetch(`${API_BASE}/auth/login`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData)
-      })
-
-      if (!response.ok) {
-        const err = await response.json().catch(() => ({ detail: 'Login failed' }))
-        throw new Error(err.detail || 'Login failed')
-      }
-
-      const data = await response.json()
+      const res = await api.post('/auth/login', formData)
+      const data = res.data
       const token = data.access_token
       const user = data.user
 
@@ -55,14 +45,8 @@ export default function LoginPage() {
     if (provider === 'Google') {
       try {
         // Fetch the Google OAuth authorization URL from backend
-        const response = await fetch(`${API_BASE}/auth/google`)
-        if (!response.ok) {
-          const errorData = await response.json().catch(() => ({}))
-          throw new Error(errorData.detail || `Server error: ${response.status}`)
-        }
-        const data = await response.json()
-        
-        // Redirect to Google OAuth
+        const response = await api.get('/auth/google')
+        const data = response.data
         window.location.href = data.authorization_url
       } catch (error) {
         console.error('Google login failed:', error)
@@ -82,14 +66,10 @@ export default function LoginPage() {
 
   const handleDevToken = async () => {
     try {
-      const res = await fetch(`${API_BASE}/auth/dev-token`, { credentials: 'include' })
-      if (!res.ok) {
-        const j = await res.json().catch(() => ({}))
-        throw new Error(j.detail || 'Dev token not available')
-      }
-      const j = await res.json()
-      const token = j.token || j.token
-      const user = j.user || j.user
+      const resp = await api.get('/auth/dev-token', { withCredentials: true })
+      const j = resp.data
+      const token = j.token
+      const user = j.user
       if (token) {
         localStorage.setItem('auth_token', token)
         login(token, user)

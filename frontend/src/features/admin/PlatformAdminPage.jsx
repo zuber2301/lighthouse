@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import Card from '../../components/Card'
 import PageHeader from '../../components/PageHeader'
 import TenantManager from '../../components/TenantManager'
-import { API_BASE } from '../../lib/api'
+import api from '../../lib/api'
 
 export default function PlatformAdminPage() {
   const navigate = useNavigate()
@@ -25,13 +25,8 @@ export default function PlatformAdminPage() {
 
   const fetchTenants = async () => {
     try {
-      const response = await fetch(`${API_BASE}/platform/tenants`, {
-        credentials: 'include'
-      })
-      if (response.ok) {
-        const data = await response.json()
-        setTenants(data)
-      }
+      const response = await api.get('/platform/tenants')
+      setTenants(response.data || [])
     } catch (error) {
       console.error('Failed to fetch tenants:', error)
     }
@@ -39,13 +34,8 @@ export default function PlatformAdminPage() {
 
   const fetchStats = async () => {
     try {
-      const response = await fetch(`${API_BASE}/platform/overview`, {
-        credentials: 'include'
-      })
-      if (response.ok) {
-        const data = await response.json()
-        setStats(data)
-      }
+      const response = await api.get('/platform/overview')
+      setStats(response.data || {})
     } catch (error) {
       console.error('Failed to fetch stats:', error)
     }

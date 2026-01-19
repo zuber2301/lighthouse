@@ -72,7 +72,7 @@ export default function Header() {
 
         {/* New Recognition Quick Action (Scoped) */}
         {(userRole !== 'PLATFORM_ADMIN' || selectedTenant) && (
-          <button className="px-4 py-1.5 rounded-full text-sm font-bold bg-indigo-600 hover:bg-indigo-500 transition-all shadow-lg shadow-indigo-600/20 text-white">
+          <button onClick={() => navigate('/recognition')} className="px-4 py-1.5 rounded-full text-sm font-bold bg-indigo-600 hover:bg-indigo-500 transition-all shadow-lg shadow-indigo-600/20 text-white">
             Give Recognition
           </button>
         )}

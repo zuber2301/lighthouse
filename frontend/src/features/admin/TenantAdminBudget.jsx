@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react'
+import api from '../../lib/api'
 import Card from '../../components/Card'
 import PageHeader from '../../components/PageHeader'
 import { useTenant } from '../../lib/TenantContext'
@@ -15,13 +16,10 @@ export default function TenantAdminBudget() {
 
   const fetchBudgetStatus = async () => {
     try {
-      const response = await fetch('/api/tenant/budget')
-      const data = await response.json()
-      setMasterBalance(data.master_budget / 100) // Convert paise to rupees
-      setLeads(data.leads.map(lead => ({
-        ...lead,
-        budget: lead.budget / 100 // Convert paise to rupees
-      })))
+      const response = await api.get('/tenant/budget')
+      const data = response.data || {}
+      setMasterBalance((data.master_budget || 0) / 100)
+      setLeads((data.leads || []).map(lead => ({ ...lead, budget: (lead.budget || 0) / 100 })))
     } catch (error) {
       console.error('Failed to fetch budget status:', error)
     } finally {
@@ -31,15 +29,9 @@ export default function TenantAdminBudget() {
 
   const loadBudget = async (amount) => {
     try {
-      const response = await fetch('/api/tenant/budget/load', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ amount: parseInt(amount) })
-      })
-      if (response.ok) {
-        const data = await response.json()
-        setMasterBalance(data.master_balance / 100)
-      }
+      const res = await api.post('/tenant/budget/load', { amount: parseInt(amount) })
+      const data = res.data
+      setMasterBalance((data.master_balance || 0) / 100)
     } catch (error) {
       console.error('Failed to load budget:', error)
     }
@@ -52,16 +44,10 @@ export default function TenantAdminBudget() {
     }
 
     try {
-      const response = await fetch('/api/tenant/budget/allocate', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ lead_id: leadId, amount: parseInt(amount) })
-      })
-      if (response.ok) {
-        const data = await response.json()
-        setMasterBalance(data.master_balance / 100)
-        setLeads(leads.map(l => l.id === leadId ? { ...l, budget: data.lead_budget / 100 } : l))
-      }
+      const res = await api.post('/tenant/budget/allocate', { lead_id: leadId, amount: parseInt(amount) })
+      const data = res.data
+      setMasterBalance((data.master_balance || 0) / 100)
+      setLeads(leads.map(l => l.id === leadId ? { ...l, budget: (data.lead_budget || 0) / 100 } : l))
     } catch (error) {
       console.error('Failed to allocate budget:', error)
     }

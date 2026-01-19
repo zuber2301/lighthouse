@@ -43,6 +43,19 @@ async def create_tables():
     finally:
         tenancy._BYPASS_TENANT.reset(token)
 
+    # In development, ensure test personas exist if DEV_DEFAULT_TENANT is configured
+    try:
+        from app.core.config import settings
+        if getattr(settings, "DEV_DEFAULT_TENANT", None):
+            try:
+                from app.scripts.seed_test_personas import seed_test_personas
+                await seed_test_personas()
+            except Exception as _e:
+                # avoid crashing startup for non-fatal seed issues
+                print("seed_test_personas error:", _e)
+    except Exception:
+        pass
+
 
 class TenantMiddleware(BaseHTTPMiddleware):
     async def dispatch(self, request: Request, call_next):

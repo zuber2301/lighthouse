@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import Card from '../../components/Card'
-import { API_BASE } from '../../lib/api'
+import api from '../../lib/api'
 
 export default function PlatformCatalog() {
   const [providers, setProviders] = useState([])
@@ -13,8 +13,8 @@ export default function PlatformCatalog() {
   const fetchProviders = async () => {
     setLoading(true)
     try {
-      const res = await fetch(`${API_BASE}/platform/catalog`, { credentials: 'include' })
-      if (res.ok) setProviders(await res.json())
+      const res = await api.get('/platform/catalog')
+      setProviders(res.data || [])
     } catch (e) {
       console.error(e)
     } finally {
@@ -24,25 +24,15 @@ export default function PlatformCatalog() {
 
   const toggleEnabled = async (p) => {
     try {
-      const res = await fetch(`${API_BASE}/platform/catalog/${p.id}`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
-        body: JSON.stringify({ enabled: !p.enabled })
-      })
-      if (res.ok) fetchProviders()
+      await api.patch(`/platform/catalog/${p.id}`, { enabled: !p.enabled })
+      fetchProviders()
     } catch (e) { console.error(e) }
   }
 
   const updateMargin = async (p, val) => {
     try {
-      const res = await fetch(`${API_BASE}/platform/catalog/${p.id}`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
-        body: JSON.stringify({ margin_paise: Math.round(Number(val) * 100) })
-      })
-      if (res.ok) fetchProviders()
+      await api.patch(`/platform/catalog/${p.id}`, { margin_paise: Math.round(Number(val) * 100) })
+      fetchProviders()
     } catch (e) { console.error(e) }
   }
 
