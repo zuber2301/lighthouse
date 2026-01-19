@@ -18,6 +18,7 @@ class Settings(BaseSettings):
     google_oidc_client_id: str = ""
     google_oidc_client_secret: str = ""
     google_oidc_redirect_uri: str = "http://localhost:18000/auth/callback"
+    google_oidc_issuer: str = "https://accounts.google.com"
 
     # Frontend URL for OAuth redirects
     FRONTEND_URL: str = "http://localhost:5173"
