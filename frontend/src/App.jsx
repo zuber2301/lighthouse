@@ -21,6 +21,8 @@ import TenantLeadDashboard from './features/admin/TenantLeadDashboard'
 import CorporateUserDashboard from './features/admin/CorporateUserDashboard'
 import TenantDashboard from './features/tenant/TenantDashboard'
 import TenantsPage from './features/tenant/TenantsPage'
+import ActivityPage from './features/activity/ActivityPage'
+import LeaderboardPage from './features/leaderboard/LeaderboardPage'
 import ThemeDemo from './pages/ThemeDemo'
 import RecognitionFeedDemo from './pages/RecognitionFeedDemo'
 
@@ -85,6 +87,8 @@ export default function App() {
             </ProtectedRoute>
           } />
           <Route path="feed" element={<RecognitionFeedDemo />} />
+          <Route path="activity" element={<ActivityPage />} />
+          <Route path="leaderboard" element={<LeaderboardPage />} />
           <Route path="theme-demo" element={<ThemeDemo />} />
         </Route>
 

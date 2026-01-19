@@ -4,18 +4,6 @@ import { useAuth } from '../lib/AuthContext'
 import { useTenant } from '../lib/TenantContext'
 import TenantSelector from './TenantSelector'
 
-const baseTabs = [
-  { name: 'Dashboard', path: '/' },
-  { name: 'Tenants', path: '/tenants' },
-  { name: 'Admin', path: '/admin', role: 'PLATFORM_ADMIN' },
-]
-
-const tenantTabs = [
-  { name: 'Recognition', path: '/recognition' },
-  { name: 'Rewards', path: '/rewards' },
-  { name: 'Analytics', path: '/analytics' },
-]
-
 export default function Header() {
   const location = useLocation()
   const navigate = useNavigate()
@@ -29,6 +17,7 @@ export default function Header() {
   }
 
   const userRole = user?.role || 'CORPORATE_USER'
+  const isCorporate = userRole === 'CORPORATE_USER'
   const displayName = user?.full_name || user?.email || 'User'
   const firstLetter = displayName.charAt(0).toUpperCase()
   const { selectedTenant } = useTenant()
@@ -46,59 +35,49 @@ export default function Header() {
   }, [])
 
   const formatRole = (role) => {
-    return role.replace('_', ' ').toLowerCase().replace(/\b\w/g, l => l.toUpperCase())
+    return role?.replace('_', ' ').toLowerCase().replace(/\b\w/g, l => l.toUpperCase())
   }
 
   return (
-    <header className={`flex items-center justify-between px-6 py-3 border-b border-white/10 bg-[rgba(10,14,39,0.95)] backdrop-blur-md`}>
+    <header className={`flex items-center justify-between px-6 py-3 border-b border-white/10 bg-[rgba(10,14,39,0.95)] backdrop-blur-md sticky top-0 z-40`}>
       <div className="flex items-center gap-4">
-        <div className="text-lg font-semibold">LightHouse</div>
-        <div>
-          <TenantSelector />
-        </div>
+        {/* Only show tenant selector/logo area logic for admins or platform admins */}
+        {!isCorporate && (
+          <>
+            <div className="text-lg font-semibold text-indigo-400">LightHouse</div>
+            <div>
+              <TenantSelector />
+            </div>
+          </>
+        )}
       </div>
 
-      {userRole === 'PLATFORM_ADMIN' ? (
-        // Platform Admin: no primary nav here — sidebar owns navigation
-        <div />
-      ) : (
-        <nav className="flex items-center gap-6">
-          {baseTabs.filter(tab => !tab.role || tab.role === userRole).map(tab => (
-            <Link
-              key={tab.path}
-              to={tab.path}
-              className={`px-3 py-2 rounded-md text-sm font-medium ${
-                location.pathname === tab.path
-                  ? 'bg-indigo-600 text-white transition-colors duration-150 focus:outline-none focus-visible:ring-2 focus-visible:ring-tm-teal'
-                  : 'text-slate-300 hover:text-white hover:bg-slate-700 transition-colors duration-150 focus:outline-none focus-visible:ring-2 focus-visible:ring-tm-teal'
-              }`}
-            >
-              {tab.name}
-            </Link>
-          ))}
-
-          {/* show tenant-level tabs only when not a pure platform admin view or when impersonating a tenant */}
-          {(userRole !== 'PLATFORM_ADMIN' || selectedTenant) && tenantTabs.map(tab => (
-            <Link
-              key={tab.path}
-              to={tab.path}
-              className={`px-3 py-2 rounded-md text-sm font-medium ${
-                location.pathname === tab.path
-                  ? 'bg-indigo-600 text-white transition-colors duration-150 focus:outline-none focus-visible:ring-2 focus-visible:ring-tm-teal'
-                  : 'text-slate-300 hover:text-white hover:bg-slate-700 transition-colors duration-150 focus:outline-none focus-visible:ring-2 focus-visible:ring-tm-teal'
-              }`}
-            >
-              {tab.name}
-            </Link>
-          ))}
-        </nav>
-      )}
+      <nav className="flex items-center gap-6">
+        {/* Primary nav is now in Sidebar for Corporate Users. 
+            We keep only essential context here or specific admin tabs if needed */}
+        {userRole === 'PLATFORM_ADMIN' && (
+           <Link to="/platform-admin/tenants" className="text-sm font-medium text-slate-300 hover:text-white">Tenants</Link>
+        )}
+      </nav>
 
       <div className="flex items-center gap-4">
-        {/* New Recognition only for tenant-scoped users or when a platform admin is impersonating a tenant */}
-        {(userRole !== 'PLATFORM_ADMIN' || selectedTenant) && (
-          <button className="px-3 py-1 rounded-md text-sm bg-indigo-600 hover:bg-indigo-500 transition-colors duration-150 focus:outline-none focus-visible:ring-3 focus-visible:ring-tm-teal">New Recognition</button>
+        {/* PROMINENT POINTS BALANCE FOR CORPORATE USERS */}
+        {isCorporate && (
+          <div className="flex items-center gap-2 px-4 py-1.5 bg-indigo-500/10 border border-indigo-500/20 rounded-full">
+            <span className="text-xl">💰</span>
+            <span className="font-bold text-indigo-400">{user?.points_balance?.toLocaleString() || 0}</span>
+            <span className="text-xs uppercase tracking-tighter text-indigo-300/60 font-medium">Points</span>
+          </div>
         )}
+
+        {/* New Recognition Quick Action (Scoped) */}
+        {(userRole !== 'PLATFORM_ADMIN' || selectedTenant) && (
+          <button className="px-4 py-1.5 rounded-full text-sm font-bold bg-indigo-600 hover:bg-indigo-500 transition-all shadow-lg shadow-indigo-600/20 text-white">
+            Give Recognition
+          </button>
+        )}
+
+        <div className="h-8 w-[1px] bg-white/10 mx-2" />
 
         {/* Platform admin header controls */}
         {userRole === 'PLATFORM_ADMIN' && (

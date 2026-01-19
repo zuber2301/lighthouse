@@ -1,13 +1,15 @@
 import React, { useState, useEffect } from 'react'
+import { motion } from 'framer-motion'
 import Card from '../../components/Card'
 import PageHeader from '../../components/PageHeader'
-import confetti from 'canvas-confetti'
 import api from '../../lib/api'
+import { useAuth } from '../../lib/AuthContext'
 import RedemptionModal from '../rewards/RedemptionModal'
+import RecognitionFeed from '../../components/RecognitionFeed'
 
 export default function CorporateUserDashboard() {
-  const [pointsBalance, setPointsBalance] = useState(0)
-  const [recognitionHistory, setRecognitionHistory] = useState([])
+  const { user } = useAuth()
+  const [pointsBalance, setPointsBalance] = useState(user?.points_balance || 0)
   const [availableRewards, setAvailableRewards] = useState([])
   const [redemptionHistory, setRedemptionHistory] = useState([])
   const [loading, setLoading] = useState(true)
@@ -20,12 +22,17 @@ export default function CorporateUserDashboard() {
     fetchRedemptions()
   }, [])
 
+  useEffect(() => {
+    if (user?.points_balance !== undefined) {
+      setPointsBalance(user.points_balance)
+    }
+  }, [user])
+
   const fetchPointsData = async () => {
     try {
       const response = await api.get('/user/points')
       const data = response?.data || {}
       setPointsBalance(data?.points_balance ?? 0)
-      setRecognitionHistory(data?.recognition_history || [])
     } catch (error) {
       console.error('Failed to fetch points data:', error)
     }
@@ -65,113 +72,131 @@ export default function CorporateUserDashboard() {
     }
   }
 
-  const handleOpenRedemption = (reward) => {
-    setSelectedReward(reward)
-    setIsModalOpen(true)
-  }
-
   if (loading) {
-    return <div className="p-6">Loading...</div>
+    return (
+      <div className="flex items-center justify-center min-h-[60vh]">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-500"></div>
+      </div>
+    )
   }
 
   return (
-    <div className="p-6">
-      <PageHeader title="My Recognition" subtitle="View your points and redeem rewards" />
-
-      {/* Points Balance */}
-      <Card className="mb-6">
-        <div className="bg-blue-900 text-white p-8 rounded-2xl">
-          <h2 className="text-sm uppercase tracking-widest opacity-70">My Points Balance</h2>
-          <h1 className="text-4xl font-bold">{pointsBalance.toLocaleString()}</h1>
-          <p className="mt-2 opacity-80">points available to redeem</p>
+    <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
+      {/* Hero Wallet */}
+      <motion.div 
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="relative overflow-hidden bg-gradient-to-br from-indigo-600 via-indigo-700 to-violet-800 rounded-[2rem] p-8 text-white shadow-2xl shadow-indigo-500/20"
+      >
+        <div className="relative z-10 flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+          <div>
+            <h1 className="text-3xl font-black tracking-tight">Hello, {user?.full_name?.split(' ')[0] || 'there'}! 👋</h1>
+            <p className="mt-2 text-indigo-100/80 font-medium">You're doing amazing! Ready to treat yourself?</p>
+            
+            <div className="mt-8 flex items-baseline gap-3">
+              <span className="text-6xl font-black tracking-tighter drop-shadow-md">
+                {pointsBalance.toLocaleString()}
+              </span>
+              <span className="text-xl font-bold uppercase tracking-widest text-indigo-200/60 transition-all">Points</span>
+            </div>
+          </div>
+          
+          <button 
+            onClick={() => window.location.href = '/rewards'}
+            className="group relative px-8 py-4 bg-white text-indigo-600 rounded-2xl font-black text-lg shadow-xl hover:scale-105 hover:-translate-y-1 transition-all active:scale-95 flex items-center gap-3"
+          >
+            <span>Redeem Now</span>
+            <span className="group-hover:translate-x-1 transition-transform">🎁</span>
+          </button>
         </div>
-      </Card>
+        
+        {/* Decorative elements */}
+        <div className="absolute -right-20 -top-20 w-80 h-80 bg-white/10 rounded-full blur-3xl animate-pulse"></div>
+        <div className="absolute -left-10 -bottom-10 w-40 h-40 bg-indigo-400/20 rounded-full blur-2xl"></div>
+      </motion.div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Recognition History */}
-        <Card>
-          <h3 className="font-bold text-lg mb-4">Recognition History</h3>
-          <div className="space-y-3 max-h-96 overflow-y-auto">
-            {recognitionHistory.length === 0 ? (
-              <p className="text-gray-500">No recognition received yet</p>
-            ) : (
-              recognitionHistory.map((recognition, index) => (
-                <div key={index} className="flex items-center justify-between p-3 bg-green-50 rounded-lg">
-                  <div>
-                    <p className="font-medium">+{recognition.amount} points</p>
-                    <p className="text-sm text-gray-600">{recognition.note}</p>
-                    <p className="text-xs text-gray-500">{new Date(recognition.date).toLocaleDateString()}</p>
-                  </div>
-                  <div className="text-green-600 font-bold">
-                    +{recognition.amount}
-                  </div>
-                </div>
-              ))
-            )}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        {/* Social Wall / Recognition Feed */}
+        <div className="lg:col-span-2 space-y-6">
+          <div className="flex items-center justify-between">
+            <h3 className="text-2xl font-black text-slate-100 flex items-center gap-3">
+              <span className="text-3xl">🤝</span> Wall of Fame
+            </h3>
+            <button className="text-sm font-bold text-indigo-400 hover:text-indigo-300 transition" onClick={() => window.location.href = '/feed'}>View all</button>
           </div>
-        </Card>
+          
+          <div className="bg-slate-900/50 backdrop-blur-sm border border-slate-800 rounded-3xl p-2 h-[500px] overflow-hidden">
+             <RecognitionFeed />
+          </div>
+        </div>
 
-        {/* Available Rewards */}
-        <Card>
-          <h3 className="font-bold text-lg mb-4">Available Rewards</h3>
-          <div className="space-y-3 max-h-96 overflow-y-auto">
-            {availableRewards.map(reward => (
-              <div key={reward.id} className="flex items-center justify-between p-3 border rounded-lg">
-                <div>
-                  <p className="font-medium">{reward.title}</p>
-                  <p className="text-sm text-gray-600">by {reward.provider}</p>
-                  <p className="text-sm font-bold text-blue-600">{reward.points_cost} points</p>
-                </div>
-                <button
-                  onClick={() => handleOpenRedemption(reward)}
-                  disabled={!reward.can_afford}
-                  className={`px-4 py-2 rounded-lg text-sm font-medium ${
-                    reward.can_afford
-                      ? 'bg-blue-600 text-white hover:bg-blue-700'
-                      : 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                  }`}
-                >
-                  {reward.can_afford ? 'Redeem' : 'Not enough points'}
-                </button>
-              </div>
-            ))}
+        {/* Sidebar Widgets */}
+        <div className="space-y-8">
+          {/* Milestone Progress */}
+          <Card className="p-8 bg-slate-900/50 border-slate-800 rounded-[2rem] relative overflow-hidden group">
+            <h3 className="text-xl font-black text-slate-100 mb-6 flex items-center gap-2">
+              🏆 Next Badge
+            </h3>
+            <div className="flex flex-col items-center">
+               <div className="relative">
+                 <div className="w-24 h-24 bg-gradient-to-br from-amber-400 to-orange-600 rounded-full flex items-center justify-center text-4xl shadow-lg ring-4 ring-orange-500/20 group-hover:scale-110 transition-transform duration-500">
+                    🥇
+                 </div>
+                 <div className="absolute -top-1 -right-1 bg-indigo-600 text-[10px] font-black px-2 py-1 rounded-full border-2 border-slate-900">
+                    LV 4
+                 </div>
+               </div>
+               
+               <p className="mt-4 font-black text-slate-100">Team Catalyst</p>
+               <p className="text-xs text-slate-400 font-medium">Earn 250 more points</p>
+               
+               <div className="w-full mt-6 h-2 bg-slate-800 rounded-full overflow-hidden border border-slate-700">
+                  <motion.div 
+                    initial={{ width: 0 }}
+                    animate={{ width: '75%' }}
+                    transition={{ delay: 0.5, duration: 1 }}
+                    className="h-full bg-gradient-to-r from-indigo-500 to-violet-500"
+                  />
+               </div>
+               <div className="flex justify-between w-full mt-2 text-[10px] font-bold text-slate-500 uppercase">
+                  <span>750 pts</span>
+                  <span>1000 pts</span>
+               </div>
+            </div>
+          </Card>
+
+          {/* Recent Activity */}
+          <div className="space-y-4">
+             <h3 className="text-lg font-black text-slate-100">📜 Recent Activity</h3>
+             <div className="space-y-3">
+                {redemptionHistory.slice(0, 3).map((item, i) => (
+                  <div key={i} className="flex items-center gap-4 p-4 bg-slate-900/40 border border-slate-800/50 rounded-2xl hover:bg-slate-800/60 transition group">
+                     <div className="h-10 w-10 rounded-xl bg-slate-800 flex items-center justify-center text-xl group-hover:scale-110 transition">
+                        🎁
+                     </div>
+                     <div className="flex-1">
+                        <p className="text-sm font-bold text-slate-200">{item.reward_title}</p>
+                        <p className="text-[10px] text-slate-500 font-medium">{new Date(item.date).toLocaleDateString()}</p>
+                     </div>
+                     <span className="text-xs font-black text-rose-500">-{item.points_spent}</span>
+                  </div>
+                ))}
+                {redemptionHistory.length === 0 && (
+                  <div className="p-8 text-center bg-slate-900/40 border border-dashed border-slate-800 rounded-2xl">
+                     <p className="text-sm text-slate-500 font-medium">No redemptions yet. Time to shop! 🛒</p>
+                  </div>
+                )}
+             </div>
           </div>
-        </Card>
+        </div>
       </div>
-
-      {/* Redemption History */}
-      <Card className="mt-6">
-        <h3 className="font-bold text-lg mb-4">Redemption History</h3>
-        <div className="space-y-3">
-          {redemptionHistory.length === 0 ? (
-            <p className="text-gray-500">No redemptions yet</p>
-          ) : (
-            redemptionHistory.map(redemption => (
-              <div key={redemption.id} className="flex items-center justify-between p-3 bg-blue-50 rounded-lg">
-                <div>
-                  <p className="font-medium">{redemption.reward_title}</p>
-                  <p className="text-sm text-gray-600">{redemption.points_spent} points spent</p>
-                  <p className="text-xs text-gray-500">{new Date(redemption.date).toLocaleDateString()}</p>
-                </div>
-                <div className={`px-2 py-1 rounded text-xs font-medium ${
-                  redemption.status === 'PENDING' ? 'bg-yellow-100 text-yellow-800' :
-                  redemption.status === 'APPROVED' ? 'bg-green-100 text-green-800' :
-                  'bg-red-100 text-red-800'
-                }`}>
-                  {redemption.status}
-                </div>
-              </div>
-            ))
-          )}
-        </div>
-      </Card>
 
       <RedemptionModal 
         isOpen={isModalOpen}
         onClose={() => {
           setIsModalOpen(false)
           setSelectedReward(null)
-          fetchPointsData() // Refresh balance
+          fetchPointsData()
         }}
         reward={selectedReward}
         currentBalance={pointsBalance}
