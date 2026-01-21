@@ -39,94 +39,74 @@ export default function Header() {
   }
 
   return (
-    <header className={`flex items-center justify-between px-6 py-3 border-b border-white/10 bg-[rgba(10,14,39,0.95)] backdrop-blur-md sticky top-0 z-40`}>
-      <div className="flex items-center gap-4">
-        {/* Only show tenant selector/logo area logic for admins or platform owners */}
+    <header className="flex items-center justify-between px-6 py-4 border-b border-white/5 bg-slate-950/70 backdrop-blur-xl sticky top-0 z-40">
+      <div className="flex items-center gap-6">
+        <Link to="/" className="text-xl font-bold tracking-tight text-white hover:opacity-80 transition-opacity">
+          Light<span className="text-indigo-500">House</span>
+        </Link>
+        
+        {/* Simplified Tenant Context for Admins */}
         {!isCorporate && (
-          <>
-            <div className="text-lg font-semibold text-indigo-400">LightHouse</div>
-            <div>
-              <TenantSelector />
-            </div>
-          </>
+          <div className="h-6 w-[1px] bg-white/10" />
         )}
+        {!isCorporate && <TenantSelector />}
       </div>
 
-      <nav className="flex items-center gap-6">
-        {/* Primary nav is now in Sidebar for Corporate Users. 
-            We keep only essential context here or specific admin tabs if needed */}
-        {userRole === 'PLATFORM_OWNER' && (
-           <Link to="/platform-admin/tenants" className="text-sm font-medium text-slate-300 hover:text-white">Tenants</Link>
-        )}
-      </nav>
-
-      <div className="flex items-center gap-4">
+      <div className="flex items-center gap-3">
         {/* PROMINENT POINTS BALANCE FOR CORPORATE USERS */}
         {isCorporate && (
-          <div className="flex items-center gap-2 px-4 py-1.5 bg-indigo-500/10 border border-indigo-500/20 rounded-full">
-            <span className="text-xl">💰</span>
-            <span className="font-bold text-indigo-400">{user?.points_balance?.toLocaleString() || 0}</span>
-            <span className="text-xs uppercase tracking-tighter text-indigo-300/60 font-medium">Points</span>
+          <div className="flex items-center gap-2 px-3 py-1.5 bg-indigo-500/10 border border-indigo-500/20 rounded-full">
+            <span className="text-sm">💰</span>
+            <span className="font-bold text-indigo-400 text-sm">{user?.points_balance?.toLocaleString() || 0}</span>
+            <span className="text-[10px] uppercase tracking-wider text-indigo-300/60 font-medium">Pts</span>
           </div>
         )}
 
-        {/* New Recognition Quick Action (Scoped) */}
+        {/* Quick Action Button - Scoped or Corporate */}
         {(userRole !== 'PLATFORM_OWNER' || selectedTenant) && (
-          <button onClick={() => navigate('/recognition')} className="px-4 py-1.5 rounded-full text-sm font-bold bg-indigo-600 hover:bg-indigo-500 transition-all shadow-lg shadow-indigo-600/20 text-white">
+          <button 
+            onClick={() => navigate('/recognition')} 
+            className="hidden sm:flex px-4 py-1.5 rounded-full text-xs font-bold bg-indigo-600 hover:bg-indigo-500 transition-all text-white shadow-lg shadow-indigo-600/20"
+          >
             Give Recognition
           </button>
         )}
 
-        <div className="h-8 w-[1px] bg-white/10 mx-2" />
-
-        {/* Platform owner header controls */}
-        {userRole === 'PLATFORM_OWNER' && (
-          <div className="flex items-center gap-3">
-            <input
-              aria-label="Global search"
-              placeholder="Search tenants or admin email..."
-              className="text-sm px-3 py-2 rounded-md bg-slate-700 text-slate-100 placeholder-slate-400"
-            />
-            <div className="px-2 py-1 text-xs font-semibold bg-rose-600 text-white rounded-md">PLATFORM CONTROL PLANE</div>
-          </div>
-        )}
+        <div className="h-6 w-[1px] bg-white/10 mx-1" />
         
         {/* User Avatar and Dropdown */}
         <div className="relative" ref={dropdownRef}>
           <button
             onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-            className="flex items-center gap-3 px-3 py-2 rounded-md hover:bg-slate-700 transition-colors duration-150 focus:outline-none focus-visible:ring-2 focus-visible:ring-slate-500"
+            className="flex items-center gap-2 p-1 rounded-full hover:bg-white/5 transition-colors focus:outline-none"
           >
-            {/* User Avatar */}
-            <div className="w-8 h-8 rounded-full bg-indigo-600 flex items-center justify-center text-white font-semibold text-sm">
+            <div className="w-8 h-8 rounded-full bg-indigo-600 flex items-center justify-center text-white font-bold text-xs ring-2 ring-indigo-500/30">
               {firstLetter}
             </div>
-            <div className="text-left">
-              <div className="text-sm font-medium text-slate-200">{displayName}</div>
-              <div className="text-xs text-slate-400">{formatRole(userRole)}</div>
+            <div className="hidden md:block text-left mr-1">
+              <div className="text-xs font-semibold text-slate-200">{displayName}</div>
+              <div className="text-[10px] text-slate-500 uppercase tracking-tighter">{formatRole(userRole)}</div>
             </div>
-            <svg
-              className={`w-4 h-4 text-slate-400 transition-transform duration-150 ${isDropdownOpen ? 'rotate-180' : ''}`}
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-            </svg>
           </button>
 
           {/* Dropdown Menu */}
           {isDropdownOpen && (
-            <div className="absolute right-0 mt-2 w-48 bg-slate-800 border border-slate-700 rounded-md shadow-lg z-50">
-              <div className="py-1">
-                <div className="px-4 py-2 text-sm text-slate-300 border-b border-slate-700">
-                  <div className="font-medium">{displayName}</div>
-                  <div className="text-slate-400">Role: {formatRole(userRole)}</div>
+            <div className="absolute right-0 mt-3 w-56 bg-slate-900 border border-slate-800 rounded-xl shadow-2xl z-50 overflow-hidden">
+              <div className="p-4 border-b border-slate-800">
+                <div className="text-sm font-bold text-white">{displayName}</div>
+                <div className="text-xs text-slate-400">{user?.email}</div>
+                <div className="mt-2 inline-block px-2 py-0.5 rounded bg-indigo-500/10 text-indigo-400 text-[10px] font-bold uppercase">
+                  {formatRole(userRole)}
                 </div>
+              </div>
+              <div className="p-1">
                 <button
                   onClick={handleLogout}
-                  className="w-full text-left px-4 py-2 text-sm text-slate-300 hover:bg-slate-700 hover:text-white transition-colors duration-150 focus:outline-none focus:bg-slate-700"
+                  className="w-full text-left px-3 py-2 text-sm text-rose-400 hover:bg-rose-500/10 rounded-lg transition-colors flex items-center gap-2"
                 >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                  </svg>
                   Logout
                 </button>
               </div>

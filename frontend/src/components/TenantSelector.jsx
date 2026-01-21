@@ -15,16 +15,16 @@ export default function TenantSelector() {
 
   return (
     <div className="flex items-center gap-2">
-      <label className="text-xs text-slate-400 mr-2">Tenant</label>
-      <select value={selectedTenantId} onChange={onChange} className="text-sm bg-slate-800 text-slate-200 px-2 py-1 rounded-md">
-        <option value="">Select tenant</option>
+      <select 
+        value={selectedTenantId} 
+        onChange={onChange} 
+        className="text-xs bg-slate-800/50 border border-indigo-500/30 text-indigo-300 px-3 py-1.5 rounded-full focus:outline-none focus:ring-1 focus:ring-indigo-500 transition-all hover:bg-slate-800"
+      >
+        <option value="">Select Tenant Context</option>
         {tenants.map(t => (
-          <option key={t.id} value={t.id}>{t.name} ({t.subdomain})</option>
+          <option key={t.id} value={t.id}>{t.name}</option>
         ))}
       </select>
-      {selectedTenant && (
-        <div className="text-xs text-slate-400 ml-3">Active: <span className="text-slate-200 font-medium">{selectedTenant.name}</span></div>
-      )}
     </div>
   )
 }
