@@ -12,3 +12,5 @@ def require_role(*roles: str):
         return user
 
     return checker
+
+    return checker

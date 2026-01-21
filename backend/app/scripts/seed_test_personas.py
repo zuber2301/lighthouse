@@ -3,14 +3,16 @@ from sqlalchemy import select
 from app.db.session import AsyncSessionLocal
 from app.models.tenants import Tenant
 from app.models.users import User, UserRole
+from app.models.subscriptions import SubscriptionPlan
 from app.core.security import get_password_hash
 from app.core import tenancy
 
 
 async def seed_test_personas():
-    """Idempotently create a 'triton' tenant and a small set of test personas.
+    """Idempotently create subscription plans, a 'triton' tenant, and a small set of test personas.
 
-    Creates the following users under the 'triton' tenant if they do not exist:
+    - Creates basic subscription plans if missing.
+    - Creates the following users under the 'triton' tenant if they do not exist:
       - hr@triton.com (CORPORATE_USER)
       - eng-lead@triton.com (TENANT_LEAD)
       - dev@triton.com (CORPORATE_USER)
@@ -21,6 +23,36 @@ async def seed_test_personas():
     async with AsyncSessionLocal() as session:
         # Ensure tenant exists (bypass tenant scoping)
         async with session.begin():
+            # 0. Seed subscription plans
+            plans = [
+                {"name": "Basic", "monthly_price": 0, "features": {"max_users": 10, "max_recognitions": 100}},
+                {"name": "Starter", "monthly_price": 2900, "features": {"max_users": 50, "max_recognitions": 1000}},
+                {"name": "Professional", "monthly_price": 7900, "features": {"max_users": 200, "max_recognitions": 5000}},
+                {"name": "Enterprise", "monthly_price": 19900, "features": {"max_users": 1000, "max_recognitions": -1}},
+            ]
+            for p in plans:
+                res_p = await session.execute(select(SubscriptionPlan).where(SubscriptionPlan.name == p["name"]))
+                if not res_p.scalar():
+                    new_p = SubscriptionPlan(
+                        name=p["name"],
+                        monthly_price_in_paise=p["monthly_price"],
+                        features=p["features"]
+                    )
+                    session.add(new_p)
+                    print(f"Created subscription plan: {p['name']}")
+
+            # 0b. Ensure platform admin user exists
+            res_admin = await session.execute(select(User).where(User.email == settings.PLATFORM_ADMIN_EMAIL))
+            if not res_admin.scalar():
+                platform_admin = User(
+                    email=settings.PLATFORM_ADMIN_EMAIL,
+                    full_name="Platform Owner",
+                    role=UserRole.PLATFORM_OWNER,
+                    is_active=True
+                )
+                session.add(platform_admin)
+                print(f"Created platform admin: {settings.PLATFORM_ADMIN_EMAIL}")
+
             # 1. Ensure 'triton' exists
             result = await session.execute(select(Tenant).where(Tenant.subdomain == "triton"))
             tenant = result.scalar()

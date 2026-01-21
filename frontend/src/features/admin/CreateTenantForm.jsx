@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useContext } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { API_BASE } from '../../lib/api'
+import api, { API_BASE } from '../../lib/api'
 import TenantContext from '../../lib/TenantContext'
 
-export default function CreateTenantForm({ fetchFn = fetch, onCreated = null, redirectOnSuccess = '/platform-admin', alertOnSuccess = true }) {
+export default function CreateTenantForm({ onCreated = null, redirectOnSuccess = '/platform-admin', alertOnSuccess = true }) {
   const navigate = useNavigate()
   const tenantCtx = useContext(TenantContext) || {}
   const addTenant = tenantCtx.addTenant
@@ -20,26 +20,35 @@ export default function CreateTenantForm({ fetchFn = fetch, onCreated = null, re
   const [errorMessage, setErrorMessage] = useState('')
 
   useEffect(() => {
+    console.log('CreateTenantForm mounted, fetching plans...')
     fetchSubscriptionPlans()
   }, [])
 
   const fetchSubscriptionPlans = async () => {
+    setIsLoadingPlans(true)
     try {
-      const token = localStorage.getItem('auth_token')
-      const headers = {}
-      if (token) headers['Authorization'] = `Bearer ${token}`
-      const response = await fetchFn(`${API_BASE}/platform/subscription-plans`, { headers })
-      if (response.ok) {
-        const plans = await response.json()
-        const normalizedPlans = Array.isArray(plans) ? plans : (plans && plans.data && Array.isArray(plans.data) ? plans.data : [])
-        setSubscriptionPlans(normalizedPlans)
-        const basicPlan = normalizedPlans.find(plan => plan && plan.name === 'Basic')
-        if (basicPlan) {
-          setFormData(prev => ({ ...prev, planId: basicPlan.id }))
-        }
+      const response = await api.get('/platform/subscription-plans')
+      console.log('Fetched subscription plans:', response.data)
+      const plans = response.data
+      const normalizedPlans = Array.isArray(plans) ? plans : (plans && plans.data && Array.isArray(plans.data) ? plans.data : [])
+      setSubscriptionPlans(normalizedPlans)
+      if (normalizedPlans.length === 0) {
+        setErrorMessage('No subscription plans found in the system.')
+      }
+      const basicPlan = normalizedPlans.find(plan => plan && plan.name === 'Basic')
+      if (basicPlan) {
+        setFormData(prev => ({ ...prev, planId: basicPlan.id }))
       }
     } catch (error) {
       console.error('Failed to fetch subscription plans:', error)
+      const status = error.response?.status
+      if (status === 403) {
+        setErrorMessage('Access denied. Platform owner permissions required (403).')
+      } else if (status === 401) {
+        setErrorMessage('Not authorized. Please log in (401).')
+      } else {
+        setErrorMessage(`Error loading plans: ${error.message}`)
+      }
     } finally {
       setIsLoadingPlans(false)
     }
@@ -58,50 +67,37 @@ export default function CreateTenantForm({ fetchFn = fetch, onCreated = null, re
     e.preventDefault()
     setIsLoading(true)
     try {
-      const token = localStorage.getItem('auth_token')
-      const headers = { 'Content-Type': 'application/json' }
-      if (token) headers['Authorization'] = `Bearer ${token}`
-      const response = await fetchFn(`${API_BASE}/platform/tenants`, {
-        method: 'POST',
-        headers,
-        body: JSON.stringify({
-          name: formData.name,
-          subdomain: formData.subdomain,
-          admin_email: formData.adminEmail,
-          admin_name: formData.adminName,
-          plan_id: parseInt(formData.planId)
-        })
+      const response = await api.post('/platform/tenants', {
+        name: formData.name,
+        subdomain: formData.subdomain,
+        admin_email: formData.adminEmail,
+        admin_name: formData.adminName,
+        plan_id: parseInt(formData.planId)
       })
-      if (response.ok) {
-        const result = await response.json()
-        try { if (addTenant) addTenant(result) } catch (e) {}
-        setErrorMessage('')
-        if (onCreated) {
-          try { onCreated(result) } catch (e) {}
-        } else {
-          if (alertOnSuccess) alert(`Tenant "${formData.name}" created successfully! Subdomain: ${result.subdomain}.lighthouse.com`)
-          if (redirectOnSuccess) navigate(redirectOnSuccess)
-        }
+      
+      const result = response.data
+      try { if (addTenant) addTenant(result) } catch (e) {}
+      setErrorMessage('')
+      if (onCreated) {
+        try { onCreated(result) } catch (e) {}
       } else {
-        const status = response.status
-        let text
-        try { const j = await response.json(); text = j.detail || JSON.stringify(j) } catch (err) { text = await response.text().catch(() => '') }
-        console.error('Create tenant failed', { status, text })
-        if (status === 401) {
-          if (alertOnSuccess) alert('Unauthorized. Please sign in as a platform owner.')
-          setErrorMessage('Unauthorized. Please sign in as a platform owner.')
-        } else if (status === 403) {
-          if (alertOnSuccess) alert('Forbidden. Your account lacks platform owner permissions.')
-          setErrorMessage('Forbidden. Your account lacks platform owner permissions.')
-        } else {
-          if (alertOnSuccess) alert(`Error creating tenant (${status}): ${text || 'unknown error'}`)
-          setErrorMessage(text || 'Error creating tenant')
-        }
+        if (alertOnSuccess) alert(`Tenant "${formData.name}" created successfully! Subdomain: ${result.subdomain}.lighthouse.com`)
+        if (redirectOnSuccess) navigate(redirectOnSuccess)
       }
     } catch (error) {
-      console.error('Failed to create tenant:', error)
-      if (alertOnSuccess) alert('Failed to create tenant. Please try again.')
-      setErrorMessage('Failed to create tenant. Please try again.')
+      const status = error.response?.status
+      const text = error.response?.data?.detail || error.message
+      console.error('Create tenant failed', { status, text })
+      if (status === 401) {
+        if (alertOnSuccess) alert('Unauthorized. Please sign in as a platform owner.')
+        setErrorMessage('Unauthorized. Please sign in as a platform owner.')
+      } else if (status === 403) {
+        if (alertOnSuccess) alert('Forbidden. Your account lacks platform owner permissions.')
+        setErrorMessage('Forbidden. Your account lacks platform owner permissions.')
+      } else {
+        if (alertOnSuccess) alert(`Error creating tenant (${status}): ${text || 'unknown error'}`)
+        setErrorMessage(text || 'Error creating tenant')
+      }
     } finally {
       setIsLoading(false)
     }

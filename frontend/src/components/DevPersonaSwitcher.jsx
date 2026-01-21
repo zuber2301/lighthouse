@@ -56,6 +56,15 @@ export default function DevPersonaSwitcher({ onSwitch } = {}) {
                 {p.name}
               </button>
             ))}
+            <button
+              onClick={() => {
+                localStorage.clear();
+                window.location.reload();
+              }}
+              className="text-left text-xs px-3 py-2 bg-red-900/50 hover:bg-red-600 rounded transition text-red-100 mt-1"
+            >
+              Clear Session
+            </button>
           </div>
         </div>
       ) : (

@@ -294,6 +294,20 @@ async def dev_login(request: DevLoginRequest, db: AsyncSession = Depends(get_db)
     # Find the user by email
     user_q = await db.execute(select(User).where(User.email == request.email))
     user = user_q.scalar_one_or_none()
+    
+    # Auto-create platform owner if it's the configured email and missing
+    if not user and request.email == settings.PLATFORM_ADMIN_EMAIL:
+        user = User(
+            email=settings.PLATFORM_ADMIN_EMAIL,
+            full_name="Platform Owner",
+            role=UserRole.PLATFORM_OWNER,
+            is_active=True
+        )
+        db.add(user)
+        await db.commit()
+        await db.refresh(user)
+        print(f"Auto-created platform owner on dev-login: {request.email}")
+
     if not user:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
 

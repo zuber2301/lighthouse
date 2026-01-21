@@ -7,10 +7,10 @@ import App from './App'
 import './styles/tailwind.css'
 // Ensure Authorization header is injected for platform API calls
 import './lib/fetchAuth'
-// Dev helper: if VITE_DEV_TOKEN is provided at build/runtime, store it in localStorage
+// Dev helper: if VITE_DEV_TOKEN is provided at build/runtime, store it in localStorage if none exists
 try {
   const devToken = import.meta.env.VITE_DEV_TOKEN
-  if (devToken) {
+  if (devToken && !localStorage.getItem('auth_token')) {
     try {
       localStorage.setItem('auth_token', devToken)
       localStorage.setItem('tenant_id', '00000000-0000-0000-0000-000000000000')

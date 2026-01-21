@@ -39,6 +39,7 @@ def get_current_user(request: Request) -> User:
     if not tp.sub or not tp.role:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid token payload")
 
+    print(f"DEBUG: get_current_user - sub: {tp.sub}, role: {tp.role}, tenant_id: {tp.tenant_id}")
     # Allow missing tenant_id for legacy/dev tokens by falling back to DEV_DEFAULT_TENANT
     tenant_id = tp.tenant_id if tp.tenant_id else settings.DEV_DEFAULT_TENANT
     return User(id=tp.sub, tenant_id=tenant_id, role=tp.role)

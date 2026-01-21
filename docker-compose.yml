@@ -47,7 +47,7 @@ services:
       - |
         npm install && \
         # fetch a dev token from the backend and write to .env before starting Vite (dev-only)
-        node -e "const http=require('http'),fs=require('fs');try{http.get('http://lighthouse_backend:8000/auth/dev-token?role=CORPORATE_USER&tenant_id=00000000-0000-0000-0000-000000000000',res=>{let d='';res.on('data',c=>d+=c);res.on('end',()=>{try{fs.writeFileSync('/tmp/dev_token.json',d)}catch(e){}})}).on('error',()=>{});}catch(e){}" && \
+        node -e "const http=require('http'),fs=require('fs');try{http.get('http://backend:8000/auth/dev-token?role=PLATFORM_OWNER&tenant_id=00000000-0000-0000-0000-000000000000',res=>{let d='';res.on('data',c=>d+=c);res.on('end',()=>{try{fs.writeFileSync('/tmp/dev_token.json',d)}catch(e){}})}).on('error',()=>{});}catch(e){}" && \
         TOKEN=$(node -e "try{const j=require('/tmp/dev_token.json');console.log(j && j.token || '')}catch(e){console.log('')}") && \
         if [ -n "$TOKEN" ]; then echo "VITE_DEV_TOKEN=$TOKEN" > .env; fi && \
         npm run dev -- --host 0.0.0.0 --port 5173
