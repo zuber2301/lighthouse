@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import api from '../api/axiosClient'
 
 const personas = [
@@ -11,6 +11,14 @@ const personas = [
 export default function DevPersonaSwitcher({ onSwitch } = {}) {
   // Only render in dev mode
   if (!import.meta.env.DEV) return null
+
+  const [collapsed, setCollapsed] = useState(() => {
+    try { return localStorage.getItem('dev_switcher_collapsed') === '1' } catch (e) { return false }
+  })
+
+  useEffect(() => {
+    try { localStorage.setItem('dev_switcher_collapsed', collapsed ? '1' : '0') } catch (e) {}
+  }, [collapsed])
 
   const handleSwitch = async (p) => {
     try {
@@ -31,19 +39,30 @@ export default function DevPersonaSwitcher({ onSwitch } = {}) {
   }
 
   return (
-    <div className="fixed bottom-4 right-4 p-4 bg-slate-900 border border-indigo-500 rounded-xl shadow-2xl z-[9999]">
-      <p className="text-xs font-bold text-indigo-400 mb-2 uppercase tracking-tighter">Dev Persona Switcher</p>
-      <div className="flex flex-col gap-2">
-        {personas.map((p) => (
-          <button
-            key={p.role}
-            onClick={() => handleSwitch(p)}
-            className="text-left text-xs px-3 py-2 bg-slate-800 hover:bg-indigo-600 rounded transition text-white"
-          >
-            {p.name}
-          </button>
-        ))}
-      </div>
+    <div className="fixed bottom-4 right-4 z-[9999]">
+      {!collapsed ? (
+        <div className="p-4 bg-slate-900 border border-indigo-500 rounded-xl shadow-2xl">
+          <div className="flex items-center justify-between mb-3">
+            <p className="text-xs font-bold text-indigo-400 uppercase tracking-tighter">Dev Persona Switcher</p>
+            <button onClick={() => setCollapsed(true)} className="text-slate-300 px-2 py-1 rounded hover:bg-slate-800">▾</button>
+          </div>
+          <div className="flex flex-col gap-2">
+            {personas.map((p) => (
+              <button
+                key={p.role}
+                onClick={() => handleSwitch(p)}
+                className="text-left text-xs px-3 py-2 bg-slate-800 hover:bg-indigo-600 rounded transition text-white"
+              >
+                {p.name}
+              </button>
+            ))}
+          </div>
+        </div>
+      ) : (
+        <div className="p-2 bg-slate-900 border border-indigo-500 rounded-xl shadow-2xl">
+          <button onClick={() => setCollapsed(false)} className="text-xs text-indigo-400 px-3 py-2">Dev Personas ▸</button>
+        </div>
+      )}
     </div>
   )
 }
