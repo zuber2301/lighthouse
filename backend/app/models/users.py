@@ -7,6 +7,7 @@ from app.db.base import Base, TenantMixin, TimestampMixin
 
 
 class UserRole(PyEnum):
+    SUPER_ADMIN = "SUPER_ADMIN"
     PLATFORM_OWNER = "PLATFORM_OWNER"
     TENANT_ADMIN = "TENANT_ADMIN"
     TENANT_LEAD = "TENANT_LEAD"

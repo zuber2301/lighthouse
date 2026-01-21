@@ -3,6 +3,8 @@ import PageHeader from '../../components/PageHeader'
 import Card from '../../components/Card'
 import api from '../../api/axiosClient'
 import { useTenant } from '../../lib/TenantContext'
+import LeadAllocationTable from '../../components/LeadAllocationTable'
+import BudgetLoadLogs from '../../components/BudgetLoadLogs'
 
 export default function TenantDashboard() {
   const { selectedTenant } = useTenant()
@@ -11,7 +13,8 @@ export default function TenantDashboard() {
 
   useEffect(() => {
     let mounted = true
-    ;(async () => {
+
+    const fetchDashboard = async () => {
       setLoading(true)
       try {
         const cfg = {}
@@ -24,7 +27,9 @@ export default function TenantDashboard() {
       } finally {
         if (mounted) setLoading(false)
       }
-    })()
+    }
+
+    fetchDashboard()
     return () => { mounted = false }
   }, [selectedTenant])
 
@@ -73,32 +78,21 @@ export default function TenantDashboard() {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <Card>
           <h3 className="font-bold text-lg mb-3">Budget Overview</h3>
-          <p>Master balance: ₹{(data.lead_budget.master_balance_paise/100).toFixed(2)}</p>
-          {data.lead_budget.leads.length === 0 ? (
-            <p className="text-slate-400">No lead budgets allocated</p>
-          ) : (
-            <ul className="space-y-2 mt-2">
-              {data.lead_budget.leads.map(l => (
-                <li key={l.id} className="flex justify-between">
-                  <span>{l.name}</span>
-                  <span className="font-bold">₹{(l.amount_paise/100).toFixed(2)}</span>
-                </li>
-              ))}
-            </ul>
-          )}
+          <LeadAllocationTable tenantId={selectedTenant?.id} onAllocated={() => { 
+            // refresh tenant dashboard after allocation
+            (async () => {
+              try {
+                const cfg = {}
+                if (selectedTenant && selectedTenant.id) cfg.headers = { 'X-Tenant-ID': selectedTenant.id }
+                const resp = await api.get('/tenant/dashboard', cfg)
+                setData(resp.data)
+              } catch (e) {
+                console.error('refresh after allocation failed', e)
+              }
+            })()
+          }} />
         </Card>
-
-        <Card>
-          <h3 className="font-bold text-lg mb-3">Recognition Trend (7d)</h3>
-          <ul className="space-y-1">
-            {data.time_series.labels.map((lbl, idx) => (
-              <li key={lbl} className="flex justify-between">
-                <span className="text-sm text-slate-500">{lbl}</span>
-                <span className="font-bold">{data.time_series.recognitions[idx]}</span>
-              </li>
-            ))}
-          </ul>
-        </Card>
+        <BudgetLoadLogs tenantId={selectedTenant?.id} />
       </div>
 
     </div>

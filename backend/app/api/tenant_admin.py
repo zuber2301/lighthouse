@@ -8,6 +8,7 @@ from app.models.tenants import Tenant
 from app.models.users import User, UserRole
 from app.models.transactions import Transaction, TransactionType
 from app.models.redemptions import Redemption
+from app.models.budget_load_logs import BudgetLoadLog
 from typing import Optional, List
 from app.schemas.tenant_dashboard import TenantDashboardResponse
 import datetime
@@ -173,6 +174,98 @@ async def get_budget_status(db: AsyncSession = Depends(get_db), user: CurrentUse
             }
             for lead in leads
         ]
+    }
+
+
+
+@router.get('/budget/logs')
+async def list_budget_logs(
+    limit: int = 50,
+    offset: int = 0,
+    transaction_type: Optional[str] = None,
+    start_date: Optional[datetime.date] = None,
+    end_date: Optional[datetime.date] = None,
+    db: AsyncSession = Depends(get_db),
+    user: CurrentUser = Depends(require_role("TENANT_ADMIN"))
+):
+    """Return recent budget load / allocation logs for this tenant (tenant-scoped).
+
+    Supports optional filtering by `transaction_type`, `start_date`, and `end_date`.
+    Returns owner name/email when available.
+    """
+    filters = [BudgetLoadLog.tenant_id == user.tenant_id]
+    if transaction_type:
+        filters.append(BudgetLoadLog.transaction_type == transaction_type)
+    if start_date:
+        start_dt = datetime.datetime.combine(start_date, datetime.time.min)
+        filters.append(BudgetLoadLog.created_at >= start_dt)
+    if end_date:
+        end_dt = datetime.datetime.combine(end_date, datetime.time.max)
+        filters.append(BudgetLoadLog.created_at <= end_dt)
+
+    stmt = (
+        select(BudgetLoadLog, User)
+        .outerjoin(User, User.id == BudgetLoadLog.platform_owner_id)
+        .where(*filters)
+        .order_by(BudgetLoadLog.created_at.desc())
+        .limit(limit)
+        .offset(offset)
+    )
+
+    q = await db.execute(stmt)
+    rows = q.all()
+
+    result = []
+    for row in rows:
+        log = row[0]
+        owner = row[1]
+        result.append({
+            "id": log.id,
+            "platform_owner": {
+                "id": owner.id if owner else None,
+                "full_name": owner.full_name if owner else None,
+                "email": owner.email if owner else None,
+                "role": owner.role.value if owner and hasattr(owner, 'role') and hasattr(owner.role, 'value') else (owner.role if owner else None)
+            },
+            "amount": float(log.amount),
+            "transaction_type": log.transaction_type,
+            "created_at": log.created_at.isoformat() if getattr(log, 'created_at', None) else None
+        })
+
+    # total count for pagination
+    count_stmt = select(func.count(BudgetLoadLog.id)).where(*filters)
+    count_q = await db.execute(count_stmt)
+    total = int(count_q.scalar() or 0)
+
+    return {"items": result, "total": total}
+
+
+@router.get('/budget/logs/{log_id}')
+async def get_budget_log(log_id: int, db: AsyncSession = Depends(get_db), user: CurrentUser = Depends(require_role("TENANT_ADMIN"))):
+    """Return a single budget load/allocation log with owner resolution for this tenant."""
+    stmt = (
+        select(BudgetLoadLog, User)
+        .outerjoin(User, User.id == BudgetLoadLog.platform_owner_id)
+        .where(BudgetLoadLog.id == log_id, BudgetLoadLog.tenant_id == user.tenant_id)
+    )
+    q = await db.execute(stmt)
+    row = q.first()
+    if not row:
+        raise HTTPException(status_code=404, detail="Log not found")
+
+    log = row[0]
+    owner = row[1]
+    return {
+        "id": log.id,
+        "platform_owner": {
+            "id": str(owner.id) if owner else None,
+            "full_name": owner.full_name if owner else None,
+            "email": owner.email if owner else None,
+            "role": owner.role.value if owner and hasattr(owner, 'role') and hasattr(owner.role, 'value') else (owner.role if owner else None)
+        },
+        "amount": float(log.amount),
+        "transaction_type": log.transaction_type,
+        "created_at": log.created_at.isoformat() if getattr(log, 'created_at', None) else None
     }
 
 

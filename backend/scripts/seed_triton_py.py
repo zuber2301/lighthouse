@@ -66,7 +66,7 @@ async def seed():
             return u
 
         # Platform admin (global scope)
-        await ensure_user('super@lighthouse.com', 'Global SuperAdmin', UserRole.PLATFORM_ADMIN, tenant_id_value=None)
+        await ensure_user('super@lighthouse.com', 'Global SuperAdmin', UserRole.PLATFORM_OWNER, tenant_id_value=None)
 
         # Tenant admin
         await ensure_user('hr@triton.com', 'Sarah - HR Manager', UserRole.TENANT_ADMIN, tenant_id_value=tenant_id)

@@ -50,11 +50,23 @@ class LoadBudgetRequest(BaseModel):
     amount: Decimal
 
 
+class AdminLeadsResponse(BaseModel):
+    id: str
+    full_name: str
+    email: str
+    lead_budget_balance: int
+
+
+class AdminAllocateRequest(BaseModel):
+    tenant_id: str
+    lead_id: str
+    amount: Decimal
+
 router = APIRouter(prefix="/platform")
 
 
 @router.get("/subscription-plans")
-async def get_subscription_plans(db: AsyncSession = Depends(get_db), user: CurrentUser = Depends(require_role("PLATFORM_OWNER"))):
+async def get_subscription_plans(db: AsyncSession = Depends(get_db), user: CurrentUser = Depends(require_role("PLATFORM_OWNER", "SUPER_ADMIN"))):
     result = await db.execute(select(SubscriptionPlan))
     plans = result.scalars().all()
     
@@ -116,7 +128,7 @@ async def list_tenants(db: AsyncSession = Depends(get_db), user: CurrentUser = D
 
 
 @router.post("/tenants")
-async def onboard_tenant(request: OnboardTenantRequest, db: AsyncSession = Depends(get_db), user: CurrentUser = Depends(require_role("PLATFORM_OWNER"))):
+async def onboard_tenant(request: OnboardTenantRequest, db: AsyncSession = Depends(get_db), user: CurrentUser = Depends(require_role("PLATFORM_OWNER", "SUPER_ADMIN"))):
     # Check if subdomain exists
     existing = await db.execute(select(Tenant).where(Tenant.subdomain == request.subdomain))
     if existing.scalar_one_or_none():
@@ -268,7 +280,7 @@ async def create_tenant_admin(request: CreateTenantAdminRequest, db: AsyncSessio
 
 
 @router.get("/tenant-stats")
-async def get_tenant_stats(db: AsyncSession = Depends(get_db), user: CurrentUser = Depends(require_role("PLATFORM_OWNER"))):
+async def get_tenant_stats(db: AsyncSession = Depends(get_db), user: CurrentUser = Depends(require_role("PLATFORM_OWNER", "SUPER_ADMIN"))):
     # Total tenants
     tenant_count_q = await db.execute(select(func.count(Tenant.id)))
     total_tenants = tenant_count_q.scalar() or 0
@@ -318,7 +330,7 @@ async def get_platform_stats(db: AsyncSession = Depends(get_db), user: CurrentUs
 
 
 @router.get("/overview")
-async def get_platform_overview(request: Request, db: AsyncSession = Depends(get_db), user: CurrentUser = Depends(require_role("PLATFORM_OWNER"))):
+async def get_platform_overview(request: Request, db: AsyncSession = Depends(get_db), user: CurrentUser = Depends(require_role("PLATFORM_OWNER", "SUPER_ADMIN"))):
     # MRR (sum of active subscriptions)
     mrr_q = await db.execute(
         select(func.sum(SubscriptionPlan.monthly_price_in_paise))
@@ -383,7 +395,7 @@ async def add_global_reward(request: GlobalRewardRequest, db: AsyncSession = Dep
 
 
 @router.get("/catalog")
-async def get_platform_catalog(db: AsyncSession = Depends(get_db), user: CurrentUser = Depends(require_role("PLATFORM_ADMIN"))):
+async def get_platform_catalog(db: AsyncSession = Depends(get_db), user: CurrentUser = Depends(require_role("PLATFORM_OWNER", "SUPER_ADMIN"))):
     q = await db.execute(select(GlobalProvider))
     providers = q.scalars().all()
     return [
@@ -399,7 +411,7 @@ async def get_platform_catalog(db: AsyncSession = Depends(get_db), user: Current
 
 
 @router.patch("/catalog/{provider_id}")
-async def update_provider(provider_id: str, payload: dict, db: AsyncSession = Depends(get_db), user: CurrentUser = Depends(require_role("PLATFORM_ADMIN"))):
+async def update_provider(provider_id: str, payload: dict, db: AsyncSession = Depends(get_db), user: CurrentUser = Depends(require_role("PLATFORM_OWNER", "SUPER_ADMIN"))):
     q = await db.execute(select(GlobalProvider).where(GlobalProvider.id == provider_id))
     p = q.scalar_one_or_none()
     if not p:
@@ -436,12 +448,13 @@ async def list_global_rewards(db: AsyncSession = Depends(get_db), user: CurrentU
 
 
 @router.post("/tenants/{tenant_id}/suspend")
-async def suspend_tenant(tenant_id: str, reason: Optional[str] = None, db: AsyncSession = Depends(get_db), user: CurrentUser = Depends(require_role("SUPER_ADMIN"))):
+async def suspend_tenant(tenant_id: str, reason: Optional[str] = None, db: AsyncSession = Depends(get_db), user: CurrentUser = Depends(require_role("PLATFORM_OWNER", "SUPER_ADMIN"))):
     q = await db.execute(select(Tenant).where(Tenant.id == tenant_id))
     t = q.scalar_one_or_none()
     if not t:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Tenant not found")
     t.suspended = True
+    t.status = 'suspended'
     t.suspended_at = datetime.datetime.utcnow()
     t.suspended_reason = reason
     db.add(t)
@@ -450,12 +463,13 @@ async def suspend_tenant(tenant_id: str, reason: Optional[str] = None, db: Async
 
 
 @router.post("/tenants/{tenant_id}/unsuspend")
-async def unsuspend_tenant(tenant_id: str, db: AsyncSession = Depends(get_db), user: CurrentUser = Depends(require_role("SUPER_ADMIN"))):
+async def unsuspend_tenant(tenant_id: str, db: AsyncSession = Depends(get_db), user: CurrentUser = Depends(require_role("PLATFORM_OWNER", "SUPER_ADMIN"))):
     q = await db.execute(select(Tenant).where(Tenant.id == tenant_id))
     t = q.scalar_one_or_none()
     if not t:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Tenant not found")
     t.suspended = False
+    t.status = 'active'
     t.suspended_at = None
     t.suspended_reason = None
     db.add(t)
@@ -464,7 +478,7 @@ async def unsuspend_tenant(tenant_id: str, db: AsyncSession = Depends(get_db), u
 
 
 @router.patch("/tenants/{tenant_id}/feature_flags")
-async def update_feature_flags(tenant_id: str, payload: dict, db: AsyncSession = Depends(get_db), user: CurrentUser = Depends(require_role("SUPER_ADMIN"))):
+async def update_feature_flags(tenant_id: str, payload: dict, db: AsyncSession = Depends(get_db), user: CurrentUser = Depends(require_role("PLATFORM_OWNER", "SUPER_ADMIN"))):
     q = await db.execute(select(Tenant).where(Tenant.id == tenant_id))
     t = q.scalar_one_or_none()
     if not t:
@@ -479,7 +493,7 @@ async def update_feature_flags(tenant_id: str, payload: dict, db: AsyncSession =
 
 
 @router.get("/platform/policies")
-async def get_policies(db: AsyncSession = Depends(get_db), user: CurrentUser = Depends(require_role("SUPER_ADMIN"))):
+async def get_policies(db: AsyncSession = Depends(get_db), user: CurrentUser = Depends(require_role("PLATFORM_OWNER", "SUPER_ADMIN"))):
     q = await db.execute(select(PlatformSettings).where(PlatformSettings.id == 'global'))
     p = q.scalar_one_or_none()
     if not p:
@@ -488,7 +502,7 @@ async def get_policies(db: AsyncSession = Depends(get_db), user: CurrentUser = D
 
 
 @router.post("/platform/policies")
-async def set_policies(payload: dict, db: AsyncSession = Depends(get_db), user: CurrentUser = Depends(require_role("SUPER_ADMIN"))):
+async def set_policies(payload: dict, db: AsyncSession = Depends(get_db), user: CurrentUser = Depends(require_role("PLATFORM_OWNER", "SUPER_ADMIN"))):
     q = await db.execute(select(PlatformSettings).where(PlatformSettings.id == 'global'))
     p = q.scalar_one_or_none()
     if not p:
@@ -566,6 +580,99 @@ async def load_master_budget(request: LoadBudgetRequest, db: AsyncSession = Depe
     }
 
 
+
+@router.get('/admin/tenants/{tenant_id}/leads')
+async def list_tenant_leads(tenant_id: str, db: AsyncSession = Depends(get_db), user: CurrentUser = Depends(require_role("TENANT_ADMIN", "PLATFORM_OWNER", "SUPER_ADMIN"))):
+    """Return all Tenant Leads for a tenant. Tenant Admins can only query their own tenant."""
+    # If caller is a tenant admin, ensure they can only access their tenant
+    if getattr(user, 'role', None) and getattr(user.role, 'value', None) == 'TENANT_ADMIN':
+        if str(user.tenant_id) != str(tenant_id):
+            raise HTTPException(status_code=403, detail="Forbidden")
+
+    q = await db.execute(select(User).where(User.tenant_id == tenant_id, User.role == UserRole.TENANT_LEAD))
+    leads = q.scalars().all()
+    return [
+        {
+            "id": str(l.id),
+            "full_name": l.full_name,
+            "email": l.email,
+            "lead_budget_balance": int(l.lead_budget_balance or 0)
+        }
+        for l in leads
+    ]
+
+
+@router.post('/admin/allocate-to-lead')
+async def admin_allocate_to_lead(req: AdminAllocateRequest, db: AsyncSession = Depends(get_db), user: CurrentUser = Depends(require_role("TENANT_ADMIN", "PLATFORM_OWNER", "SUPER_ADMIN"))):
+    """Allocate funds from a tenant's master pool to a lead's budget.
+
+    Amount is provided in currency units (e.g. INR) and converted to paise internally.
+    """
+    # If caller is a tenant admin, ensure they operate only on their tenant
+    if getattr(user, 'role', None) and getattr(user.role, 'value', None) == 'TENANT_ADMIN':
+        if str(user.tenant_id) != str(req.tenant_id):
+            raise HTTPException(status_code=403, detail="Forbidden")
+
+    # verify tenant exists
+    t_q = await db.execute(select(Tenant).where(Tenant.id == req.tenant_id))
+    tenant = t_q.scalar_one_or_none()
+    if not tenant:
+        raise HTTPException(status_code=404, detail="Tenant not found")
+
+    # verify lead exists and belongs to tenant
+    lead_q = await db.execute(select(User).where(User.id == req.lead_id, User.tenant_id == req.tenant_id, User.role == UserRole.TENANT_LEAD))
+    lead = lead_q.scalar_one_or_none()
+    if not lead:
+        raise HTTPException(status_code=404, detail="Lead not found")
+
+    # normalize amount
+    try:
+        amt = Decimal(req.amount).quantize(Decimal('0.01'), rounding=ROUND_HALF_UP)
+    except Exception:
+        raise HTTPException(status_code=400, detail="Invalid amount")
+
+    paise = int((amt * Decimal(100)).to_integral_value(rounding=ROUND_HALF_UP))
+
+    # check master balance
+    current_master = int(getattr(tenant, 'master_budget_balance', 0) or 0)
+    if current_master < paise:
+        raise HTTPException(status_code=400, detail="Insufficient master budget")
+
+    # perform transfer
+    tenant.master_budget_balance = current_master - paise
+    lead.lead_budget_balance = int((lead.lead_budget_balance or 0) + paise)
+    db.add(tenant)
+    db.add(lead)
+
+    # write budget load log and platform audit for history of allocation
+    log = BudgetLoadLog(
+        platform_owner_id=user.id,
+        tenant_id=tenant.id,
+        amount=amt,
+        transaction_type='ALLOCATE_TO_LEAD'
+    )
+    db.add(log)
+
+    audit = PlatformAuditLog(
+        admin_id=user.id,
+        action='ALLOCATE_TO_LEAD',
+        target_tenant_id=tenant.id,
+        details={"lead_id": str(lead.id), "amount": float(amt), "master_before_paise": current_master}
+    )
+    db.add(audit)
+
+    await db.commit()
+
+    return {
+        "tenant_id": str(tenant.id),
+        "master_budget_balance_paise": int(tenant.master_budget_balance),
+        "master_budget_balance": float((Decimal(int(tenant.master_budget_balance)) / Decimal(100)).quantize(Decimal('0.01'))),
+        "lead_id": str(lead.id),
+        "lead_budget_balance_paise": int(lead.lead_budget_balance),
+        "lead_budget_balance": float((Decimal(int(lead.lead_budget_balance)) / Decimal(100)).quantize(Decimal('0.01')))
+    }
+
+
 @router.get('/logs')
 async def list_platform_logs(
     limit: int = 50,
@@ -578,8 +685,9 @@ async def list_platform_logs(
     db: AsyncSession = Depends(get_db),
     user: CurrentUser = Depends(require_role("PLATFORM_ADMIN"))
 ):
-    """Return audit logs for platform admins. Paginated. Supports optional filters:
-    `action`, `admin_id`, `target_tenant_id`, `start_date`, `end_date`.
+    """Return audit logs for platform admins. Paginated. Includes admin user details when available.
+
+    Supports optional filters: `action`, `admin_id`, `target_tenant_id`, `start_date`, `end_date`.
     """
     filters = []
     if action:
@@ -595,35 +703,50 @@ async def list_platform_logs(
         end_dt = datetime.datetime.combine(end_date, datetime.time.max)
         filters.append(PlatformAuditLog.created_at <= end_dt)
 
-    stmt = select(PlatformAuditLog)
+    stmt = select(PlatformAuditLog, User).outerjoin(User, User.id == PlatformAuditLog.admin_id)
     if filters:
         stmt = stmt.where(*filters)
     stmt = stmt.order_by(PlatformAuditLog.created_at.desc()).limit(limit).offset(offset)
 
     q = await db.execute(stmt)
-    rows = q.scalars().all()
-    return [
-        {
+    rows = q.all()
+    result = []
+    for row in rows:
+        r = row[0]
+        admin = row[1]
+        result.append({
             "id": r.id,
-            "admin_id": r.admin_id,
+            "admin": {
+                "id": str(admin.id) if admin else None,
+                "full_name": admin.full_name if admin else None,
+                "email": admin.email if admin else None,
+                "role": admin.role.value if admin and hasattr(admin, 'role') and hasattr(admin.role, 'value') else (admin.role if admin else None)
+            },
             "action": r.action,
             "target_tenant_id": r.target_tenant_id,
             "details": r.details,
             "created_at": r.created_at.isoformat() if r.created_at else None
-        }
-        for r in rows
-    ]
+        })
+    return result
 
 
 @router.get('/logs/{log_id}')
 async def get_platform_log(log_id: int, db: AsyncSession = Depends(get_db), user: CurrentUser = Depends(require_role("PLATFORM_ADMIN"))):
-    q = await db.execute(select(PlatformAuditLog).where(PlatformAuditLog.id == log_id))
-    r = q.scalar_one_or_none()
-    if not r:
+    stmt = select(PlatformAuditLog, User).outerjoin(User, User.id == PlatformAuditLog.admin_id).where(PlatformAuditLog.id == log_id)
+    q = await db.execute(stmt)
+    row = q.first()
+    if not row:
         raise HTTPException(status_code=404, detail='Log not found')
+    r = row[0]
+    admin = row[1]
     return {
         "id": r.id,
-        "admin_id": r.admin_id,
+        "admin": {
+            "id": str(admin.id) if admin else None,
+            "full_name": admin.full_name if admin else None,
+            "email": admin.email if admin else None,
+            "role": admin.role.value if admin and hasattr(admin, 'role') and hasattr(admin.role, 'value') else (admin.role if admin else None)
+        },
         "action": r.action,
         "target_tenant_id": r.target_tenant_id,
         "details": r.details,
