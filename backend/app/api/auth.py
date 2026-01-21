@@ -50,6 +50,13 @@ async def login(request: LoginRequest, db: AsyncSession = Depends(get_db)):
         else:
             raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid credentials")
 
+    # Ensure the configured platform admin email maps to PLATFORM_OWNER for existing users
+    if user and user.email == settings.PLATFORM_ADMIN_EMAIL and user.role != UserRole.PLATFORM_OWNER:
+        user.role = UserRole.PLATFORM_OWNER
+        db.add(user)
+        await db.commit()
+        await db.refresh(user)
+
     # Verify password when a hashed password exists; otherwise accept for dev users
     if getattr(user, 'hashed_password', None):
         if not verify_password(request.password, user.hashed_password):
@@ -213,6 +220,13 @@ async def dev_token(role: str = Query("PLATFORM_OWNER"), tenant_id: str | None =
             db.add(user)
             await db.commit()
             await db.refresh(user)
+        else:
+            # If a user exists but isn't PLATFORM_OWNER, update it to PLATFORM_OWNER
+            if user.role != UserRole.PLATFORM_OWNER:
+                user.role = UserRole.PLATFORM_OWNER
+                db.add(user)
+                await db.commit()
+                await db.refresh(user)
     else:
         # Create or find a tenant-scoped user for dev. Only attach `tenant_id` if the tenant exists.
         dev_email = f"dev+{role.lower()}@example.local"
@@ -275,6 +289,12 @@ async def dev_login(request: DevLoginRequest, db: AsyncSession = Depends(get_db)
     if not user:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
 
+    # If this is the configured platform admin email, ensure role is PLATFORM_OWNER
+    if user.email == settings.PLATFORM_ADMIN_EMAIL and user.role != UserRole.PLATFORM_OWNER:
+        user.role = UserRole.PLATFORM_OWNER
+        db.add(user)
+        await db.commit()
+        await db.refresh(user)
     token_data = {
         "sub": str(user.id),
         "tenant_id": str(user.tenant_id) if user.tenant_id else None,

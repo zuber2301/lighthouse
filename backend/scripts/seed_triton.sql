@@ -5,7 +5,7 @@ VALUES ('748c0823-c976-49a6-8968-3e4210a48b96', 'Triton Industries', 'triton', 1
 
 -- 2. Create the Platform Admin (Global Scope)
 INSERT INTO users (id, tenant_id, email, full_name, role)
-VALUES (gen_random_uuid(), NULL, 'super@lighthouse.com', 'Global SuperAdmin', 'PLATFORM_ADMIN');
+VALUES (gen_random_uuid(), NULL, 'super@lighthouse.com', 'Global SuperAdmin', 'PLATFORM_OWNER');
 
 -- 3. Create the Tenant Admin (Company Scope)
 INSERT INTO users (id, tenant_id, email, full_name, role)
