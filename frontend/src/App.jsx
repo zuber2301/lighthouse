@@ -19,6 +19,8 @@ import CreateTenantForm from './features/admin/CreateTenantForm'
 import TenantAdminBudget from './features/admin/TenantAdminBudget'
 import TenantLeadDashboard from './features/admin/TenantLeadDashboard'
 import CorporateUserDashboard from './features/admin/CorporateUserDashboard'
+import TenantManagerPage from './features/admin/TenantManagerPage'
+import SubscriptionEngine from './features/admin/SubscriptionEngine'
 import TenantDashboard from './features/tenant/TenantDashboard'
 import TenantsPage from './features/tenant/TenantsPage'
 import ActivityPage from './features/activity/ActivityPage'
@@ -52,6 +54,16 @@ export default function App() {
           <Route path="platform-admin" element={
             <ProtectedRoute allowedRoles={[ 'PLATFORM_OWNER' ]}>
               <PlatformAdminPage />
+            </ProtectedRoute>
+          } />
+          <Route path="platform-admin/tenants" element={
+            <ProtectedRoute allowedRoles={[ 'PLATFORM_OWNER' ]}>
+              <TenantManagerPage />
+            </ProtectedRoute>
+          } />
+          <Route path="platform-admin/subscriptions" element={
+            <ProtectedRoute allowedRoles={[ 'PLATFORM_OWNER' ]}>
+              <SubscriptionEngine />
             </ProtectedRoute>
           } />
           <Route path="platform-admin/create-tenant" element={
