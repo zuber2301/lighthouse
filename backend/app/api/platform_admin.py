@@ -363,7 +363,7 @@ async def get_platform_overview(request: Request, db: AsyncSession = Depends(get
     top = [ { 'id': str(r[0]), 'name': r[1], 'recognitions': int(r[2]) } for r in rec_q.fetchall() ]
 
     return {
-        'mrr_paise': mrr,
+        'INR': mrr,
         'total_active_users': total_active_users,
         'uptime_seconds': uptime_seconds,
         'top_tenants': top

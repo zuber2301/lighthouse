@@ -15,11 +15,13 @@ async def seed_test_personas():
       - eng-lead@triton.com (TENANT_LEAD)
       - dev@triton.com (CORPORATE_USER)
 
-    This function is safe to call repeatedly and is intended for development startup.
+    Also ensures that the DEV_DEFAULT_TENANT exists if configured.
     """
+    from app.core.config import settings
     async with AsyncSessionLocal() as session:
         # Ensure tenant exists (bypass tenant scoping)
         async with session.begin():
+            # 1. Ensure 'triton' exists
             result = await session.execute(select(Tenant).where(Tenant.subdomain == "triton"))
             tenant = result.scalar()
             if not tenant:
@@ -35,6 +37,21 @@ async def seed_test_personas():
                 print(f"Created tenant: triton id={tenant.id}")
             else:
                 print(f"Tenant exists: triton id={tenant.id}")
+
+            # 2. Ensure DEV_DEFAULT_TENANT exists if configured
+            dev_tenant_id = getattr(settings, "DEV_DEFAULT_TENANT", None)
+            if dev_tenant_id:
+                res_dev = await session.execute(select(Tenant).where(Tenant.id == dev_tenant_id))
+                if not res_dev.scalar():
+                    dev_tenant = Tenant(
+                        id=dev_tenant_id,
+                        name="Default dev tenant",
+                        subdomain="dev",
+                        master_budget_balance=1000000,
+                        status="active",
+                    )
+                    session.add(dev_tenant)
+                    print(f"Created dev default tenant: {dev_tenant_id}")
 
         # Create users if missing. Use bypass context to avoid tenant scoping interference.
         pwd = get_password_hash("Password123")

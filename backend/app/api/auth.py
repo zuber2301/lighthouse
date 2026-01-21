@@ -42,8 +42,16 @@ async def login(request: LoginRequest, db: AsyncSession = Depends(get_db)):
             # create a simple dev user (platform owner if email matches PLATFORM_ADMIN_EMAIL)
             is_platform_owner = request.email == settings.PLATFORM_ADMIN_EMAIL
             role = UserRole.PLATFORM_OWNER if is_platform_owner else UserRole.CORPORATE_USER
-            # Do not assign a non-existent tenant id; leave tenant_id NULL for dev-created users.
-            user = User(email=request.email, full_name=request.email.split('@')[0], role=role, is_active=True, tenant_id=settings.DEV_DEFAULT_TENANT)
+            
+            # For platform owners, leave tenant_id NULL. For others, only assign if tenant exists.
+            from app.models.tenants import Tenant
+            tenant_id = None
+            if not is_platform_owner:
+                t_q = await db.execute(select(Tenant).where(Tenant.id == settings.DEV_DEFAULT_TENANT))
+                if t_q.scalar_one_or_none():
+                    tenant_id = settings.DEV_DEFAULT_TENANT
+
+            user = User(email=request.email, full_name=request.email.split('@')[0], role=role, is_active=True, tenant_id=tenant_id)
             db.add(user)
             await db.commit()
             await db.refresh(user)

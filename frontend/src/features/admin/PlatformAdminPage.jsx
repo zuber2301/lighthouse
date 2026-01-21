@@ -53,7 +53,7 @@ export default function PlatformAdminPage() {
         {/* Stats Cards */}
         <div className="mt-6 grid grid-cols-1 md:grid-cols-4 gap-6">
           <Card>
-            <h3 className="text-2xl font-bold text-indigo-400">₹{((stats.mrr_paise || 0) / 100).toLocaleString()}</h3>
+            <h3 className="text-2xl font-bold text-indigo-400">₹{((stats.INR || 0) / 100).toLocaleString()}</h3>
             <p className="text-slate-400">Aggregated MRR</p>
           </Card>
           <Card>
