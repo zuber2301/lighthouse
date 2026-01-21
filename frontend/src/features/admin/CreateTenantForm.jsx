@@ -88,11 +88,11 @@ export default function CreateTenantForm({ fetchFn = fetch, onCreated = null, re
         try { const j = await response.json(); text = j.detail || JSON.stringify(j) } catch (err) { text = await response.text().catch(() => '') }
         console.error('Create tenant failed', { status, text })
         if (status === 401) {
-          if (alertOnSuccess) alert('Unauthorized. Please sign in as a platform admin.')
-          setErrorMessage('Unauthorized. Please sign in as a platform admin.')
+          if (alertOnSuccess) alert('Unauthorized. Please sign in as a platform owner.')
+          setErrorMessage('Unauthorized. Please sign in as a platform owner.')
         } else if (status === 403) {
-          if (alertOnSuccess) alert('Forbidden. Your account lacks platform admin permissions.')
-          setErrorMessage('Forbidden. Your account lacks platform admin permissions.')
+          if (alertOnSuccess) alert('Forbidden. Your account lacks platform owner permissions.')
+          setErrorMessage('Forbidden. Your account lacks platform owner permissions.')
         } else {
           if (alertOnSuccess) alert(`Error creating tenant (${status}): ${text || 'unknown error'}`)
           setErrorMessage(text || 'Error creating tenant')

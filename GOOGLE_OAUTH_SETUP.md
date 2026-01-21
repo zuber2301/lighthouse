@@ -31,8 +31,8 @@ google_oidc_client_secret=your-actual-google-client-secret
 google_oidc_redirect_uri=http://localhost:18000/auth/callback
 ```
 
-### 5. Platform Admin Setup
-The platform admin is automatically configured for `mohammed.zuber@gmail.com`. When this email logs in via Google OAuth, they will be granted PLATFORM_ADMIN role.
+### 5. Platform Owner Setup
+The platform owner is automatically configured for `mohammed.zuber@gmail.com`. When this email logs in via Google OAuth, they will be granted PLATFORM_OWNER role.
 
 ## Testing Google OAuth
 

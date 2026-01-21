@@ -7,7 +7,7 @@ import { useTenant } from '../lib/TenantContext'
 import { useTheme } from '../themes/templatemo_602_graph_page/ThemeProvider'
 
 const NAV_ITEMS = {
-  PLATFORM_ADMIN: [
+  PLATFORM_OWNER: [
     { label: 'Dashboard', href: '/platform-admin', icon: '📊' },
     { label: 'Tenant Manager', href: '/platform-admin/tenants', icon: '🏢' },
     { label: 'Subscriptions', href: '/platform-admin/subscriptions', icon: '💳' },
@@ -62,7 +62,7 @@ export default function Sidebar() {
             </NavLink>
           ))}
 
-          {userRole === 'PLATFORM_ADMIN' && selectedTenant && (
+          {userRole === 'PLATFORM_OWNER' && selectedTenant && (
             <NavLink to={`/tenants/${selectedTenant.id}`} className={({ isActive }) => `flex items-center gap-3 p-3 rounded-xl transition ${
               isActive ? 'bg-slate-700' : 'text-slate-400 hover:bg-slate-800'
             }`}>

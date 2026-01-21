@@ -8,6 +8,7 @@ from app.models.tenants import Tenant
 from app.models.users import User, UserRole
 from app.models.platform import PlatformSettings
 from app.models.budgets import BudgetPool
+from app.models.budget_load_logs import BudgetLoadLog
 from app.models.subscriptions import SubscriptionPlan, TenantSubscription
 from app.models.global_rewards import GlobalReward
 from app.models.global_providers import GlobalProvider
@@ -18,6 +19,7 @@ from typing import Optional, List
 import datetime
 import uuid
 from pydantic import BaseModel
+from decimal import Decimal, ROUND_HALF_UP
 from sqlalchemy import desc
 
 
@@ -43,11 +45,16 @@ class GlobalRewardRequest(BaseModel):
     points_cost: int
 
 
+class LoadBudgetRequest(BaseModel):
+    tenant_id: str
+    amount: Decimal
+
+
 router = APIRouter(prefix="/platform")
 
 
 @router.get("/subscription-plans")
-async def get_subscription_plans(db: AsyncSession = Depends(get_db), user: CurrentUser = Depends(require_role("PLATFORM_ADMIN"))):
+async def get_subscription_plans(db: AsyncSession = Depends(get_db), user: CurrentUser = Depends(require_role("PLATFORM_OWNER"))):
     result = await db.execute(select(SubscriptionPlan))
     plans = result.scalars().all()
     
@@ -64,7 +71,7 @@ async def get_subscription_plans(db: AsyncSession = Depends(get_db), user: Curre
 
 
 @router.get("/tenants")
-async def list_tenants(db: AsyncSession = Depends(get_db), user: CurrentUser = Depends(require_role("SUPER_ADMIN", "PLATFORM_ADMIN"))):
+async def list_tenants(db: AsyncSession = Depends(get_db), user: CurrentUser = Depends(require_role("SUPER_ADMIN", "PLATFORM_OWNER"))):
     q = await db.execute(select(Tenant))
     rows = q.scalars().all()
     tenants = []
@@ -101,13 +108,15 @@ async def list_tenants(db: AsyncSession = Depends(get_db), user: CurrentUser = D
             "last_billing_date": t.last_billing_date.isoformat() if getattr(t, 'last_billing_date', None) else None,
             "credit_limit": int(getattr(t, 'credit_limit', 0) or 0),
             "activity_last_7_days": activity,
-            "created_at": t.created_at.isoformat() if t.created_at else None
+            "created_at": t.created_at.isoformat() if t.created_at else None,
+            "master_budget_balance_paise": int(getattr(t, 'master_budget_balance', 0) or 0),
+            "master_budget_balance": float((Decimal(int(getattr(t, 'master_budget_balance', 0) or 0)) / Decimal(100)).quantize(Decimal('0.01')))
         })
     return tenants
 
 
 @router.post("/tenants")
-async def onboard_tenant(request: OnboardTenantRequest, db: AsyncSession = Depends(get_db), user: CurrentUser = Depends(require_role("PLATFORM_ADMIN"))):
+async def onboard_tenant(request: OnboardTenantRequest, db: AsyncSession = Depends(get_db), user: CurrentUser = Depends(require_role("PLATFORM_OWNER"))):
     # Check if subdomain exists
     existing = await db.execute(select(Tenant).where(Tenant.subdomain == request.subdomain))
     if existing.scalar_one_or_none():
@@ -213,7 +222,7 @@ async def onboard_tenant(request: OnboardTenantRequest, db: AsyncSession = Depen
 
 
 @router.post("/create-tenant-admin")
-async def create_tenant_admin(request: CreateTenantAdminRequest, db: AsyncSession = Depends(get_db), user: CurrentUser = Depends(require_role("PLATFORM_ADMIN"))):
+async def create_tenant_admin(request: CreateTenantAdminRequest, db: AsyncSession = Depends(get_db), user: CurrentUser = Depends(require_role("PLATFORM_OWNER"))):
     tenant_id = request.tenant_id
     # Verify tenant exists
     tenant_q = await db.execute(select(Tenant).where(Tenant.id == tenant_id))
@@ -259,7 +268,7 @@ async def create_tenant_admin(request: CreateTenantAdminRequest, db: AsyncSessio
 
 
 @router.get("/tenant-stats")
-async def get_tenant_stats(db: AsyncSession = Depends(get_db), user: CurrentUser = Depends(require_role("PLATFORM_ADMIN"))):
+async def get_tenant_stats(db: AsyncSession = Depends(get_db), user: CurrentUser = Depends(require_role("PLATFORM_OWNER"))):
     # Total tenants
     tenant_count_q = await db.execute(select(func.count(Tenant.id)))
     total_tenants = tenant_count_q.scalar() or 0
@@ -280,7 +289,7 @@ async def get_tenant_stats(db: AsyncSession = Depends(get_db), user: CurrentUser
 
 
 @router.get("/stats")
-async def get_platform_stats(db: AsyncSession = Depends(get_db), user: CurrentUser = Depends(require_role("SUPER_ADMIN"))):
+async def get_platform_stats(db: AsyncSession = Depends(get_db), user: CurrentUser = Depends(require_role("SUPER_ADMIN", "PLATFORM_OWNER"))):
     # Total tenants
     tenant_count = await db.execute(select(func.count(Tenant.id)))
     total_tenants = tenant_count.scalar()
@@ -296,16 +305,20 @@ async def get_platform_stats(db: AsyncSession = Depends(get_db), user: CurrentUs
         .where(TenantSubscription.is_active == True)
     )
     total_revenue = revenue_q.scalar() or 0
+    # total master budget across tenants (stored as paise/int)
+    mb_q = await db.execute(select(func.sum(Tenant.master_budget_balance)))
+    total_master_budget = mb_q.scalar() or 0
     
     return {
         "total_tenants": total_tenants,
         "active_tenants": active_tenants,
-        "total_revenue_paise": total_revenue
+        "total_revenue_paise": total_revenue,
+        "total_master_budget_paise": int(total_master_budget or 0)
     }
 
 
 @router.get("/overview")
-async def get_platform_overview(request: Request, db: AsyncSession = Depends(get_db), user: CurrentUser = Depends(require_role("PLATFORM_ADMIN"))):
+async def get_platform_overview(request: Request, db: AsyncSession = Depends(get_db), user: CurrentUser = Depends(require_role("PLATFORM_OWNER"))):
     # MRR (sum of active subscriptions)
     mrr_q = await db.execute(
         select(func.sum(SubscriptionPlan.monthly_price_in_paise))
@@ -505,6 +518,52 @@ async def create_budget_pool(tenant_id: str, payload: dict, db: AsyncSession = D
     await db.commit()
     await db.refresh(pool)
     return {"id": pool.id, "period": pool.period, "total_amount": str(pool.total_amount)}
+
+
+
+@router.post("/load-budget")
+async def load_master_budget(request: LoadBudgetRequest, db: AsyncSession = Depends(get_db), user: CurrentUser = Depends(require_role("PLATFORM_OWNER"))):
+    """Platform Owner deposits funds into a Tenant's master wallet.
+
+    `amount` is expected in currency units (e.g. INR). The tenant.master_budget_balance
+    is stored as integer paise (BigInteger) in the DB, so we convert amount to paise before updating.
+    """
+    # verify tenant exists
+    q = await db.execute(select(Tenant).where(Tenant.id == request.tenant_id))
+    t = q.scalar_one_or_none()
+    if not t:
+        raise HTTPException(status_code=404, detail="Tenant not found")
+
+    # normalize amount and convert to paise (integer)
+    try:
+        amt = Decimal(request.amount).quantize(Decimal('0.01'), rounding=ROUND_HALF_UP)
+    except Exception:
+        raise HTTPException(status_code=400, detail="Invalid amount")
+
+    paise = int((amt * Decimal(100)).to_integral_value(rounding=ROUND_HALF_UP))
+
+    # perform update and insert log; commit using the provided session (avoid nested transactions)
+    current = int(getattr(t, 'master_budget_balance', 0) or 0)
+    t.master_budget_balance = current + paise
+    db.add(t)
+
+    log = BudgetLoadLog(
+        platform_owner_id=user.id,
+        tenant_id=t.id,
+        amount=amt,
+        transaction_type='DEPOSIT'
+    )
+    db.add(log)
+    await db.commit()
+    await db.refresh(t)
+
+    # return updated balances (both paise and currency)
+    return {
+        "tenant_id": str(t.id),
+        "master_budget_balance_paise": int(t.master_budget_balance),
+        "master_budget_balance": float((Decimal(int(t.master_budget_balance)) / Decimal(100)).quantize(Decimal('0.01'))),
+        "loaded_amount": float(amt)
+    }
 
 
 @router.get('/logs')

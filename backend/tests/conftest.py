@@ -124,8 +124,8 @@ async def platform_admin_user(db_session):
     """Create a platform admin user for testing."""
     user = User(
         email=f"platform_admin_{uuid.uuid4().hex}@test.com",
-        full_name="Platform Admin",
-        role=UserRole.PLATFORM_ADMIN,
+        full_name="Platform Owner",
+        role=UserRole.PLATFORM_OWNER,
         is_active=True
     )
     db_session.add(user)

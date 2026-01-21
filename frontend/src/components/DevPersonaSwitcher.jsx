@@ -2,7 +2,7 @@ import React from 'react'
 import api from '../api/axiosClient'
 
 const personas = [
-  { name: 'Platform Admin', email: 'super@lighthouse.com', role: 'PLATFORM_ADMIN' },
+  { name: 'Platform Owner', email: 'super@lighthouse.com', role: 'PLATFORM_OWNER' },
   { name: 'Tenant Admin', email: 'hr@triton.com', role: 'TENANT_ADMIN' },
   { name: 'Tenant Lead', email: 'eng-lead@triton.com', role: 'TENANT_LEAD' },
   { name: 'Corporate User', email: 'dev@triton.com', role: 'CORPORATE_USER' },

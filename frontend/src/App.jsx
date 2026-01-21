@@ -50,22 +50,22 @@ export default function App() {
           <Route path="analytics" element={<AnalyticsPage />} />
           <Route path="admin" element={<AdminPage />} />
           <Route path="platform-admin" element={
-            <ProtectedRoute allowedRoles={[ 'PLATFORM_ADMIN' ]}>
+            <ProtectedRoute allowedRoles={[ 'PLATFORM_OWNER' ]}>
               <PlatformAdminPage />
             </ProtectedRoute>
           } />
           <Route path="platform-admin/create-tenant" element={
-            <ProtectedRoute allowedRoles={[ 'PLATFORM_ADMIN' ]}>
+            <ProtectedRoute allowedRoles={[ 'PLATFORM_OWNER' ]}>
               <CreateTenantForm />
             </ProtectedRoute>
           } />
           <Route path="platform-admin/global-catalog" element={
-            <ProtectedRoute allowedRoles={[ 'PLATFORM_ADMIN' ]}>
+            <ProtectedRoute allowedRoles={[ 'PLATFORM_OWNER' ]}>
               <PlatformCatalog />
             </ProtectedRoute>
           } />
           <Route path="platform-admin/logs" element={
-            <ProtectedRoute allowedRoles={[ 'PLATFORM_ADMIN' ]}>
+            <ProtectedRoute allowedRoles={[ 'PLATFORM_OWNER' ]}>
               <PlatformLogs />
             </ProtectedRoute>
           } />

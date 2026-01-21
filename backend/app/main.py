@@ -1,4 +1,5 @@
 from fastapi import FastAPI, Request
+from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
 from starlette.middleware.base import BaseHTTPMiddleware
 
@@ -86,6 +87,13 @@ class TenantMiddleware(BaseHTTPMiddleware):
 
 
 app.add_middleware(TenantMiddleware)
+
+# Serve uploaded files from /uploads
+try:
+    app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
+except Exception:
+    # if directory is missing or mount fails during some CI flows, ignore
+    pass
 
 app.include_router(auth.router)
 app.include_router(recognition.router)

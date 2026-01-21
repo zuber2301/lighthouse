@@ -28,8 +28,15 @@ export default function TenantAdminBudget() {
   }
 
   const loadBudget = async (amount) => {
+    if (!amount || !Number.isFinite(Number(amount)) || Number(amount) <= 0) {
+      alert('Enter a valid positive amount')
+      return
+    }
+
+    if (!window.confirm(`Load ₹${Number(amount).toLocaleString()} to master budget?`)) return
+
     try {
-      const res = await api.post('/tenant/budget/load', { amount: parseInt(amount) })
+      const res = await api.post('/tenant/budget/load', { amount: parseInt(amount, 10) })
       const data = res.data
       setMasterBalance((data.master_balance || 0) / 100)
     } catch (error) {
@@ -38,13 +45,20 @@ export default function TenantAdminBudget() {
   }
 
   const allocateToLead = async (leadId, amount) => {
-    if (parseInt(amount) > masterBalance) {
-      alert("Insufficient Master Balance")
+    const num = parseInt(amount, 10)
+    if (!Number.isFinite(num) || num <= 0) {
+      alert('Enter a valid positive amount')
+      return
+    }
+    if (num > masterBalance) {
+      alert('Insufficient Master Balance')
       return
     }
 
+    if (!window.confirm(`Allocate ₹${num.toLocaleString()} to ${leadId}?`)) return
+
     try {
-      const res = await api.post('/tenant/budget/allocate', { lead_id: leadId, amount: parseInt(amount) })
+      const res = await api.post('/tenant/budget/allocate', { lead_id: leadId, amount: num })
       const data = res.data
       setMasterBalance((data.master_balance || 0) / 100)
       setLeads(leads.map(l => l.id === leadId ? { ...l, budget: (data.lead_budget || 0) / 100 } : l))

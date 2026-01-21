@@ -1,7 +1,7 @@
 from typing import List
 from uuid import UUID
 
-from fastapi import APIRouter, Depends, HTTPException, status, Request, Query
+from fastapi import APIRouter, Depends, HTTPException, status, Request, Query, UploadFile, File
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
@@ -21,6 +21,35 @@ import datetime
 
 
 router = APIRouter(prefix="/recognition")
+
+
+@router.post("/uploads")
+async def upload_files(files: List[UploadFile] = File(...)):
+    """Accept multiple files and save them to the backend `uploads/` folder.
+
+    Returns a list of uploaded file metadata with URLs.
+    """
+    import os
+    from uuid import uuid4
+
+    upload_dir = os.path.join(os.getcwd(), "uploads")
+    os.makedirs(upload_dir, exist_ok=True)
+
+    out = []
+    for f in files:
+        try:
+            contents = await f.read()
+            ext = os.path.splitext(f.filename)[1]
+            fname = f"{uuid4().hex}{ext}"
+            path = os.path.join(upload_dir, fname)
+            with open(path, "wb") as fh:
+                fh.write(contents)
+            url = f"/uploads/{fname}"
+            out.append({"name": f.filename, "url": url, "type": f.content_type})
+        except Exception as exc:
+            raise HTTPException(status_code=400, detail=f"Failed to save file: {f.filename}") from exc
+
+    return out
 
 
 @router.get("/", response_model=List[RecognitionOut])

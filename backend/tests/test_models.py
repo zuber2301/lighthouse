@@ -28,7 +28,7 @@ class TestUserModel:
 
     def test_user_role_enum(self):
         """Test UserRole enum values."""
-        assert UserRole.PLATFORM_ADMIN.value == "PLATFORM_ADMIN"
+        assert UserRole.PLATFORM_OWNER.value == "PLATFORM_OWNER"
         assert UserRole.TENANT_ADMIN.value == "TENANT_ADMIN"
         assert UserRole.TENANT_LEAD.value == "TENANT_LEAD"
         assert UserRole.CORPORATE_USER.value == "CORPORATE_USER"

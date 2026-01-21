@@ -41,7 +41,7 @@ export default function Header() {
   return (
     <header className={`flex items-center justify-between px-6 py-3 border-b border-white/10 bg-[rgba(10,14,39,0.95)] backdrop-blur-md sticky top-0 z-40`}>
       <div className="flex items-center gap-4">
-        {/* Only show tenant selector/logo area logic for admins or platform admins */}
+        {/* Only show tenant selector/logo area logic for admins or platform owners */}
         {!isCorporate && (
           <>
             <div className="text-lg font-semibold text-indigo-400">LightHouse</div>
@@ -55,7 +55,7 @@ export default function Header() {
       <nav className="flex items-center gap-6">
         {/* Primary nav is now in Sidebar for Corporate Users. 
             We keep only essential context here or specific admin tabs if needed */}
-        {userRole === 'PLATFORM_ADMIN' && (
+        {userRole === 'PLATFORM_OWNER' && (
            <Link to="/platform-admin/tenants" className="text-sm font-medium text-slate-300 hover:text-white">Tenants</Link>
         )}
       </nav>
@@ -71,7 +71,7 @@ export default function Header() {
         )}
 
         {/* New Recognition Quick Action (Scoped) */}
-        {(userRole !== 'PLATFORM_ADMIN' || selectedTenant) && (
+        {(userRole !== 'PLATFORM_OWNER' || selectedTenant) && (
           <button onClick={() => navigate('/recognition')} className="px-4 py-1.5 rounded-full text-sm font-bold bg-indigo-600 hover:bg-indigo-500 transition-all shadow-lg shadow-indigo-600/20 text-white">
             Give Recognition
           </button>
@@ -79,8 +79,8 @@ export default function Header() {
 
         <div className="h-8 w-[1px] bg-white/10 mx-2" />
 
-        {/* Platform admin header controls */}
-        {userRole === 'PLATFORM_ADMIN' && (
+        {/* Platform owner header controls */}
+        {userRole === 'PLATFORM_OWNER' && (
           <div className="flex items-center gap-3">
             <input
               aria-label="Global search"

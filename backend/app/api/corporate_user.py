@@ -11,6 +11,7 @@ from app.models.global_rewards import GlobalReward
 from app.models.redemptions import Redemption, RedemptionStatus
 from typing import Optional, List
 from pydantic import BaseModel
+from fastapi import Query
 
 
 class RedeemPointsRequest(BaseModel):
@@ -18,6 +19,22 @@ class RedeemPointsRequest(BaseModel):
 
 
 router = APIRouter(prefix="/user")
+
+
+@router.get("/search")
+async def search_users(q: str = Query(..., min_length=1), db: AsyncSession = Depends(get_db), user: CurrentUser = Depends(get_current_user)):
+    """Search corporate users in the current tenant by name or email."""
+    tenant_id = getattr(user, "tenant_id", None)
+    stmt = select(User).where(
+        User.tenant_id == tenant_id,
+        (User.full_name.ilike(f"%{q}%")) | (User.email.ilike(f"%{q}%"))
+    ).limit(25)
+    res = await db.execute(stmt)
+    users = res.scalars().all()
+    return [
+        {"id": str(u.id), "name": u.full_name, "email": u.email}
+        for u in users
+    ]
 
 
 @router.get("/points")

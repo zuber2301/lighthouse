@@ -9,6 +9,8 @@ psycopg2-binary==2.9.9
 redis==5.3.1
 aioredis==2.0.1
 
+python-multipart==0.0.6
+
 authlib==1.2.1
 httpx==0.25.0
 pytest==7.4.0

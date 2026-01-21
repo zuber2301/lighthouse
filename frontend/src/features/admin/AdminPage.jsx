@@ -12,7 +12,7 @@ export default function AdminPage() {
         <div className="mt-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           <Link to="/platform-admin" className="block">
             <Card className="hover:bg-slate-700 transition-colors cursor-pointer border-indigo-500/20 bg-gradient-to-br from-indigo-900/20 to-slate-800">
-              <h3 className="text-lg font-semibold mb-2 text-indigo-400">Platform Admin</h3>
+              <h3 className="text-lg font-semibold mb-2 text-indigo-400">Platform Owner</h3>
               <p className="text-slate-400">Global SaaS control plane - manage all tenants</p>
             </Card>
           </Link>

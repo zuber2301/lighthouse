@@ -48,7 +48,7 @@ export default function PlatformAdminPage() {
   return (
     <div className="space-y-6">
       <div className="bg-gradient-to-br from-tm-bg-dark to-surface p-6 rounded-xl">
-        <PageHeader title="Platform Admin" subtitle="Global SaaS control plane" />
+        <PageHeader title="Platform Owner" subtitle="Global SaaS control plane" />
 
         {/* Stats Cards */}
         <div className="mt-6 grid grid-cols-1 md:grid-cols-4 gap-6">

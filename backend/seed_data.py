@@ -119,54 +119,32 @@ async def seed_data():
             )
             session.add(tenant_admin)
 
-            # Create tenant leads
-            lead1 = User(
+            # Create a single tenant lead
+            lead = User(
                 tenant_id=test_tenant.id,
-                email="rajesh@acme.com",
+                email="lead@acme.com",
                 hashed_password=get_password_hash("password"),
-                full_name="Rajesh Kumar",
+                full_name="Lead User",
                 role=UserRole.TENANT_LEAD,
                 lead_budget_balance=200000,  # 2000 rupees in paise
                 is_active=True
             )
-            session.add(lead1)
+            session.add(lead)
 
-            lead2 = User(
+            # Create a single corporate user
+            corp_user = User(
                 tenant_id=test_tenant.id,
-                email="anita@acme.com",
+                email="user@acme.com",
                 hashed_password=get_password_hash("password"),
-                full_name="Anita Sharma",
-                role=UserRole.TENANT_LEAD,
-                lead_budget_balance=200000,  # 2000 rupees in paise
-                is_active=True
-            )
-            session.add(lead2)
-
-            # Create corporate users
-            user1 = User(
-                tenant_id=test_tenant.id,
-                email="suresh@acme.com",
-                hashed_password=get_password_hash("password"),
-                full_name="Suresh Patel",
+                full_name="Corporate User",
                 role=UserRole.CORPORATE_USER,
                 points_balance=500,
                 is_active=True
             )
-            session.add(user1)
-
-            user2 = User(
-                tenant_id=test_tenant.id,
-                email="priya@acme.com",
-                hashed_password=get_password_hash("password"),
-                full_name="Priya Singh",
-                role=UserRole.CORPORATE_USER,
-                points_balance=750,
-                is_active=True
-            )
-            session.add(user2)
+            session.add(corp_user)
 
             await session.commit()
-            print("Created test users for Acme Corporation")
+            print("Created test users for Acme Corporation: tenant_admin, lead, corporate_user")
 
 if __name__ == "__main__":
     asyncio.run(seed_data())

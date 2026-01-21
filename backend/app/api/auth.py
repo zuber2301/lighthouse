@@ -39,9 +39,9 @@ async def login(request: LoginRequest, db: AsyncSession = Depends(get_db)):
     # when the account doesn't exist (makes local testing easier).
     if not user:
         if getattr(settings, 'DEV_DEFAULT_TENANT', None):
-            # create a simple dev user (platform admin if email matches PLATFORM_ADMIN_EMAIL)
-            is_platform_admin = request.email == settings.PLATFORM_ADMIN_EMAIL
-            role = UserRole.PLATFORM_ADMIN if is_platform_admin else UserRole.CORPORATE_USER
+            # create a simple dev user (platform owner if email matches PLATFORM_ADMIN_EMAIL)
+            is_platform_owner = request.email == settings.PLATFORM_ADMIN_EMAIL
+            role = UserRole.PLATFORM_OWNER if is_platform_owner else UserRole.CORPORATE_USER
             # Do not assign a non-existent tenant id; leave tenant_id NULL for dev-created users.
             user = User(email=request.email, full_name=request.email.split('@')[0], role=role, is_active=True, tenant_id=settings.DEV_DEFAULT_TENANT)
             db.add(user)
@@ -137,8 +137,8 @@ async def google_callback(code: str, state: str, db: AsyncSession = Depends(get_
 
         if not user:
             # Create new user
-            is_platform_admin = email == settings.PLATFORM_ADMIN_EMAIL
-            role = UserRole.PLATFORM_ADMIN if is_platform_admin else UserRole.CORPORATE_USER
+            is_platform_owner = email == settings.PLATFORM_ADMIN_EMAIL
+            role = UserRole.PLATFORM_OWNER if is_platform_owner else UserRole.CORPORATE_USER
 
             user = User(
                 email=email,
@@ -186,7 +186,7 @@ async def health():
 
 
 @router.get("/dev-token")
-async def dev_token(role: str = Query("PLATFORM_ADMIN"), tenant_id: str | None = None, db: AsyncSession = Depends(get_db)):
+async def dev_token(role: str = Query("PLATFORM_OWNER"), tenant_id: str | None = None, db: AsyncSession = Depends(get_db)):
     """Development helper: return a JWT for the configured PLATFORM_ADMIN_EMAIL.
 
     Only available when `DEV_DEFAULT_TENANT` is set. This helps local development
@@ -204,12 +204,12 @@ async def dev_token(role: str = Query("PLATFORM_ADMIN"), tenant_id: str | None =
     except Exception:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"Invalid role: {role}")
 
-    # For PLATFORM_ADMIN, use PLATFORM_ADMIN_EMAIL; otherwise create/find a user with the requested role
-    if requested_role == UserRole.PLATFORM_ADMIN:
+    # For PLATFORM_OWNER, use PLATFORM_ADMIN_EMAIL; otherwise create/find a user with the requested role
+    if requested_role == UserRole.PLATFORM_OWNER:
         user_q = await db.execute(select(User).where(User.email == settings.PLATFORM_ADMIN_EMAIL))
         user = user_q.scalar_one_or_none()
         if not user:
-            user = User(email=settings.PLATFORM_ADMIN_EMAIL, full_name="Platform Admin", role=UserRole.PLATFORM_ADMIN, is_active=True)
+            user = User(email=settings.PLATFORM_ADMIN_EMAIL, full_name="Platform Owner", role=UserRole.PLATFORM_OWNER, is_active=True)
             db.add(user)
             await db.commit()
             await db.refresh(user)

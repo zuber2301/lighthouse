@@ -15,7 +15,7 @@ The test suite covers all layers of the application:
 tests/
 ├── conftest.py                 # Pytest fixtures and configuration
 ├── test_models.py             # Database model unit tests
-├── test_platform_admin_api.py # Platform admin API integration tests
+├── test_platform_admin_api.py # Platform owner API integration tests
 ├── test_recognition_api.py    # Recognition API integration tests
 ├── test_recognition_service.py # Business logic service tests
 └── test_tenancy.py            # Multi-tenancy tests (existing)
@@ -162,7 +162,7 @@ jobs:
 
 ### Seed Data
 The test suite uses deterministic seed data:
-- Platform admin user
+- Platform owner user
 - Test tenant with subdomain
 - Subscription plans (Basic, Pro)
 - Budget pools and allocations
