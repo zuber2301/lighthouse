@@ -32,9 +32,9 @@ export default function CurrencyInput({ value, onChange, placeholder, className 
         value={value || ''}
         onChange={handleChange}
         placeholder={placeholder}
-        className={className || 'w-full p-3 rounded bg-card/20 text-text-main placeholder:text-text-main/60'}
+        className={className || 'w-full p-3 rounded-xl bg-indigo-500/5 border border-indigo-500/10 text-text-main placeholder:text-text-main/30 focus:outline-none focus:ring-2 focus:ring-indigo-500/30 transition-all font-medium'}
       />
-      <div className="text-text-main/60 text-xs mt-1">{value ? `₹${formatDisplay(value)}` : ''}</div>
+      <div className="text-indigo-400 text-xs mt-1.5 font-bold tracking-tight">{value ? `₹${formatDisplay(value)}` : ''}</div>
     </div>
   )
 }

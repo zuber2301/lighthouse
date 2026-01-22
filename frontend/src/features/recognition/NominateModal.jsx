@@ -113,104 +113,171 @@ export default function NominateModal({ open, onClose, onSubmit }) {
   }, [search])
 
   return (
-    <Modal open={open} onClose={onClose}>
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <h2 className="text-lg font-semibold">Nominate a Peer</h2>
+    <Modal open={open} onClose={onClose} className="max-w-4xl">
+      <form onSubmit={handleSubmit} className="space-y-6">
+        <div>
+          <h2 className="text-3xl font-black text-text-main tracking-tight">Nominate a Peer</h2>
+          <div className="text-[13px] font-bold uppercase tracking-[0.15em] opacity-40 text-text-main mt-1">Reward excellence across your organization</div>
+        </div>
 
-        <div className="text-sm opacity-70 text-text-main">All sections are shown below — fill any fields and submit.</div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="space-y-4">
-            {/* Left column: Recipient, Category, Design */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-stretch">
+          {/* Left column: Entry Form */}
+          <div className="space-y-6 bg-indigo-500/5 p-6 rounded-2xl border border-indigo-500/10">
             <section>
-              <div className="text-sm opacity-70 text-text-main">Select Recipient</div>
-              <input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search teammates..." className="mt-1 w-full bg-card border border-indigo-500/10 rounded-md p-2" />
-              {search.trim() ? (
-                users.length ? (
-                  <div className="grid grid-cols-2 gap-2 mt-2">
-                    {users.map((u) => (
-                      <button type="button" key={u.id} onClick={() => setNominee(u.id)} className={`text-left p-2 rounded-md ${nominee === u.id ? 'ring-2 ring-primary bg-card border border-indigo-500/10' : 'bg-card border border-indigo-500/10'}`}>
-                        {u.name}
-                      </button>
-                    ))}
-                  </div>
-                ) : (
-                  <div className="mt-2 text-sm text-slate-500">No matches</div>
-                )
-              ) : (
-                <div className="mt-2 text-sm text-slate-500">Type to search teammates...</div>
-              )}
-              {nominee && <div className="text-sm text-text-main opacity-80 mt-1">Selected: {users.find((x)=>x.id===nominee)?.name || nominee}</div>}
-            </section>
-
-            <section>
-              <div className="text-sm opacity-70 text-text-main">Select Area of Focus</div>
-              <select value={category} onChange={(e) => setCategory(e.target.value)} className="mt-1 w-full bg-card border border-indigo-500/10 rounded-md p-2">
-                {CATEGORIES.map((c) => (
-                  <option key={c} value={c} className="bg-card border border-indigo-500/10">{c}</option>
-                ))}
-              </select>
-              <label className="block mt-3">
-                <div className="text-sm opacity-70 text-text-main">Points</div>
-                <input type="number" value={points} onChange={(e) => setPoints(Number(e.target.value))} className="mt-1 w-full bg-card border border-indigo-500/10 rounded-md p-2" min={1} />
-              </label>
-            </section>
-
-            <section>
-              <div className="text-sm opacity-70 text-text-main">Design Message</div>
-              <textarea value={message} onChange={(e) => setMessage(e.target.value)} className="mt-1 w-full bg-card border border-indigo-500/10 rounded-md p-3 min-h-[150px]" rows={6} placeholder="Write a message..." />
-
-              <div className="mt-3">
-                <div className="text-sm opacity-70 text-text-main">Add images or videos</div>
-                <input type="file" accept="image/*,video/*" multiple onChange={handleFileChange} className="mt-1" />
-                <div className="flex gap-2 mt-2">
-                  {attachments.map((a, i) => (
-                    <div key={i} className="relative w-24 h-16 bg-card border border-indigo-500/10 rounded-md overflow-hidden">
-                      {a.type && a.type.startsWith('image/') ? (
-                        // eslint-disable-next-line jsx-a11y/img-redundant-alt
-                        <img src={a.preview} alt={a.name} className="w-full h-full object-cover" />
-                      ) : (
-                        <video src={a.preview} className="w-full h-full object-cover" />
-                      )}
-                      <button type="button" onClick={() => removeAttachment(i)} className="absolute top-1 right-1 text-xs bg-black/50 rounded-full px-1">x</button>
-                    </div>
-                  ))}
-                </div>
+              <div className="text-[11px] font-black uppercase tracking-widest text-text-main/50 mb-3">Recipient</div>
+              <div className="relative">
+                <input 
+                  value={search} 
+                  onChange={(e) => setSearch(e.target.value)} 
+                  placeholder="Seach by name or email..." 
+                  className="w-full bg-surface border border-indigo-500/20 rounded-xl p-3 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/30 transition-all font-medium" 
+                />
+                <svg className="w-4 h-4 absolute right-3 top-3.5 opacity-30" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" strokeWidth={3} strokeLinecap="round" strokeLinejoin="round"/></svg>
               </div>
+              
+              {search.trim() ? (
+                <div className="mt-3 max-h-40 overflow-y-auto space-y-1 pr-1 custom-scrollbar">
+                  {users.map((u) => (
+                    <button 
+                      type="button" 
+                      key={u.id} 
+                      onClick={() => { setNominee(u.id); setSearch(u.name); }} 
+                      className={`w-full text-left px-4 py-2.5 rounded-lg text-sm transition-all flex items-center gap-3 ${nominee === u.id ? 'bg-indigo-500 text-white font-bold' : 'bg-surface hover:bg-indigo-500/10 border border-indigo-500/10'}`}
+                    >
+                      <div className={`w-6 h-6 rounded-full flex items-center justify-center text-[10px] ${nominee === u.id ? 'bg-white/20' : 'bg-indigo-500/20 text-indigo-500'}`}>
+                        {u.name.charAt(0)}
+                      </div>
+                      {u.name}
+                    </button>
+                  ))}
+                  {!users.length && <div className="text-xs opacity-40 italic py-2">No teammates found</div>}
+                </div>
+              ) : null}
             </section>
-            </div>
 
-            <div className="space-y-4 flex flex-col">
-              {/* Right column: Review & Schedule */}
+            <div className="grid grid-cols-2 gap-4">
               <section>
-                <div className="text-sm opacity-70 text-text-main">Review & Schedule</div>
-                <div className="bg-card border border-indigo-500/10 p-3 rounded-md mt-2 min-h-[150px]">
-                  <div className="text-sm text-text-main opacity-80">Recipient: <span className="font-medium">{users.find((x)=>x.id===nominee)?.name || '—'}</span></div>
-                  <div className="text-sm text-text-main opacity-80">Category: <span className="font-medium">{category}</span></div>
-                  <div className="mt-2 text-sm text-text-main opacity-80">Message:</div>
-                  <div className="mt-1 p-2 bg-card border border-indigo-500/10 rounded-md">
-                    {message ? <pre className="whitespace-pre-wrap">{message}</pre> : <i>No message provided</i>}
-                  </div>
-                  <div className="mt-2 text-sm text-text-main opacity-80">Attachments:</div>
-                  <ul className="mt-1 list-disc list-inside text-sm text-text-main opacity-80">
-                    {attachments.length === 0 ? <li>None</li> : attachments.map((a, i) => <li key={i}>{a.name}</li>)}
-                  </ul>
-
-                  <div className="mt-3 grid grid-cols-2 gap-2">
-                    <input type="date" value={scheduledDate} onChange={(e) => setScheduledDate(e.target.value)} className="bg-card border border-indigo-500/10 rounded-md p-2" />
-                    <input type="time" value={scheduledTime} onChange={(e) => setScheduledTime(e.target.value)} className="bg-card border border-indigo-500/10 rounded-md p-2" />
-                  </div>
+                <div className="text-[11px] font-black uppercase tracking-widest text-text-main/50 mb-3">Area of Focus</div>
+                <div className="relative">
+                  <select 
+                    value={category} 
+                    onChange={(e) => setCategory(e.target.value)} 
+                    className="w-full bg-surface border border-indigo-500/20 rounded-xl p-3 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/30 appearance-none cursor-pointer font-bold"
+                  >
+                    {CATEGORIES.map((c) => (
+                      <option key={c} value={c} className="bg-card text-text-main font-medium">{c}</option>
+                    ))}
+                  </select>
+                  <svg className="w-3 h-3 absolute right-3 top-4 opacity-40 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M19 9l-7 7-7-7" strokeWidth={3} strokeLinecap="round" strokeLinejoin="round"/></svg>
                 </div>
               </section>
 
-              <div className="mt-4 mb-2 flex justify-end gap-3">
-                <button type="button" onClick={onClose} className="px-4 py-1.5 rounded-full bg-surface text-text-main font-bold hover:bg-card border border-border-soft transition-all">Cancel</button>
-                <button type="submit" className="px-4 py-1.5 rounded-full btn-recognition text-xs font-bold transition-all shadow-lg">Submit Recognition</button>
-              </div>
+              <section>
+                <div className="text-[11px] font-black uppercase tracking-widest text-text-main/50 mb-3">Points</div>
+                <input 
+                  type="number" 
+                  value={points} 
+                  onChange={(e) => setPoints(Number(e.target.value))} 
+                  className="w-full bg-surface border border-indigo-500/20 rounded-xl p-3 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/30 font-black text-indigo-500" 
+                  min={1} 
+                />
+              </section>
             </div>
-        </div>
 
-        {/* Buttons moved to the right column; duplicate bottom buttons removed */}
+            <section>
+              <div className="text-[11px] font-black uppercase tracking-widest text-text-main/50 mb-3">Message</div>
+              <textarea 
+                value={message} 
+                onChange={(e) => setMessage(e.target.value)} 
+                className="w-full bg-surface border border-indigo-500/20 rounded-xl p-4 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/30 min-h-[120px] font-medium placeholder:opacity-30" 
+                placeholder="Why does this person deserve recognition?" 
+              />
+            </section>
+
+            <section>
+              <div className="text-[11px] font-black uppercase tracking-widest text-text-main/50 mb-3">Attachments</div>
+              <div className="flex flex-wrap gap-2">
+                <label className="flex items-center gap-2 px-4 py-2.5 bg-indigo-500/10 hover:bg-indigo-500/20 border border-indigo-500/20 rounded-xl cursor-pointer transition-all active:scale-95 group">
+                  <span className="text-lg group-hover:rotate-12 transition-transform">📁</span>
+                  <span className="text-[12px] font-black uppercase tracking-widest text-indigo-500">Upload Media</span>
+                  <input type="file" accept="image/*,video/*" multiple onChange={handleFileChange} className="hidden" />
+                </label>
+                
+                {attachments.map((a, i) => (
+                  <div key={i} className="relative w-14 h-14 bg-surface border border-indigo-500/20 rounded-xl overflow-hidden group">
+                    {a.type && a.type.startsWith('image/') ? (
+                      <img src={a.preview} alt={a.name} className="w-full h-full object-cover" />
+                    ) : (
+                      <div className="w-full h-full bg-indigo-500/10 flex items-center justify-center text-[8px] font-bold">VID</div>
+                    )}
+                    <button type="button" onClick={() => removeAttachment(i)} className="absolute inset-0 bg-rose-500/80 opacity-0 group-hover:opacity-100 flex items-center justify-center text-white text-xs transition-opacity rounded-xl">✕</button>
+                  </div>
+                ))}
+              </div>
+            </section>
+          </div>
+
+          {/* Right column: Summary & Schedule */}
+          <div className="flex flex-col gap-6">
+            <div className="flex-1 space-y-6 bg-card border border-border-soft p-6 rounded-2xl shadow-inner">
+              <div className="text-[11px] font-black uppercase tracking-widest text-text-main/30 border-b border-border-soft pb-3">Preview Recognition</div>
+              
+              <div className="space-y-4">
+                <div className="flex justify-between items-center bg-indigo-500/5 p-3 rounded-xl border border-indigo-500/5">
+                  <span className="text-[12px] font-black uppercase tracking-widest opacity-40">Recipient</span>
+                  <span className="text-sm font-black text-indigo-500">{users.find((x)=>x.id===nominee)?.name || 'None selected'}</span>
+                </div>
+                
+                <div className="flex justify-between items-center bg-indigo-500/5 p-3 rounded-xl border border-indigo-500/5">
+                  <span className="text-[12px] font-black uppercase tracking-widest opacity-40">Category</span>
+                  <span className="text-sm font-black text-emerald-500 uppercase tracking-widest">{category}</span>
+                </div>
+
+                <div className="bg-indigo-500/5 p-4 rounded-xl border border-indigo-500/5 min-h-[100px]">
+                  <span className="text-[11px] font-black uppercase tracking-widest opacity-40 block mb-2">Message Preview</span>
+                  <p className="text-sm text-text-main/80 font-medium italic leading-relaxed">
+                    {message ? message : 'Write a message to see it previewed here...'}
+                  </p>
+                </div>
+              </div>
+
+              <section className="pt-4 border-t border-border-soft">
+                <div className="text-[11px] font-black uppercase tracking-widest text-text-main/30 mb-4">Schedule (Optional)</div>
+                <div className="grid grid-cols-2 gap-3">
+                  <input 
+                    type="date" 
+                    value={scheduledDate} 
+                    onChange={(e) => setScheduledDate(e.target.value)} 
+                    className="bg-surface border border-border-soft rounded-xl p-3 text-[13px] font-black focus:outline-none focus:ring-2 focus:ring-indigo-500/30 transition-all cursor-pointer text-text-main" 
+                  />
+                  <input 
+                    type="time" 
+                    value={scheduledTime} 
+                    onChange={(e) => setScheduledTime(e.target.value)} 
+                    className="bg-surface border border-border-soft rounded-xl p-3 text-[13px] font-black focus:outline-none focus:ring-2 focus:ring-indigo-500/30 transition-all cursor-pointer text-text-main" 
+                  />
+                </div>
+              </section>
+            </div>
+
+            <div className="flex gap-4">
+              <button 
+                type="button" 
+                onClick={onClose} 
+                className="flex-1 py-4 rounded-2xl bg-indigo-500/5 border border-indigo-500/10 text-text-main text-[13px] font-black uppercase tracking-widest hover:bg-slate-500/5 transition-all active:scale-95"
+              >
+                Cancel
+              </button>
+              <button 
+                type="submit" 
+                disabled={!nominee} 
+                className="flex-[2] py-4 rounded-2xl btn-accent font-black text-[13px] uppercase tracking-widest shadow-xl shadow-indigo-600/20 disabled:opacity-30 disabled:grayscale transition-all active:scale-95"
+              >
+                Submit Recognition
+              </button>
+            </div>
+          </div>
+        </div>
       </form>
     </Modal>
   )

@@ -13,6 +13,9 @@ export default function Header() {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false)
   const dropdownRef = useRef(null)
 
+  const [isThemeDropdownOpen, setIsThemeDropdownOpen] = useState(false)
+  const themeDropdownRef = useRef(null)
+
   const handleLogout = () => {
     logout()
     navigate('/auth/login')
@@ -25,11 +28,14 @@ export default function Header() {
   const firstLetter = displayName.charAt(0).toUpperCase()
   const { selectedTenant } = useTenant()
 
-  // Close dropdown when clicking outside
+  // Close dropdowns when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
         setIsDropdownOpen(false)
+      }
+      if (themeDropdownRef.current && !themeDropdownRef.current.contains(event.target)) {
+        setIsThemeDropdownOpen(false)
       }
     }
 
@@ -47,62 +53,76 @@ export default function Header() {
 
   return (
     <header className={`flex items-center justify-between px-6 py-4 sticky top-0 z-40 ${headerClass} transition-colors duration-300`}>
-      <div className="flex items-center gap-6">
-        <Link to="/" className="text-xl font-bold tracking-tight hover:opacity-80 transition-opacity text-tm-gradient">
-          Portal<span className="text-white">Admin</span>
+      <div className="flex items-center gap-8">
+        <Link to="/" className="text-2xl font-black tracking-tighter hover:opacity-80 transition-opacity text-tm-gradient flex items-center gap-2">
+          <div className="w-8 h-8 rounded-lg bg-tm-gradient flex items-center justify-center shadow-tm-neon active:scale-95 transition-transform">
+            <span className="text-tm-bg-dark text-[10px] font-black italic">LH</span>
+          </div>
+          <span>Portal<span className="text-text-main opacity-20 group-hover:opacity-100 transition-opacity">/</span>Admin</span>
         </Link>
         
         {!isCorporate && (
-          <div className={`h-6 w-[1px] ${separatorClass}`} />
+          <div className={`h-8 w-[1px] ${separatorClass} opacity-20`} />
         )}
         {!isCorporate && <TenantSelector />}
       </div>
 
       <div className="flex items-center gap-4">
-        {/* Theme Toggle - Modern Segmented Control with Visual Previews */}
-        <div className="flex items-center p-1 bg-indigo-500/5 rounded-full border border-indigo-500/10 shadow-inner">
-          <button 
-            onClick={() => setTheme('light')}
-            className={`flex items-center gap-2 px-3 py-1.5 text-[10px] font-black uppercase tracking-widest rounded-full transition-all duration-500 ${theme === 'light' ? 'btn-accent scale-105' : 'text-text-main opacity-30 hover:opacity-100 hover:bg-indigo-500/5'}`}
-            title="Light Mode"
+        {/* Theme Dropdown */}
+        <div className="relative" ref={themeDropdownRef}>
+          <button
+            onClick={() => setIsThemeDropdownOpen(!isThemeDropdownOpen)}
+            className="flex items-center gap-2 px-4 py-2 bg-indigo-500/5 hover:bg-indigo-500/10 border border-indigo-500/20 rounded-full transition-all text-[15px] font-bold text-text-main"
           >
-            <span className="w-2 h-2 rounded-full bg-white border border-gray-200" />
-            Light
+            <span className="opacity-70">🎨</span>
+            <span>Theme</span>
+            <svg className={`w-2 h-2 ml-1 transition-transform ${isThemeDropdownOpen ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={4} d="M19 9l-7 7-7-7" />
+            </svg>
           </button>
-          <button 
-            onClick={() => setTheme('dim')}
-            className={`flex items-center gap-2 px-3 py-1.5 text-[10px] font-black uppercase tracking-widest rounded-full transition-all duration-500 ${theme === 'dim' ? 'btn-accent scale-105' : 'text-text-main opacity-30 hover:opacity-100 hover:bg-indigo-500/5'}`}
-            title="Dim Mode"
-          >
-            <span className="w-2 h-2 rounded-full bg-[#1E1E2F] border border-indigo-400/30" />
-            Dim
-          </button>
-          <button 
-            onClick={() => setTheme('dark')}
-            className={`flex items-center gap-2 px-3 py-1.5 text-[10px] font-black uppercase tracking-widest rounded-full transition-all duration-500 ${theme === 'dark' ? 'btn-accent scale-105' : 'text-text-main opacity-30 hover:opacity-100 hover:bg-indigo-500/5'}`}
-            title="Dark Mode"
-          >
-            <span className="w-2 h-2 rounded-full bg-black border border-indigo-900" />
-            Dark
-          </button>
-          <button 
-            onClick={() => setTheme('graph')}
-            className={`flex items-center gap-2 px-3 py-1.5 text-[10px] font-black uppercase tracking-widest rounded-full transition-all duration-500 ${theme === 'graph' ? 'btn-accent scale-105' : 'text-text-main opacity-30 hover:opacity-100 hover:bg-indigo-500/5'}`}
-            title="Graph Mode"
-          >
-            <span className="w-2 h-2 rounded-full bg-[#0a0e27] border border-[#00ffcc]" />
-            Graph
-          </button>
+
+          {isThemeDropdownOpen && (
+            <div className="absolute left-0 mt-3 w-44 bg-card border border-border-soft rounded-2xl shadow-2xl z-50 overflow-hidden py-2 animate-in fade-in slide-in-from-top-2 duration-200">
+              <button 
+                onClick={() => { setTheme('light'); setIsThemeDropdownOpen(false); }} 
+                className={`w-full text-left px-4 py-2.5 text-[11px] font-black uppercase tracking-widest hover:bg-indigo-500/5 flex items-center gap-3 transition-colors ${theme === 'light' ? 'text-indigo-500 bg-indigo-500/5' : 'text-text-main opacity-60'}`}
+              >
+                <span className="w-2.5 h-2.5 rounded-full bg-white border border-gray-200 shadow-sm" />
+                Light Mode
+              </button>
+              <button 
+                onClick={() => { setTheme('dim'); setIsThemeDropdownOpen(false); }} 
+                className={`w-full text-left px-4 py-2.5 text-[11px] font-black uppercase tracking-widest hover:bg-indigo-500/5 flex items-center gap-3 transition-colors ${theme === 'dim' ? 'text-indigo-500 bg-indigo-500/5' : 'text-text-main opacity-60'}`}
+              >
+                <span className="w-2.5 h-2.5 rounded-full bg-[#1E1E2F] border border-indigo-400/30 shadow-sm" />
+                Dim Mode
+              </button>
+              <button 
+                onClick={() => { setTheme('dark'); setIsThemeDropdownOpen(false); }} 
+                className={`w-full text-left px-4 py-2.5 text-[11px] font-black uppercase tracking-widest hover:bg-indigo-500/5 flex items-center gap-3 transition-colors ${theme === 'dark' ? 'text-indigo-500 bg-indigo-500/5' : 'text-text-main opacity-60'}`}
+              >
+                <span className="w-2.5 h-2.5 rounded-full bg-black border border-indigo-900 shadow-sm" />
+                Dark Mode
+              </button>
+              <button 
+                onClick={() => { setTheme('graph'); setIsThemeDropdownOpen(false); }} 
+                className={`w-full text-left px-4 py-2.5 text-[11px] font-black uppercase tracking-widest hover:bg-indigo-500/5 flex items-center gap-3 transition-colors ${theme === 'graph' ? 'text-indigo-500 bg-indigo-500/5' : 'text-text-main opacity-60'}`}
+              >
+                <span className="w-2.5 h-2.5 rounded-full bg-[#0a0e27] border border-[#00ffcc] shadow-[0_0_5px_rgba(0,255,204,0.5)]" />
+                Graph Mode
+              </button>
+            </div>
+          )}
         </div>
 
         <div className={`h-6 w-[1px] ${separatorClass}`} />
 
         {/* PROMINENT POINTS BALANCE FOR CORPORATE USERS */}
         {isCorporate && (
-          <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 bg-indigo-500/10 border border-indigo-500/20 rounded-full">
+          <div className="hidden sm:flex items-center gap-2 px-4 py-2 bg-indigo-500/10 border border-indigo-500/20 rounded-full">
             <span className="text-sm">💰</span>
-            <span className="font-bold text-indigo-500 text-sm">{user?.points_balance?.toLocaleString() || 0}</span>
-            <span className="text-[10px] uppercase tracking-wider text-indigo-500/60 font-medium">Pts</span>
+            <span className="font-bold text-indigo-500 text-[15px]">{user?.points_balance?.toLocaleString() || 0}</span>
+            <span className="text-[10px] uppercase tracking-wider text-indigo-500/60 font-black">Pts</span>
           </div>
         )}
 
@@ -110,45 +130,46 @@ export default function Header() {
         {(userRole !== 'PLATFORM_OWNER' || selectedTenant) && (
           <button 
             onClick={() => navigate('/recognition')} 
-            className="hidden sm:flex px-4 py-1.5 rounded-full text-xs font-bold btn-recognition hover:brightness-95 transition-all shadow-lg"
+            className="hidden sm:flex px-5 py-2 rounded-full text-[14px] font-black uppercase tracking-tight btn-recognition hover:brightness-95 transition-all shadow-lg active:scale-95"
           >
             Give Recognition
           </button>
         )}
 
         <div className={`h-6 w-[1px] mx-1 ${separatorClass}`} />
-        
+
         {/* User Avatar and Dropdown */}
         <div className="relative" ref={dropdownRef}>
           <button
             onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-            className="flex items-center gap-2 p-1 rounded-full transition-colors focus:outline-none hover:bg-surface"
+            className="flex items-center gap-2.5 p-1 rounded-full transition-colors focus:outline-none hover:bg-surface active:scale-95"
           >
-            <div className="w-8 h-8 rounded-full bg-indigo-600 flex items-center justify-center text-accent-contrast font-bold text-xs ring-2 ring-indigo-500/30">
+            <div className="w-9 h-9 rounded-full bg-indigo-600 flex items-center justify-center text-accent-contrast font-black text-sm ring-2 ring-indigo-500/30 shadow-md">
               {firstLetter}
             </div>
             <div className="hidden md:block text-left mr-1">
-              <div className="text-xs font-semibold text-text-main">{displayName}</div>
-              <div className="text-[10px] uppercase tracking-tighter text-text-main/60">{formatRole(userRole)}</div>
+              <div className="text-[14px] font-bold text-text-main leading-none">{displayName}</div>
+              <div className="text-[10px] uppercase tracking-widest text-text-main/50 font-black mt-0.5">{formatRole(userRole)}</div>
             </div>
           </button>
 
           {/* Dropdown Menu */}
           {isDropdownOpen && (
-            <div className="absolute right-0 mt-3 w-56 border rounded-xl shadow-2xl z-50 overflow-hidden bg-card border-border-soft">
-              <div className="p-4 border-b border-border-soft">
-                <div className="text-sm font-bold text-text-main">{displayName}</div>
-                <div className="text-xs text-text-main/60">{user?.email}</div>
-                <div className="mt-2 inline-block px-2 py-0.5 rounded bg-indigo-500/10 text-indigo-500 text-[10px] font-bold uppercase">
+            <div className="absolute right-0 mt-3 w-60 border bg-card border-border-soft rounded-2xl shadow-2xl z-50 overflow-hidden py-1 animate-in fade-in slide-in-from-top-2 duration-200">
+              <div className="p-4 border-b border-border-soft bg-indigo-500/5">
+                <div className="text-[15px] font-black text-text-main">{displayName}</div>
+                <div className="text-xs text-text-main/50 font-medium truncate">{user?.email}</div>
+                <div className="mt-2 inline-block px-2.5 py-1 rounded-lg bg-indigo-500/20 text-indigo-500 text-[9px] font-black uppercase tracking-widest">
                   {formatRole(userRole)}
                 </div>
               </div>
               <div className="p-2">
                 <button
                   onClick={handleLogout}
-                  className="w-full text-left px-3 py-2 rounded-lg text-xs font-medium text-rose-500 hover:bg-rose-500/10 transition-colors"
+                  className="w-full text-left px-4 py-2.5 rounded-xl text-xs font-black uppercase tracking-widest text-rose-500 hover:bg-rose-500/10 transition-colors flex items-center justify-between group"
                 >
                   Logout
+                  <span className="opacity-0 group-hover:opacity-100 transition-opacity">👋</span>
                 </button>
               </div>
             </div>

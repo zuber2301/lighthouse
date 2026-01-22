@@ -73,79 +73,81 @@ const TenantManager = ({ tenants, onRefresh, onAddTenant }) => {
       <div className="bg-card border border-indigo-500/5 rounded-3xl overflow-hidden shadow-sm transition-colors duration-300">
         <div className="p-8 border-b border-indigo-500/5 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
           <div>
-            <h2 className="text-xl font-bold text-text-main tracking-tight">Tenant Registry</h2>
-            <p className="opacity-60 text-text-main mt-1 text-sm font-medium">All companies using LightHouse platform</p>
+            <h2 className="text-2xl font-black text-text-main tracking-tight">Tenant Registry</h2>
+            <p className="opacity-40 text-text-main mt-1 text-[13px] font-bold uppercase tracking-widest">Global SaaS Control Plane</p>
           </div>
           <div className="flex items-center gap-4 w-full md:w-auto">
-            <div className="relative flex-1 md:w-64">
+            <div className="relative flex-1 md:w-80">
               <input
                 type="text"
-                placeholder="Search tenants..."
+                placeholder="Search by company, subdomain or email..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full bg-surface/50 border border-indigo-500/10 rounded-2xl px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all pl-10 text-text-main placeholder:opacity-40"
+                className="w-full bg-indigo-500/10 border border-indigo-500/20 rounded-2xl px-5 py-3 text-[15px] focus:outline-none focus:ring-2 focus:ring-indigo-500/30 focus:bg-indigo-500/20 transition-all pl-12 text-text-main placeholder:text-text-main/50 font-medium"
               />
-              <svg className="w-4 h-4 absolute left-3 top-3 opacity-40 text-text-main" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              <svg className="w-5 h-5 absolute left-4 top-3.5 opacity-30 text-text-main" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
               </svg>
             </div>
             <button 
               onClick={onAddTenant}
-              className="btn-accent px-6 py-2 rounded-2xl text-sm font-bold shadow-lg hover:brightness-95 transition-all whitespace-nowrap active:scale-95"
+              className="btn-accent px-8 py-3 rounded-2xl text-[14px] font-black uppercase tracking-wider shadow-xl hover:scale-[1.02] transition-all whitespace-nowrap active:scale-95"
             >
-              + Add Company
+              + Create Tenant
             </button>
           </div>
         </div>
 
         <div className="overflow-x-auto">
           <table className="w-full text-left">
-            <thead className="bg-indigo-500/5 text-text-main text-[10px] uppercase font-bold tracking-widest border-b border-indigo-500/5">
+            <thead className="bg-indigo-500/5 text-text-main text-[14px] font-semibold border-b border-indigo-500/5">
               <tr>
-                <th className="px-8 py-5">Company</th>
-                <th className="px-8 py-5">Subdomain</th>
-                <th className="px-8 py-5">Plan</th>
-                <th className="px-8 py-5">Status</th>
-                <th className="px-8 py-5 uppercase">Activity</th>
-                <th className="px-8 py-5 uppercase">Created</th>
-                <th className="px-8 py-5 text-right">Actions</th>
+                <th className="px-8 py-6">Company</th>
+                <th className="px-8 py-6">Subdomain</th>
+                <th className="px-8 py-6">Plan</th>
+                <th className="px-8 py-6">Status</th>
+                <th className="px-8 py-6">Activity</th>
+                <th className="px-8 py-6">Created</th>
+                <th className="px-8 py-6 text-right">Action</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-indigo-500/5">
               {filteredTenants.map((tenant) => (
-                <tr key={tenant.id} className="hover:bg-indigo-500/5 transition duration-150">
-                  <td className="px-8 py-5">
-                    <div className="font-bold text-text-main">{tenant.name}</div>
+                <tr key={tenant.id} className="hover:bg-indigo-500/5 transition duration-150 group">
+                  <td className="px-8 py-6">
+                    <div className="font-medium text-[16px] text-text-main tracking-tight group-hover:text-indigo-500 transition-colors">{tenant.name}</div>
                   </td>
-                  <td className="px-8 py-5">
-                    <span className="text-[10px] font-bold text-indigo-500 bg-indigo-500/10 px-2.5 py-1 rounded-lg border border-indigo-500/10 uppercase tracking-tight">
+                  <td className="px-8 py-6">
+                    <span className="text-[12px] font-bold text-indigo-400/90 bg-indigo-500/10 px-3 py-1.5 rounded-xl border border-indigo-500/20 group-hover:bg-indigo-500/20 transition-all">
                       {tenant.subdomain}.lighthouse.com
                     </span>
                   </td>
-                  <td className="px-8 py-5">
-                    <div className="text-xs font-bold text-text-main">{tenant.plan}</div>
-                    <div className="text-[10px] opacity-60 text-text-main font-medium mt-0.5">Users: {tenant.user_count ?? '—'}</div>
+                  <td className="px-8 py-6">
+                    <div className="text-[14px] font-semibold text-text-main tracking-tight italic">{tenant.plan}</div>
+                    <div className="text-[11px] opacity-40 text-text-main font-black mt-1 uppercase tracking-tighter">USERS: {tenant.user_count ?? '—'}</div>
                   </td>
-                  <td className="px-8 py-5">
-                    <div className={`inline-flex px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider ${
-                      tenant.status === 'active' ? 'bg-emerald-500/10 text-emerald-500' : 'bg-rose-500/10 text-rose-500'
+                  <td className="px-8 py-6">
+                    <div className={`inline-flex px-3.5 py-1.5 rounded-xl text-[10px] font-bold uppercase tracking-[0.1em] ${
+                      tenant.status === 'active' ? 'bg-emerald-500/10 text-emerald-500 border border-emerald-500/20' : 'bg-rose-500/10 text-rose-500 border border-rose-500/20'
                     }`}>
                       {tenant.status}
                     </div>
                   </td>
-                  <td className="px-8 py-5">
-                    {renderSparkline(tenant.activity_last_7_days)}
+                  <td className="px-8 py-6">
+                    <div className="opacity-60 group-hover:opacity-100 transition-opacity">
+                      {renderSparkline(tenant.activity_last_7_days)}
+                    </div>
                   </td>
-                  <td className="px-8 py-5 opacity-60 text-text-main text-xs font-medium">
-                    {new Date(tenant.created_at).toLocaleDateString()}
+                  <td className="px-8 py-6 opacity-80 text-text-main text-[13px] font-medium">
+                    {new Date(tenant.created_at).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' })}
                   </td>
-                  <td className="px-8 py-5 text-right space-x-2">
+                  <td className="px-8 py-6 text-right space-x-2">
                     <button 
                       onClick={() => handleStatusToggle(tenant.id, tenant.status)}
-                      className={`text-[10px] font-bold px-3 py-1.5 rounded-xl border transition-all ${
+                      className={`text-[10px] font-black tracking-widest px-4 py-2 rounded-xl border transition-all active:scale-95 ${
                         tenant.status === 'active' 
-                          ? 'text-rose-500 border-rose-500/20 hover:bg-rose-500/10' 
-                          : 'text-emerald-500 border-emerald-500/20 hover:bg-emerald-500/10'
+                          ? 'text-rose-500 border-rose-500/20 hover:bg-rose-500/20' 
+                          : 'text-emerald-500 border-emerald-500/20 hover:bg-emerald-500/20'
                       }`}
                     >
                       {tenant.status === 'active' ? 'SUSPEND' : 'ACTIVATE'}
@@ -154,17 +156,17 @@ const TenantManager = ({ tenants, onRefresh, onAddTenant }) => {
                     <button
                       onClick={() => openLoadModal(tenant)}
                       title="Load Master Budget"
-                      className="text-[10px] px-3 py-1.5 rounded-xl bg-indigo-500/5 border border-indigo-500/10 text-text-main font-bold hover:bg-indigo-500/10 transition-all opacity-80"
+                      className="text-[10px] px-4 py-2 rounded-xl bg-indigo-500/10 border border-indigo-500/10 text-text-main font-bold tracking-widest hover:bg-indigo-500/20 transition-all active:scale-95"
                     >
-                      LOAD BUDGET
+                      BUDGET
                     </button>
 
                     <button
                       onClick={() => handleImpersonate(tenant.id)}
                       title="Impersonate tenant"
-                      className="text-[10px] px-3 py-1.5 rounded-xl btn-accent font-bold hover:brightness-95 transition-all"
+                      className="text-[11px] px-4 py-2 rounded-xl btn-accent font-black tracking-widest hover:brightness-95 transition-all shadow-lg active:scale-95"
                     >
-                      VIEW
+                      ENTER
                     </button>
                   </td>
                 </tr>

@@ -49,16 +49,16 @@ export default function PlatformAdminPage() {
     <div className="space-y-8 max-w-7xl mx-auto">
       <div className="flex justify-between items-end">
         <PageHeader title="Operator View" subtitle="Global SaaS control plane" />
-        <div className="flex gap-2 mb-6">
+        <div className="flex gap-3 mb-8">
           <button 
             onClick={() => navigate('/platform-admin/logs')}
-            className="px-4 py-2 rounded-xl bg-card border border-indigo-500/10 text-text-main text-[10px] font-bold uppercase tracking-wider hover:bg-indigo-500/5 transition-all shadow-sm"
+            className="px-5 py-2.5 rounded-2xl bg-indigo-500/5 border border-indigo-500/10 text-text-main text-[13px] font-black uppercase tracking-widest hover:bg-indigo-500/10 transition-all shadow-lg active:scale-95"
           >
             System Logs
           </button>
           <button 
             onClick={() => navigate('/platform-admin/subscriptions')}
-            className="px-4 py-2 rounded-xl btn-accent text-[10px] font-bold uppercase tracking-wider hover:brightness-95 transition-all shadow-md shadow-indigo-600/20"
+            className="px-5 py-2.5 rounded-2xl btn-accent text-[13px] font-black uppercase tracking-widest hover:brightness-95 transition-all shadow-xl shadow-indigo-600/20 active:scale-95"
           >
             Pricing Engine
           </button>
@@ -67,28 +67,28 @@ export default function PlatformAdminPage() {
 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-        <Card className="border-l-4 border-l-indigo-500 bg-gradient-to-br from-card to-indigo-500/5">
-          <p className="text-[10px] font-bold opacity-70 text-text-main uppercase tracking-widest">Aggregated MRR</p>
-          <h3 className="text-2xl font-black text-text-main mt-2">₹{((stats.INR || 0) / 100).toLocaleString()}</h3>
-          <p className="text-xs text-indigo-500 font-bold mt-1 uppercase tracking-tighter">Growth: +12.5%</p>
+        <Card className="border-l-[6px] border-l-indigo-500 bg-gradient-to-br from-indigo-500/10 to-transparent hover:shadow-2xl hover:shadow-indigo-500/10 hover:translate-y-[-4px] transition-all border border-indigo-500/5">
+          <p className="text-[12px] font-black opacity-60 text-text-main uppercase tracking-widest leading-none">Aggregated MRR</p>
+          <h3 className="text-4xl font-black text-text-main mt-4">₹{((stats.INR || 0) / 100).toLocaleString()}</h3>
+          <p className="text-[11px] text-indigo-400 font-black mt-2 uppercase tracking-widest opacity-80">Growth: +12.5%</p>
         </Card>
-        <Card className="border-l-4 border-l-emerald-500 bg-gradient-to-br from-card to-emerald-500/5">
-          <p className="text-[10px] font-bold opacity-70 text-text-main uppercase tracking-widest">Total Active Users</p>
-          <h3 className="text-2xl font-black text-text-main mt-2">{stats.total_active_users || 0}</h3>
-          <p className="text-xs text-emerald-500 font-bold mt-1 uppercase tracking-tighter">Across {tenants.length} tenants</p>
+        <Card className="border-l-[6px] border-l-emerald-500 bg-gradient-to-br from-emerald-500/10 to-transparent hover:shadow-2xl hover:shadow-emerald-500/10 hover:translate-y-[-4px] transition-all border border-emerald-500/5">
+          <p className="text-[12px] font-black opacity-60 text-text-main uppercase tracking-widest leading-none">Active Users</p>
+          <h3 className="text-4xl font-black text-text-main mt-4">{stats.total_active_users || 0}</h3>
+          <p className="text-[11px] text-emerald-400 font-black mt-2 uppercase tracking-widest opacity-80">Across {tenants.length} tenants</p>
         </Card>
-        <Card className="border-l-4 border-l-amber-500 bg-gradient-to-br from-card to-amber-500/5">
-          <p className="text-[10px] font-bold opacity-70 text-text-main uppercase tracking-widest">System Uptime</p>
-          <h3 className="text-2xl font-black text-text-main mt-2">{formatUptime(stats.uptime_seconds)}</h3>
-          <p className="text-xs text-amber-500 font-bold mt-1 uppercase tracking-tighter">Status: Operational</p>
+        <Card className="border-l-[6px] border-l-amber-500 bg-gradient-to-br from-amber-500/10 to-transparent hover:shadow-2xl hover:shadow-amber-500/10 hover:translate-y-[-4px] transition-all border border-amber-500/5">
+          <p className="text-[12px] font-black opacity-60 text-text-main uppercase tracking-widest leading-none">System Uptime</p>
+          <h3 className="text-4xl font-black text-text-main mt-4 truncate">{formatUptime(stats.uptime_seconds)}</h3>
+          <p className="text-[11px] text-amber-400 font-black mt-2 uppercase tracking-widest opacity-80">Status: Operational</p>
         </Card>
-        <Card className="border-l-4 border-l-rose-500 bg-gradient-to-br from-card to-rose-500/5">
-          <p className="text-[10px] font-bold opacity-70 text-text-main uppercase tracking-widest">Top Tenants</p>
-          <ul className="mt-2 text-[11px] text-text-main space-y-1">
+        <Card className="border-l-[6px] border-l-rose-500 bg-gradient-to-br from-rose-500/10 to-transparent hover:shadow-2xl hover:shadow-rose-500/10 hover:translate-y-[-4px] transition-all border border-rose-500/5">
+          <p className="text-[12px] font-black opacity-60 text-text-main uppercase tracking-widest leading-none">Top Tenants</p>
+          <ul className="mt-4 text-[13px] text-text-main space-y-2">
             {(stats.top_tenants || []).slice(0, 3).map(t => (
-              <li key={t.id} className="flex justify-between border-b border-indigo-500/5 pb-1">
+              <li key={t.id} className="flex justify-between border-b border-indigo-500/10 pb-2">
                 <span className="font-bold opacity-80">{t.name}</span>
-                <span className="opacity-40">{t.recognitions} recs</span>
+                <span className="opacity-60 font-black uppercase text-[10px] text-rose-400">{t.recognitions} recs</span>
               </li>
             ))}
           </ul>
@@ -96,13 +96,11 @@ export default function PlatformAdminPage() {
       </div>
 
       {/* Tenant Management */}
-      <div className="bg-card border border-indigo-500/10 rounded-3xl border border-border-soft shadow-sm-sm overflow-hidden">
-        <TenantManager 
-          tenants={tenants} 
-          onRefresh={fetchTenants}
-          onAddTenant={handleAddTenant}
-        />
-      </div>
+      <TenantManager 
+        tenants={tenants} 
+        onRefresh={fetchTenants}
+        onAddTenant={handleAddTenant}
+      />
     </div>
   )
 }
