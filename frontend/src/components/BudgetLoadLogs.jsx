@@ -70,7 +70,7 @@ export default function BudgetLoadLogs({ tenantId }) {
             <li key={l.id} className="flex justify-between items-start hover:bg-surface p-3 rounded cursor-pointer" onClick={() => setSelectedLog(l)}>
               <div>
                 <div className="text-sm text-text-main opacity-60">{l.created_at ? new Date(l.created_at).toLocaleString() : ''}</div>
-                <div className="font-medium">{l.transaction_type}</div>
+                <div className="font-normal">{l.transaction_type}</div>
                 <div className="text-sm text-text-main opacity-60">By: {l.platform_owner?.full_name || l.platform_owner?.email || 'system'}</div>
               </div>
               <div className="font-bold">₹{(l.amount||0).toLocaleString(undefined,{minimumFractionDigits:2})}</div>

@@ -91,7 +91,7 @@ export default function CorporateUserDashboard() {
         <div className="relative z-10 flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
           <div>
             <h1 className="text-3xl font-black tracking-tight">Hello, {user?.full_name?.split(' ')[0] || 'there'}! 👋</h1>
-            <p className="mt-2 text-indigo-100/80 font-medium">You're doing amazing! Ready to treat yourself?</p>
+            <p className="mt-2 text-indigo-100/80 font-normal">You're doing amazing! Ready to treat yourself?</p>
             
             <div className="mt-8 flex items-baseline gap-3">
               <span className="text-6xl font-black tracking-tighter drop-shadow-sm-md">
@@ -148,7 +148,7 @@ export default function CorporateUserDashboard() {
                </div>
                
                <p className="mt-4 font-black text-text-main">Team Catalyst</p>
-               <p className="text-xs opacity-70 text-text-main font-medium">Earn 250 more points</p>
+               <p className="text-xs opacity-70 text-text-main font-normal">Earn 250 more points</p>
                
                <div className="w-full mt-6 h-2 bg-surface rounded-full overflow-hidden border border-border-soft">
                   <motion.div 
@@ -176,14 +176,14 @@ export default function CorporateUserDashboard() {
                      </div>
                      <div className="flex-1">
                         <p className="text-sm font-bold text-text-main">{item.reward_title}</p>
-                        <p className="text-[10px] opacity-50 text-text-main font-medium">{new Date(item.date).toLocaleDateString()}</p>
+                        <p className="text-[10px] opacity-50 text-text-main font-normal">{new Date(item.date).toLocaleDateString()}</p>
                      </div>
                      <span className="text-xs font-black text-rose-500">-{item.points_spent}</span>
                   </div>
                 ))}
                 {redemptionHistory.length === 0 && (
                   <div className="p-8 text-center bg-card/4 border border-indigo-500/100 border border-dashed border-border-soft rounded-2xl">
-                     <p className="text-sm opacity-50 text-text-main font-medium">No redemptions yet. Time to shop! 🛒</p>
+                     <p className="text-sm opacity-50 text-text-main font-normal">No redemptions yet. Time to shop! 🛒</p>
                   </div>
                 )}
              </div>

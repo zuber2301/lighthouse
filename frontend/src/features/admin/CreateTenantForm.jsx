@@ -128,12 +128,12 @@ export default function CreateTenantForm({ onCreated = null, redirectOnSuccess =
           )}
 
           <div>
-            <label htmlFor="company-name" className="block text-sm font-medium text-text-main opacity-80 mb-2">Company Name</label>
+            <label htmlFor="company-name" className="block text-sm font-normal text-text-main opacity-80 mb-2">Company Name</label>
             <input id="company-name" aria-label="Company Name" type="text" name="name" value={formData.name} onChange={handleInputChange} className="w-full px-3 py-2 bg-surface border border-border-soft rounded-md text-text-main placeholder-text-main opacity-40 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent" placeholder="TigerCorp" required />
           </div>
 
           <div>
-            <label htmlFor="subdomain" className="block text-sm font-medium text-text-main opacity-80 mb-2">Subdomain</label>
+            <label htmlFor="subdomain" className="block text-sm font-normal text-text-main opacity-80 mb-2">Subdomain</label>
             <div className="flex">
               <input aria-label="Subdomain" id="subdomain" type="text" name="subdomain" value={formData.subdomain} onChange={handleInputChange} className="flex-1 px-3 py-2 bg-surface border border-border-soft rounded-l-md text-text-main placeholder-text-main opacity-40 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent" placeholder="tigercorp" required />
               <span className="inline-flex items-center px-3 py-2 bg-surface border border-l-0 border-border-soft rounded-r-md opacity-70 text-text-main">.lighthouse.com</span>
@@ -141,17 +141,17 @@ export default function CreateTenantForm({ onCreated = null, redirectOnSuccess =
           </div>
 
           <div>
-            <label htmlFor="adminEmail" className="block text-sm font-medium text-text-main opacity-80 mb-2">Primary Admin Email</label>
+            <label htmlFor="adminEmail" className="block text-sm font-normal text-text-main opacity-80 mb-2">Primary Admin Email</label>
             <input aria-label="Admin Email" id="adminEmail" type="email" name="adminEmail" value={formData.adminEmail} onChange={handleInputChange} className="w-full px-3 py-2 bg-surface border border-border-soft rounded-md text-text-main placeholder-text-main opacity-40 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent" placeholder="john@tigercorp.com" required />
           </div>
 
           <div>
-            <label htmlFor="adminName" className="block text-sm font-medium text-text-main opacity-80 mb-2">Admin Full Name</label>
+            <label htmlFor="adminName" className="block text-sm font-normal text-text-main opacity-80 mb-2">Admin Full Name</label>
             <input aria-label="Admin Name" id="adminName" type="text" name="adminName" value={formData.adminName} onChange={handleInputChange} className="w-full px-3 py-2 bg-surface border border-border-soft rounded-md text-text-main placeholder-text-main opacity-40 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent" placeholder="John Smith" required />
           </div>
 
           <div>
-            <label htmlFor="planId" className="block text-sm font-medium text-text-main opacity-80 mb-2">Subscription Plan</label>
+            <label htmlFor="planId" className="block text-sm font-normal text-text-main opacity-80 mb-2">Subscription Plan</label>
             <select aria-label="Subscription Plan" id="planId" name="planId" value={formData.planId} onChange={handleInputChange} className="w-full px-3 py-2 bg-surface border border-border-soft rounded-md text-text-main focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent" required>
               <option value="">Select a plan</option>
               {subscriptionPlans.map(plan => (
@@ -166,7 +166,7 @@ export default function CreateTenantForm({ onCreated = null, redirectOnSuccess =
                 const selectedPlan = subscriptionPlans.find(plan => plan.id === parseInt(formData.planId))
                 return selectedPlan ? (
                   <div>
-                    <h3 className="font-medium text-text-main mb-2">{selectedPlan.name} Plan</h3>
+                    <h3 className="font-normal text-text-main mb-2">{selectedPlan.name} Plan</h3>
                     <p className="text-sm text-text-main opacity-80 mb-2">{selectedPlan.features?.description}</p>
                     <div className="text-sm opacity-70 text-text-main"><strong>Price:</strong> {formatPrice(selectedPlan.monthly_price_in_paise)}</div>
                     <div className="text-sm opacity-70 text-text-main"><strong>Max Users:</strong> {selectedPlan.features?.max_users}</div>

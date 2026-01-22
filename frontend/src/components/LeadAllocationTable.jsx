@@ -122,7 +122,7 @@ export default function LeadAllocationTable({ tenantId, onAllocated }) {
               <div className="inline-flex p-4 bg-indigo-500/5 rounded-full mb-4">
                 <span className="text-indigo-500/40 text-2xl">＋</span>
               </div>
-            <p className="text-text-main opacity-50 font-medium">No Department Leads found for this tenant.</p>
+            <p className="text-text-main opacity-50 font-normal">No Department Leads found for this tenant.</p>
           </div>
         )}
       </div>

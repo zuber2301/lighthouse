@@ -58,7 +58,7 @@ export default function PlatformCatalog() {
             <tbody>
               {providers.map(p => (
                 <tr key={p.id} className="border-t border-border-soft">
-                  <td className="p-3 font-medium">{p.name}</td>
+                  <td className="p-3 font-normal">{p.name}</td>
                   <td className="p-3">
                     <button onClick={() => toggleEnabled(p)} className={`${p.enabled ? 'btn-success' : 'btn-danger'} px-3 py-1 rounded` }>
                       {p.enabled ? 'Enabled' : 'Disabled'}

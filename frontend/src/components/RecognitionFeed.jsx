@@ -27,7 +27,7 @@ const RecognitionCard = ({ data }) => (
           <span className="text-emerald-500 text-[10px] font-black uppercase tracking-tight">+{data.points} Points</span>
         </div>
 
-        <p className="mt-2 text-sm text-text-main opacity-70 italic text-center line-clamp-3 font-medium leading-relaxed">"{data.message}"</p>
+        <p className="mt-2 text-sm text-text-main opacity-70 italic text-center line-clamp-3 font-normal leading-relaxed">"{data.message}"</p>
 
         <div className="mt-auto flex justify-between items-center">
           <div className="flex -space-x-1">

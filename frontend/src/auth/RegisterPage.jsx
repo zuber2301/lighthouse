@@ -57,7 +57,7 @@ export default function RegisterPage() {
 
       <form onSubmit={handleSubmit} className="space-y-6">
         <div>
-          <label htmlFor="fullName" className="block text-sm font-medium text-text-main opacity-70 mb-2">
+          <label htmlFor="fullName" className="block text-sm font-normal text-text-main opacity-70 mb-2">
             Full Name
           </label>
           <input
@@ -73,7 +73,7 @@ export default function RegisterPage() {
         </div>
 
         <div>
-          <label htmlFor="email" className="block text-sm font-medium text-text-main/60 mb-2">
+          <label htmlFor="email" className="block text-sm font-normal text-text-main/60 mb-2">
             Email Address
           </label>
           <input
@@ -89,7 +89,7 @@ export default function RegisterPage() {
         </div>
 
         <div>
-          <label htmlFor="password" className="block text-sm font-medium text-text-main/60 mb-2">
+          <label htmlFor="password" className="block text-sm font-normal text-text-main/60 mb-2">
             Password
           </label>
           <input
@@ -105,7 +105,7 @@ export default function RegisterPage() {
         </div>
 
         <div>
-          <label htmlFor="confirmPassword" className="block text-sm font-medium text-text-main/60 mb-2">
+          <label htmlFor="confirmPassword" className="block text-sm font-normal text-text-main/60 mb-2">
             Confirm Password
           </label>
           <input
@@ -151,7 +151,7 @@ export default function RegisterPage() {
       <div className="mt-8 text-center">
         <p className="text-text-main/60">
           Already have an account?{' '}
-          <Link to="/auth/login" className="text-tm-teal hover:text-tm-teal-2 font-medium transition-colors">
+          <Link to="/auth/login" className="text-tm-teal hover:text-tm-teal-2 font-normal transition-colors">
             Sign in here
           </Link>
         </p>

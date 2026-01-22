@@ -104,10 +104,10 @@ export default function TenantLeadDashboard() {
 
       {/* Recognition Form */}
       <Card className="mb-6">
-        <h3 className="font-bold text-lg mb-4">Give Recognition</h3>
+        <h3 className="font-normal text-lg mb-4">Give Recognition</h3>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div>
-            <label className="block text-sm font-medium text-text-main opacity-80 mb-2">Team Member</label>
+            <label className="block text-sm font-normal text-text-main opacity-80 mb-2">Team Member</label>
               <select
               value={recognitionData.userId}
               onChange={(e) => setRecognitionData({...recognitionData, userId: e.target.value})}
@@ -120,7 +120,7 @@ export default function TenantLeadDashboard() {
             </select>
           </div>
           <div>
-            <label className="block text-sm font-medium text-text-main opacity-80 mb-2">Points</label>
+            <label className="block text-sm font-normal text-text-main opacity-80 mb-2">Points</label>
             <input
               type="number"
               value={recognitionData.amount}
@@ -130,7 +130,7 @@ export default function TenantLeadDashboard() {
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-text-main opacity-80 mb-2">Note (Optional)</label>
+            <label className="block text-sm font-normal text-text-main opacity-80 mb-2">Note (Optional)</label>
             <input
               type="text"
               value={recognitionData.note}
@@ -142,7 +142,7 @@ export default function TenantLeadDashboard() {
         </div>
         <button
           onClick={recognizeUser}
-          className="mt-4 btn-recognition px-6 py-2 rounded-full font-bold transition-all shadow-lg"
+          className="mt-4 btn-recognition px-6 py-2 rounded-full font-normal transition-all shadow-lg"
           disabled={!recognitionData.userId || !recognitionData.amount}
         >
           Give Recognition

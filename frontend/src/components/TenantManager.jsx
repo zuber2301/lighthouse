@@ -83,7 +83,7 @@ const TenantManager = ({ tenants, onRefresh, onAddTenant }) => {
                 placeholder="Search by company, subdomain or email..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full bg-indigo-500/10 border border-indigo-500/20 rounded-2xl px-5 py-3 text-[15px] focus:outline-none focus:ring-2 focus:ring-indigo-500/30 focus:bg-indigo-500/20 transition-all pl-12 text-text-main placeholder:text-text-main/50 font-medium"
+                className="w-full bg-indigo-500/10 border border-indigo-500/20 rounded-2xl px-5 py-3 text-[15px] focus:outline-none focus:ring-2 focus:ring-indigo-500/30 focus:bg-indigo-500/20 transition-all pl-12 text-text-main placeholder:text-text-main/50 font-normal"
               />
               <svg className="w-5 h-5 absolute left-4 top-3.5 opacity-30 text-text-main" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
@@ -115,7 +115,7 @@ const TenantManager = ({ tenants, onRefresh, onAddTenant }) => {
               {filteredTenants.map((tenant) => (
                 <tr key={tenant.id} className="hover:bg-indigo-500/5 transition duration-150 group">
                   <td className="px-8 py-6">
-                    <div className="font-medium text-[16px] text-text-main tracking-tight group-hover:text-indigo-500 transition-colors">{tenant.name}</div>
+                    <div className="font-normal text-[16px] text-text-main tracking-tight group-hover:text-indigo-500 transition-colors">{tenant.name}</div>
                   </td>
                   <td className="px-8 py-6">
                     <span className="text-[12px] font-bold text-indigo-400/90 bg-indigo-500/10 px-3 py-1.5 rounded-xl border border-indigo-500/20 group-hover:bg-indigo-500/20 transition-all">
@@ -138,7 +138,7 @@ const TenantManager = ({ tenants, onRefresh, onAddTenant }) => {
                       {renderSparkline(tenant.activity_last_7_days)}
                     </div>
                   </td>
-                  <td className="px-8 py-6 opacity-80 text-text-main text-[13px] font-medium">
+                  <td className="px-8 py-6 opacity-80 text-text-main text-[13px] font-normal">
                     {new Date(tenant.created_at).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' })}
                   </td>
                   <td className="px-8 py-6 text-right space-x-2">

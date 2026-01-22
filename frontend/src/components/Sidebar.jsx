@@ -45,8 +45,8 @@ export default function Sidebar() {
   const items = NAV_ITEMS[userRole] || NAV_ITEMS.CORPORATE_USER
 
   const sidebarClass = "bg-sidebar border-r border-border-soft text-text-main shadow-sm"
-  const activeLinkClass = "bg-tm-gradient text-tm-bg-dark shadow-tm-neon font-bold"
-  const inactiveLinkClass = "text-text-main opacity-60 hover:opacity-100 hover:bg-white/5 transition-all duration-200"
+  const activeLinkClass = "bg-tm-gradient text-white shadow-tm-neon"
+  const inactiveLinkClass = "text-text-main opacity-90 hover:opacity-100 hover:bg-white/5 transition-all duration-200"
 
   return (
     <aside className={`w-64 h-screen ${sidebarClass} transition-colors duration-300`}>
@@ -64,17 +64,25 @@ export default function Sidebar() {
               to={it.href}
               className={({ isActive }) => `flex items-center gap-3 p-3 rounded-xl transition-all duration-200 ${isActive ? activeLinkClass : inactiveLinkClass}`}
             >
-              <span className="text-xl">{it.icon}</span>
-              <span className="font-medium">{it.label}</span>
+              {({ isActive }) => (
+                <>
+                  <span className={`text-3xl drop-shadow-sm ${isActive ? 'text-white' : 'text-indigo-200/90'}`}>{it.icon}</span>
+                  <span className={`font-normal text-[17px] ${isActive ? 'text-white' : 'text-text-main/70'}`}>{it.label}</span>
+                </>
+              )}
             </NavLink>
           ))}
 
           {userRole === 'PLATFORM_OWNER' && selectedTenant && (
             <NavLink to={`/tenants/${selectedTenant.id}`} className={({ isActive }) => `flex items-center gap-3 p-3 rounded-xl transition ${
-              isActive ? 'bg-indigo-600/20 text-indigo-500' : 'text-text-main opacity-50 hover:bg-indigo-500/5 hover:opacity-100'
+              isActive ? 'bg-indigo-600/20 text-indigo-500' : 'text-text-main opacity-90 hover:bg-indigo-500/5 hover:opacity-100'
             }`}>
-              <span className="text-xl">🏢</span>
-              <span className="font-medium text-[10px] uppercase tracking-wider">Manage {selectedTenant.name}</span>
+              {({ isActive }) => (
+                <>
+                  <span className={`text-3xl drop-shadow-sm ${isActive ? 'text-white' : 'text-indigo-200/90'}`}>🏢</span>
+                  <span className={`font-normal text-[16px] ${isActive ? 'text-white' : 'text-text-main/70'}`}>Manage {selectedTenant.name}</span>
+                </>
+              )}
             </NavLink>
           )}
         </nav>

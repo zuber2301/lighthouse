@@ -96,7 +96,7 @@ export default function LoginPage() {
 
       <form onSubmit={handleSubmit} className="space-y-6">
         <div>
-          <label htmlFor="email" className="block text-sm font-medium text-text-main opacity-70 mb-2">
+          <label htmlFor="email" className="block text-sm font-normal text-text-main opacity-70 mb-2">
             Email Address
           </label>
           <input
@@ -112,7 +112,7 @@ export default function LoginPage() {
         </div>
 
         <div>
-          <label htmlFor="password" className="block text-sm font-medium text-text-main opacity-70 mb-2">
+          <label htmlFor="password" className="block text-sm font-normal text-text-main opacity-70 mb-2">
             Password
           </label>
           <input
@@ -195,7 +195,7 @@ export default function LoginPage() {
       <div className="mt-8 text-center">
         <p className="text-text-main/60">
           Don't have an account?{' '}
-          <Link to="/register" className="text-tm-teal hover:text-tm-teal-2 font-medium transition-colors">
+          <Link to="/register" className="text-tm-teal hover:text-tm-teal-2 font-normal transition-colors">
             Create one now
           </Link>
         </p>

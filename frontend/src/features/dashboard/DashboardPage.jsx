@@ -29,7 +29,7 @@ export default function DashboardPage() {
 
   return (
     <div className="space-y-6">
-      <PageHeader title="Dashboard" subtitle="What's happening right now?" actions={<button onClick={() => setOpen(true)} className="px-4 py-1.5 rounded-full btn-recognition text-xs font-bold transition-all shadow-lg">Nominate</button>} />
+      <PageHeader title="Dashboard" subtitle="What's happening right now?" actions={<button onClick={() => setOpen(true)} className="px-4 py-1.5 rounded-full btn-recognition text-xs font-normal transition-all shadow-lg">Nominate</button>} />
       <div className="bg-surface p-6 rounded-[2rem] border border-border-soft transition-colors duration-300">
         {/* Hero */}
         <div className="mb-6">
@@ -41,7 +41,7 @@ export default function DashboardPage() {
             <div data-theme="graph-stat-card" style={{ transform: 'translateY(20px)', opacity: 0 }} className="group card-base p-4 hover:-translate-y-1 transform transition-all duration-200 hover:shadow-sm-tm-neon focus-within:shadow-sm-tm-neon">
               <div className="flex items-center gap-3 mb-2">
                 <div className="w-10 h-10 rounded-lg flex items-center justify-center bg-gradient-to-br from-tm-teal to-tm-teal-2 text-tm-bg-dark">📊</div>
-                <div className="text-sm opacity-70 text-text-main font-medium">Total Revenue</div>
+                <div className="text-sm opacity-70 text-text-main font-normal">Total Revenue</div>
               </div>
               <div className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-white to-tm-teal">$42,847</div>
               <div className="text-sm opacity-70 text-text-main">Monthly revenue increased by 23% compared to last month with strong performance across all channels.</div>
@@ -54,7 +54,7 @@ export default function DashboardPage() {
             <div data-theme="graph-stat-card" style={{ transform: 'translateY(20px)', opacity: 0 }} className="group card-base p-4 hover:-translate-y-1 transform transition-all duration-200 hover:shadow-sm-tm-neon focus-within:shadow-sm-tm-neon">
               <div className="flex items-center gap-3 mb-2">
                 <div className="w-10 h-10 rounded-lg flex items-center justify-center bg-gradient-to-br from-tm-teal to-tm-teal-2 text-tm-bg-dark">👥</div>
-                <div className="text-sm opacity-70 text-text-main font-medium">Active Users</div>
+                <div className="text-sm opacity-70 text-text-main font-normal">Active Users</div>
               </div>
               <div className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-white to-tm-teal">18.5K</div>
               <div className="text-sm opacity-70 text-text-main">Real-time analytics showing active users currently engaging with the platform.</div>
@@ -68,7 +68,7 @@ export default function DashboardPage() {
             <div data-theme="graph-stat-card" style={{ transform: 'translateY(20px)', opacity: 0 }} className="group card-base p-4 hover:-translate-y-1 transform transition-all duration-200 hover:shadow-sm-tm-neon focus-within:shadow-sm-tm-neon">
               <div className="flex items-center gap-3 mb-2">
                 <div className="w-10 h-10 rounded-lg flex items-center justify-center bg-gradient-to-br from-tm-teal to-tm-teal-2 text-tm-bg-dark">🎯</div>
-                <div className="text-sm opacity-70 text-text-main font-medium">Conversion Rate</div>
+                <div className="text-sm opacity-70 text-text-main font-normal">Conversion Rate</div>
               </div>
               <div className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-white to-tm-teal">94.3%</div>
               <div className="text-sm opacity-70 text-text-main">Customer satisfaction rate based on recent surveys and feedback analysis.</div>

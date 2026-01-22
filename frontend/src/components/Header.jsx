@@ -54,7 +54,7 @@ export default function Header() {
   return (
     <header className={`flex items-center justify-between px-6 py-4 sticky top-0 z-40 ${headerClass} transition-colors duration-300`}>
       <div className="flex items-center gap-8">
-        <Link to="/" className="text-2xl font-black tracking-tighter hover:opacity-80 transition-opacity text-tm-gradient flex items-center gap-2">
+        <Link to="/" className="text-2xl font-normal tracking-tighter hover:opacity-80 transition-opacity text-tm-gradient flex items-center gap-2">
           <div className="w-8 h-8 rounded-lg bg-tm-gradient flex items-center justify-center shadow-tm-neon active:scale-95 transition-transform">
             <span className="text-tm-bg-dark text-[10px] font-black italic">LH</span>
           </div>
@@ -130,7 +130,7 @@ export default function Header() {
         {(userRole !== 'PLATFORM_OWNER' || selectedTenant) && (
           <button 
             onClick={() => navigate('/recognition')} 
-            className="hidden sm:flex px-5 py-2 rounded-full text-[14px] font-black uppercase tracking-tight btn-recognition hover:brightness-95 transition-all shadow-lg active:scale-95"
+            className="hidden sm:flex px-5 py-2 rounded-full text-[14px] font-normal btn-recognition hover:brightness-95 transition-all shadow-lg active:scale-95"
           >
             Give Recognition
           </button>
@@ -158,7 +158,7 @@ export default function Header() {
             <div className="absolute right-0 mt-3 w-60 border bg-card border-border-soft rounded-2xl shadow-2xl z-50 overflow-hidden py-1 animate-in fade-in slide-in-from-top-2 duration-200">
               <div className="p-4 border-b border-border-soft bg-indigo-500/5">
                 <div className="text-[15px] font-black text-text-main">{displayName}</div>
-                <div className="text-xs text-text-main/50 font-medium truncate">{user?.email}</div>
+                <div className="text-xs text-text-main/50 font-normal truncate">{user?.email}</div>
                 <div className="mt-2 inline-block px-2.5 py-1 rounded-lg bg-indigo-500/20 text-indigo-500 text-[9px] font-black uppercase tracking-widest">
                   {formatRole(userRole)}
                 </div>

@@ -27,7 +27,7 @@ const OnboardTenantModal = ({ isOpen, onClose, onSave }) => {
         
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium mb-1">Company Name</label>
+            <label className="block text-sm font-normal mb-1">Company Name</label>
             <input 
               type="text"
               className="w-full px-4 py-2 rounded-lg border bg-card/20 border-indigo-500/10 outline-none focus:ring-2 focus:ring-indigo-500 text-text-main placeholder:text-text-main/60"
@@ -39,7 +39,7 @@ const OnboardTenantModal = ({ isOpen, onClose, onSave }) => {
           </div>
           
           <div>
-            <label className="block text-sm font-medium mb-1">Subdomain</label>
+            <label className="block text-sm font-normal mb-1">Subdomain</label>
             <div className="flex items-center">
               <input 
                 type="text"
@@ -54,7 +54,7 @@ const OnboardTenantModal = ({ isOpen, onClose, onSave }) => {
           </div>
 
           <div>
-            <label className="block text-sm font-medium mb-1">Primary Admin Email</label>
+            <label className="block text-sm font-normal mb-1">Primary Admin Email</label>
             <input 
               type="email"
               className="w-full px-4 py-2 rounded-lg border bg-card/20 border-indigo-500/10 outline-none focus:ring-2 focus:ring-indigo-500 text-text-main placeholder:text-text-main/60"
@@ -65,7 +65,7 @@ const OnboardTenantModal = ({ isOpen, onClose, onSave }) => {
           </div>
 
           <div>
-            <label className="block text-sm font-medium mb-1">Subscription Plan</label>
+            <label className="block text-sm font-normal mb-1">Subscription Plan</label>
             <select 
               className="w-full px-4 py-2 rounded-lg border bg-card/20 border-indigo-500/10 outline-none focus:ring-2 focus:ring-indigo-500 text-text-main"
               value={formData.planId}
@@ -78,7 +78,7 @@ const OnboardTenantModal = ({ isOpen, onClose, onSave }) => {
           </div>
 
           <div className="flex gap-3 justify-end pt-4">
-            <button type="button" onClick={onClose} className="px-6 py-2 text-text-main/60 font-medium hover:text-text-main transition">
+            <button type="button" onClick={onClose} className="px-6 py-2 text-text-main/60 font-normal hover:text-text-main transition">
               Cancel
             </button>
             <button type="submit" className="px-6 py-2 btn-accent rounded-lg font-bold hover:brightness-95 transition">

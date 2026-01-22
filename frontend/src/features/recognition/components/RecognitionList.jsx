@@ -21,7 +21,7 @@ export default function RecognitionList({ pages, fetchNextPage, hasNextPage, isF
               <div className="flex-1">
                 <div className="flex items-center justify-between">
                   <div>
-                    <div className="text-sm font-medium">{r.nominee_name || r.nominee_id}</div>
+                    <div className="text-sm font-normal">{r.nominee_name || r.nominee_id}</div>
                     <div className="text-xs text-text-main opacity-60">Points: <span className="font-semibold">{r.points}</span></div>
                   </div>
                   <div>

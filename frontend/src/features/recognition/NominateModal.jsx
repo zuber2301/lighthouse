@@ -116,21 +116,21 @@ export default function NominateModal({ open, onClose, onSubmit }) {
     <Modal open={open} onClose={onClose} className="max-w-4xl">
       <form onSubmit={handleSubmit} className="space-y-6">
         <div>
-          <h2 className="text-3xl font-black text-text-main tracking-tight">Nominate a Peer</h2>
-          <div className="text-[13px] font-bold uppercase tracking-[0.15em] opacity-40 text-text-main mt-1">Reward excellence across your organization</div>
+          <h2 className="text-3xl font-normal text-text-main tracking-tight">Nominate a Peer</h2>
+          <div className="text-[13px] font-normal tracking-[0.08em] opacity-40 text-text-main mt-1">Reward excellence across your organization</div>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-stretch">
           {/* Left column: Entry Form */}
           <div className="space-y-6 bg-indigo-500/5 p-6 rounded-2xl border border-indigo-500/10">
             <section>
-              <div className="text-[11px] font-black uppercase tracking-widest text-text-main/50 mb-3">Recipient</div>
+              <div className="text-[15px] font-normal tracking-tight text-white mb-3">Recipient</div>
               <div className="relative">
                 <input 
                   value={search} 
                   onChange={(e) => setSearch(e.target.value)} 
-                  placeholder="Seach by name or email..." 
-                  className="w-full bg-surface border border-indigo-500/20 rounded-xl p-3 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/30 transition-all font-medium" 
+                  placeholder="Search by name or email..." 
+                  className="w-full bg-surface border border-indigo-500/20 rounded-xl p-3 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/30 transition-all font-normal" 
                 />
                 <svg className="w-4 h-4 absolute right-3 top-3.5 opacity-30" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" strokeWidth={3} strokeLinecap="round" strokeLinejoin="round"/></svg>
               </div>
@@ -157,15 +157,15 @@ export default function NominateModal({ open, onClose, onSubmit }) {
 
             <div className="grid grid-cols-2 gap-4">
               <section>
-                <div className="text-[11px] font-black uppercase tracking-widest text-text-main/50 mb-3">Area of Focus</div>
+                <div className="text-[15px] font-normal tracking-tight text-white mb-3">Area of Focus</div>
                 <div className="relative">
                   <select 
                     value={category} 
                     onChange={(e) => setCategory(e.target.value)} 
-                    className="w-full bg-surface border border-indigo-500/20 rounded-xl p-3 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/30 appearance-none cursor-pointer font-bold"
+                    className="w-full bg-surface border border-indigo-500/20 rounded-xl p-3 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/30 appearance-none cursor-pointer font-normal"
                   >
                     {CATEGORIES.map((c) => (
-                      <option key={c} value={c} className="bg-card text-text-main font-medium">{c}</option>
+                      <option key={c} value={c} className="bg-card text-text-main font-normal">{c}</option>
                     ))}
                   </select>
                   <svg className="w-3 h-3 absolute right-3 top-4 opacity-40 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M19 9l-7 7-7-7" strokeWidth={3} strokeLinecap="round" strokeLinejoin="round"/></svg>
@@ -173,33 +173,33 @@ export default function NominateModal({ open, onClose, onSubmit }) {
               </section>
 
               <section>
-                <div className="text-[11px] font-black uppercase tracking-widest text-text-main/50 mb-3">Points</div>
+                <div className="text-[15px] font-normal tracking-tight text-white mb-3">Points</div>
                 <input 
                   type="number" 
                   value={points} 
                   onChange={(e) => setPoints(Number(e.target.value))} 
-                  className="w-full bg-surface border border-indigo-500/20 rounded-xl p-3 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/30 font-black text-indigo-500" 
+                  className="w-full bg-surface border border-indigo-500/20 rounded-xl p-3 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/30 font-normal text-indigo-500" 
                   min={1} 
                 />
               </section>
             </div>
 
             <section>
-              <div className="text-[11px] font-black uppercase tracking-widest text-text-main/50 mb-3">Message</div>
+              <div className="text-[15px] font-normal tracking-tight text-white mb-3">Message</div>
               <textarea 
                 value={message} 
                 onChange={(e) => setMessage(e.target.value)} 
-                className="w-full bg-surface border border-indigo-500/20 rounded-xl p-4 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/30 min-h-[120px] font-medium placeholder:opacity-30" 
+                className="w-full bg-surface border border-indigo-500/20 rounded-xl p-4 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/30 min-h-[120px] font-normal placeholder:opacity-30" 
                 placeholder="Why does this person deserve recognition?" 
               />
             </section>
 
             <section>
-              <div className="text-[11px] font-black uppercase tracking-widest text-text-main/50 mb-3">Attachments</div>
+              <div className="text-[15px] font-normal tracking-tight text-white mb-3">Attachments</div>
               <div className="flex flex-wrap gap-2">
                 <label className="flex items-center gap-2 px-4 py-2.5 bg-indigo-500/10 hover:bg-indigo-500/20 border border-indigo-500/20 rounded-xl cursor-pointer transition-all active:scale-95 group">
                   <span className="text-lg group-hover:rotate-12 transition-transform">📁</span>
-                  <span className="text-[12px] font-black uppercase tracking-widest text-indigo-500">Upload Media</span>
+                  <span className="text-[12px] font-normal text-indigo-300">Upload Media</span>
                   <input type="file" accept="image/*,video/*" multiple onChange={handleFileChange} className="hidden" />
                 </label>
                 
@@ -220,41 +220,41 @@ export default function NominateModal({ open, onClose, onSubmit }) {
           {/* Right column: Summary & Schedule */}
           <div className="flex flex-col gap-6">
             <div className="flex-1 space-y-6 bg-card border border-border-soft p-6 rounded-2xl shadow-inner">
-              <div className="text-[11px] font-black uppercase tracking-widest text-text-main/30 border-b border-border-soft pb-3">Preview Recognition</div>
+              <div className="text-[15px] font-normal tracking-tight text-white border-b border-border-soft pb-3">Preview Recognition</div>
               
               <div className="space-y-4">
-                <div className="flex justify-between items-center bg-indigo-500/5 p-3 rounded-xl border border-indigo-500/5">
-                  <span className="text-[12px] font-black uppercase tracking-widest opacity-40">Recipient</span>
-                  <span className="text-sm font-black text-indigo-500">{users.find((x)=>x.id===nominee)?.name || 'None selected'}</span>
-                </div>
+                  <div className="flex justify-between items-center bg-indigo-500/5 p-3 rounded-xl border border-indigo-500/5">
+                    <span className="text-[16px] font-normal text-white">Recipient</span>
+                    <span className="text-sm font-normal text-indigo-500">{users.find((x)=>x.id===nominee)?.name || 'None selected'}</span>
+                  </div>
                 
-                <div className="flex justify-between items-center bg-indigo-500/5 p-3 rounded-xl border border-indigo-500/5">
-                  <span className="text-[12px] font-black uppercase tracking-widest opacity-40">Category</span>
-                  <span className="text-sm font-black text-emerald-500 uppercase tracking-widest">{category}</span>
-                </div>
+                  <div className="flex justify-between items-center bg-indigo-500/5 p-3 rounded-xl border border-indigo-500/5">
+                    <span className="text-[16px] font-normal text-white">Category</span>
+                    <span className="text-sm font-normal text-emerald-500">{category}</span>
+                  </div>
 
                 <div className="bg-indigo-500/5 p-4 rounded-xl border border-indigo-500/5 min-h-[100px]">
-                  <span className="text-[11px] font-black uppercase tracking-widest opacity-40 block mb-2">Message Preview</span>
-                  <p className="text-sm text-text-main/80 font-medium italic leading-relaxed">
+                  <span className="text-[15px] font-normal text-white block mb-2">Message Preview</span>
+                  <p className="text-sm text-text-main/80 font-normal italic leading-relaxed">
                     {message ? message : 'Write a message to see it previewed here...'}
                   </p>
                 </div>
               </div>
 
               <section className="pt-4 border-t border-border-soft">
-                <div className="text-[11px] font-black uppercase tracking-widest text-text-main/30 mb-4">Schedule (Optional)</div>
+                <div className="text-[11px] font-normal text-text-main/30 mb-4">Schedule (Optional)</div>
                 <div className="grid grid-cols-2 gap-3">
                   <input 
                     type="date" 
                     value={scheduledDate} 
                     onChange={(e) => setScheduledDate(e.target.value)} 
-                    className="bg-surface border border-border-soft rounded-xl p-3 text-[13px] font-black focus:outline-none focus:ring-2 focus:ring-indigo-500/30 transition-all cursor-pointer text-text-main" 
+                    className="bg-surface border border-border-soft rounded-xl p-3 text-[13px] font-normal focus:outline-none focus:ring-2 focus:ring-indigo-500/30 transition-all cursor-pointer text-text-main" 
                   />
                   <input 
                     type="time" 
                     value={scheduledTime} 
                     onChange={(e) => setScheduledTime(e.target.value)} 
-                    className="bg-surface border border-border-soft rounded-xl p-3 text-[13px] font-black focus:outline-none focus:ring-2 focus:ring-indigo-500/30 transition-all cursor-pointer text-text-main" 
+                    className="bg-surface border border-border-soft rounded-xl p-3 text-[13px] font-normal focus:outline-none focus:ring-2 focus:ring-indigo-500/30 transition-all cursor-pointer text-text-main" 
                   />
                 </div>
               </section>
@@ -264,14 +264,14 @@ export default function NominateModal({ open, onClose, onSubmit }) {
               <button 
                 type="button" 
                 onClick={onClose} 
-                className="flex-1 py-4 rounded-2xl bg-indigo-500/5 border border-indigo-500/10 text-text-main text-[13px] font-black uppercase tracking-widest hover:bg-slate-500/5 transition-all active:scale-95"
+                className="flex-1 py-4 rounded-2xl bg-indigo-500/5 border border-indigo-500/10 text-text-main text-[13px] font-normal hover:bg-slate-500/5 transition-all active:scale-95"
               >
                 Cancel
               </button>
               <button 
                 type="submit" 
                 disabled={!nominee} 
-                className="flex-[2] py-4 rounded-2xl btn-accent font-black text-[13px] uppercase tracking-widest shadow-xl shadow-indigo-600/20 disabled:opacity-30 disabled:grayscale transition-all active:scale-95"
+                className="flex-[2] py-4 rounded-2xl btn-accent text-white font-normal text-[13px] shadow-xl shadow-indigo-600/20 disabled:opacity-30 disabled:grayscale transition-all active:scale-95"
               >
                 Submit Recognition
               </button>

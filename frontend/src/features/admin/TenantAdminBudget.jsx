@@ -131,17 +131,17 @@ export default function TenantAdminBudget() {
             <Card>
               <p className="text-xs font-bold opacity-70 text-text-main uppercase">Active Users</p>
               <h2 className="text-2xl font-bold text-text-main mt-2">1,284</h2>
-              <p className="text-xs text-emerald-500 font-medium mt-auto">+12 this week</p>
+              <p className="text-xs text-emerald-500 font-normal mt-auto">+12 this week</p>
             </Card>
             <Card>
               <p className="text-xs font-bold opacity-70 text-text-main uppercase">Total Recognition</p>
               <h2 className="text-2xl font-bold text-text-main mt-2">856</h2>
-              <p className="text-xs text-indigo-500 font-medium mt-auto">Avg 4.2 / user</p>
+              <p className="text-xs text-indigo-500 font-normal mt-auto">Avg 4.2 / user</p>
             </Card>
             <Card>
               <p className="text-xs font-bold opacity-70 text-text-main uppercase">Redemptions</p>
               <h2 className="text-2xl font-bold text-text-main mt-2">142</h2>
-              <p className="text-xs opacity-60 text-text-main font-medium mt-auto">24 pending approval</p>
+              <p className="text-xs opacity-60 text-text-main font-normal mt-auto">24 pending approval</p>
             </Card>
           </div>
 
@@ -212,7 +212,7 @@ export default function TenantAdminBudget() {
                         </div>
                       </td>
                       <td className="px-6 py-4">
-                        <span className="text-xs font-medium px-2 py-0.5 rounded bg-indigo-500/10 text-indigo-500 uppercase tracking-tight">
+                        <span className="text-xs font-normal px-2 py-0.5 rounded bg-indigo-500/10 text-indigo-500 uppercase tracking-tight">
                           {lead.department || 'General'}
                         </span>
                       </td>

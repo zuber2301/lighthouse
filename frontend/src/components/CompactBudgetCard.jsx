@@ -15,7 +15,7 @@ const CompactBudgetCard = ({ master = 0, allocated = 0, spent = 0 }) => {
         {/* Master Pool to Allocation */}
         <div>
           <div className="flex justify-between mb-2">
-            <span className="text-sm font-medium opacity-70 text-text-main">Distribution to Leads</span>
+            <span className="text-sm font-normal opacity-70 text-text-main">Distribution to Leads</span>
             <span className="text-sm font-bold text-text-main">₹{allocated.toLocaleString()} / ₹{master.toLocaleString()}</span>
           </div>
           <div className="h-2 w-full bg-indigo-500/10 rounded-full overflow-hidden">
@@ -29,7 +29,7 @@ const CompactBudgetCard = ({ master = 0, allocated = 0, spent = 0 }) => {
         {/* Allocation to Actual Spending */}
         <div>
           <div className="flex justify-between mb-2">
-            <span className="text-sm font-medium opacity-70 text-text-main">Employee Recognition Spending</span>
+            <span className="text-sm font-normal opacity-70 text-text-main">Employee Recognition Spending</span>
             <span className="text-sm font-bold text-emerald-500">₹{spent.toLocaleString()} spent</span>
           </div>
           <div className="h-2 w-full bg-indigo-500/10 rounded-full overflow-hidden">
