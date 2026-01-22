@@ -34,7 +34,7 @@ const RedemptionModal = ({ isOpen, onClose, reward, currentBalance, onConfirm })
       <motion.div 
         initial={{ scale: 0.9, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
-        className="bg-white dark:bg-slate-900 w-full max-w-md rounded-3xl overflow-hidden shadow-2xl border dark:border-slate-800"
+        className="bg-card dark:bg-card w-full max-w-md rounded-3xl overflow-hidden shadow-sm-2xl border dark:border-border-soft"
       >
         {status !== 'success' ? (
           <div className="p-8">
@@ -42,8 +42,8 @@ const RedemptionModal = ({ isOpen, onClose, reward, currentBalance, onConfirm })
             <p className="text-slate-500 text-sm mb-6">You are about to redeem your hard-earned points for this reward.</p>
 
             {/* Reward Summary Card */}
-            <div className="flex items-center gap-4 bg-slate-50 dark:bg-slate-800/50 p-4 rounded-2xl mb-6">
-              <div className="h-16 w-16 bg-white dark:bg-slate-800 rounded-xl flex items-center justify-center text-3xl shadow-sm">
+            <div className="flex items-center gap-4 bg-slate-50 dark:bg-card/50 p-4 rounded-2xl mb-6">
+              <div className="h-16 w-16 bg-card dark:bg-card rounded-xl flex items-center justify-center text-3xl shadow-sm-sm">
                 {reward.icon || '🎁'}
               </div>
               <div>
@@ -53,7 +53,7 @@ const RedemptionModal = ({ isOpen, onClose, reward, currentBalance, onConfirm })
             </div>
 
             {/* Point Calculation Ledger */}
-            <div className="space-y-3 border-t dark:border-slate-800 pt-6 mb-8 text-sm">
+            <div className="space-y-3 border-t dark:border-border-soft pt-6 mb-8 text-sm">
               <div className="flex justify-between text-slate-500">
                 <span>Current Balance</span>
                 <span>{currentBalance} pts</span>
@@ -62,7 +62,7 @@ const RedemptionModal = ({ isOpen, onClose, reward, currentBalance, onConfirm })
                 <span>Reward Cost</span>
                 <span>- {rewardPoints} pts</span>
               </div>
-              <div className="flex justify-between font-bold text-lg text-slate-800 dark:text-white pt-2 border-t border-dashed dark:border-slate-700">
+              <div className="flex justify-between font-bold text-lg text-slate-800 dark:text-white pt-2 border-t border-dashed dark:border-border-soft">
                 <span>Remaining Balance</span>
                 <span className={remainingBalance < 0 ? 'text-rose-500' : 'text-emerald-500'}>
                   {remainingBalance} pts
@@ -74,15 +74,15 @@ const RedemptionModal = ({ isOpen, onClose, reward, currentBalance, onConfirm })
             <div className="flex gap-3">
               <button 
                 onClick={onClose}
-                className="flex-1 py-3 font-semibold text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl transition"
+                className="flex-1 py-3 font-semibold text-slate-500 hover:bg-slate-100 dark:hover:bg-card rounded-xl transition"
               >
                 Cancel
               </button>
               <button 
                 disabled={!isAffordable || status === 'processing'}
                 onClick={handleConfirm}
-                className={`flex-1 py-3 rounded-xl font-bold text-white transition shadow-lg 
-                  ${isAffordable && status !== 'processing' ? 'bg-indigo-600 hover:bg-indigo-700 shadow-indigo-200' : 'bg-slate-300 cursor-not-allowed'}
+                className={`flex-1 py-3 rounded-xl font-bold text-white transition shadow-sm-lg 
+                  ${isAffordable && status !== 'processing' ? 'bg-indigo-600 hover:bg-indigo-700 shadow-sm-indigo-200' : 'bg-slate-300 cursor-not-allowed'}
                 `}
               >
                 {status === 'processing' ? 'Processing...' : 'Confirm'}
@@ -101,7 +101,7 @@ const RedemptionModal = ({ isOpen, onClose, reward, currentBalance, onConfirm })
               onClick={() => {
                 onClose();
               }}
-              className="w-full mt-6 py-3 bg-slate-800 text-white rounded-xl font-bold hover:bg-slate-950 transition"
+              className="w-full mt-6 py-3 bg-card text-white rounded-xl font-bold hover:bg-slate-950 transition"
              >
                Back to Store
              </button>

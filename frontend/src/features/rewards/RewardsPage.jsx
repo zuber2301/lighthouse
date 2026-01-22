@@ -47,12 +47,12 @@ export default function RewardsPage() {
         />
 
         {loading ? (
-          <div className="text-center py-10 text-slate-400">Loading rewards...</div>
+          <div className="text-center py-10 opacity-70 text-text-main">Loading rewards...</div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-6">
             {rewards.map((reward) => (
               <Card key={reward.id} className="p-0 overflow-hidden group">
-                <div className="h-40 bg-slate-800 flex items-center justify-center text-5xl">
+                <div className="h-40 bg-card flex items-center justify-center text-5xl">
                    {reward.icon || '🎁'}
                 </div>
                 <div className="p-6">
@@ -62,7 +62,7 @@ export default function RewardsPage() {
                       {reward.points_cost} pts
                     </span>
                   </div>
-                  <p className="text-slate-400 text-sm mb-6 line-clamp-2">
+                  <p className="opacity-70 text-text-main text-sm mb-6 line-clamp-2">
                     {reward.description || 'No description available.'}
                   </p>
                   <button 
@@ -71,7 +71,7 @@ export default function RewardsPage() {
                     className={`w-full py-2 rounded-lg font-bold transition ${
                       user?.points_balance >= reward.points_cost
                         ? 'bg-indigo-600 hover:bg-indigo-700 text-white'
-                        : 'bg-slate-800 text-slate-500 cursor-not-allowed'
+                        : 'bg-card text-slate-500 cursor-not-allowed'
                     }`}
                   >
                     {user?.points_balance >= reward.points_cost ? 'Redeem Now' : 'Insufficient Points'}

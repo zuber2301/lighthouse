@@ -41,7 +41,7 @@ export default function DevPersonaSwitcher({ onSwitch } = {}) {
   return (
     <div className="fixed bottom-4 right-4 z-[9999]">
       {!collapsed ? (
-        <div className="p-4 bg-slate-900 border border-indigo-500 rounded-xl shadow-2xl">
+        <div className="p-4 bg-card border border-indigo-500 rounded-xl shadow-2xl">
           <div className="flex items-center justify-between mb-3">
             <p className="text-xs font-bold text-indigo-400 uppercase tracking-tighter">Dev Persona Switcher</p>
             <button onClick={() => setCollapsed(true)} className="text-slate-300 px-2 py-1 rounded hover:bg-slate-800">▾</button>
@@ -68,7 +68,7 @@ export default function DevPersonaSwitcher({ onSwitch } = {}) {
           </div>
         </div>
       ) : (
-        <div className="p-2 bg-slate-900 border border-indigo-500 rounded-xl shadow-2xl">
+        <div className="p-2 bg-card border border-indigo-500 rounded-xl shadow-2xl">
           <button onClick={() => setCollapsed(false)} className="text-xs text-indigo-400 px-3 py-2">Dev Personas ▸</button>
         </div>
       )}

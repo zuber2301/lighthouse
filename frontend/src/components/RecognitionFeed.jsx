@@ -3,7 +3,7 @@ import React from 'react'
 const RecognitionCard = ({ data }) => (
   <article role="article" className="w-full max-w-xs">
     <div className="rounded-2xl bg-gradient-to-r from-indigo-700 via-indigo-600 to-teal-400 p-[1px] h-full">
-      <div className="bg-slate-900/80 dark:bg-slate-900/90 rounded-xl p-4 flex flex-col gap-3 h-full">
+      <div className="bg-card/80 dark:bg-card/90 rounded-xl p-4 flex flex-col gap-3 h-full">
         <div className="flex items-center justify-center">
           <div className="h-12 w-12 rounded-full bg-gradient-to-br from-indigo-600 to-teal-400 text-white flex items-center justify-center text-base font-semibold">
             {data.sender_avatar}

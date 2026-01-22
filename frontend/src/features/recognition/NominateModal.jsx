@@ -117,19 +117,19 @@ export default function NominateModal({ open, onClose, onSubmit }) {
       <form onSubmit={handleSubmit} className="space-y-4">
         <h2 className="text-lg font-semibold">Nominate a Peer</h2>
 
-        <div className="text-sm text-slate-400">All sections are shown below — fill any fields and submit.</div>
+        <div className="text-sm opacity-70 text-text-main">All sections are shown below — fill any fields and submit.</div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="space-y-4">
             {/* Left column: Recipient, Category, Design */}
             <section>
-              <div className="text-sm text-slate-400">Select Recipient</div>
-              <input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search teammates..." className="mt-1 w-full bg-slate-900 rounded-md p-2" />
+              <div className="text-sm opacity-70 text-text-main">Select Recipient</div>
+              <input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search teammates..." className="mt-1 w-full bg-card rounded-md p-2" />
               {search.trim() ? (
                 users.length ? (
                   <div className="grid grid-cols-2 gap-2 mt-2">
                     {users.map((u) => (
-                      <button type="button" key={u.id} onClick={() => setNominee(u.id)} className={`text-left p-2 rounded-md ${nominee === u.id ? 'ring-2 ring-primary bg-slate-800' : 'bg-slate-900'}`}>
+                      <button type="button" key={u.id} onClick={() => setNominee(u.id)} className={`text-left p-2 rounded-md ${nominee === u.id ? 'ring-2 ring-primary bg-card' : 'bg-card'}`}>
                         {u.name}
                       </button>
                     ))}
@@ -140,32 +140,32 @@ export default function NominateModal({ open, onClose, onSubmit }) {
               ) : (
                 <div className="mt-2 text-sm text-slate-500">Type to search teammates...</div>
               )}
-              {nominee && <div className="text-sm text-slate-300 mt-1">Selected: {users.find((x)=>x.id===nominee)?.name || nominee}</div>}
+              {nominee && <div className="text-sm text-text-main opacity-80 mt-1">Selected: {users.find((x)=>x.id===nominee)?.name || nominee}</div>}
             </section>
 
             <section>
-              <div className="text-sm text-slate-400">Select Area of Focus</div>
-              <select value={category} onChange={(e) => setCategory(e.target.value)} className="mt-1 w-full bg-slate-900 rounded-md p-2">
+              <div className="text-sm opacity-70 text-text-main">Select Area of Focus</div>
+              <select value={category} onChange={(e) => setCategory(e.target.value)} className="mt-1 w-full bg-card rounded-md p-2">
                 {CATEGORIES.map((c) => (
-                  <option key={c} value={c} className="bg-slate-800">{c}</option>
+                  <option key={c} value={c} className="bg-card">{c}</option>
                 ))}
               </select>
               <label className="block mt-3">
-                <div className="text-sm text-slate-400">Points</div>
-                <input type="number" value={points} onChange={(e) => setPoints(Number(e.target.value))} className="mt-1 w-full bg-slate-900 rounded-md p-2" min={1} />
+                <div className="text-sm opacity-70 text-text-main">Points</div>
+                <input type="number" value={points} onChange={(e) => setPoints(Number(e.target.value))} className="mt-1 w-full bg-card rounded-md p-2" min={1} />
               </label>
             </section>
 
             <section>
-              <div className="text-sm text-slate-400">Design Message</div>
-              <textarea value={message} onChange={(e) => setMessage(e.target.value)} className="mt-1 w-full bg-slate-900 rounded-md p-3 min-h-[150px]" rows={6} placeholder="Write a message..." />
+              <div className="text-sm opacity-70 text-text-main">Design Message</div>
+              <textarea value={message} onChange={(e) => setMessage(e.target.value)} className="mt-1 w-full bg-card rounded-md p-3 min-h-[150px]" rows={6} placeholder="Write a message..." />
 
               <div className="mt-3">
-                <div className="text-sm text-slate-400">Add images or videos</div>
+                <div className="text-sm opacity-70 text-text-main">Add images or videos</div>
                 <input type="file" accept="image/*,video/*" multiple onChange={handleFileChange} className="mt-1" />
                 <div className="flex gap-2 mt-2">
                   {attachments.map((a, i) => (
-                    <div key={i} className="relative w-24 h-16 bg-slate-800 rounded-md overflow-hidden">
+                    <div key={i} className="relative w-24 h-16 bg-card rounded-md overflow-hidden">
                       {a.type && a.type.startsWith('image/') ? (
                         // eslint-disable-next-line jsx-a11y/img-redundant-alt
                         <img src={a.preview} alt={a.name} className="w-full h-full object-cover" />
@@ -183,28 +183,28 @@ export default function NominateModal({ open, onClose, onSubmit }) {
             <div className="space-y-4 flex flex-col">
               {/* Right column: Review & Schedule */}
               <section>
-                <div className="text-sm text-slate-400">Review & Schedule</div>
-                <div className="bg-slate-900 p-3 rounded-md mt-2 min-h-[150px]">
-                  <div className="text-sm text-slate-300">Recipient: <span className="font-medium">{users.find((x)=>x.id===nominee)?.name || '—'}</span></div>
-                  <div className="text-sm text-slate-300">Category: <span className="font-medium">{category}</span></div>
-                  <div className="mt-2 text-sm text-slate-300">Message:</div>
-                  <div className="mt-1 p-2 bg-slate-800 rounded-md">
+                <div className="text-sm opacity-70 text-text-main">Review & Schedule</div>
+                <div className="bg-card p-3 rounded-md mt-2 min-h-[150px]">
+                  <div className="text-sm text-text-main opacity-80">Recipient: <span className="font-medium">{users.find((x)=>x.id===nominee)?.name || '—'}</span></div>
+                  <div className="text-sm text-text-main opacity-80">Category: <span className="font-medium">{category}</span></div>
+                  <div className="mt-2 text-sm text-text-main opacity-80">Message:</div>
+                  <div className="mt-1 p-2 bg-card rounded-md">
                     {message ? <pre className="whitespace-pre-wrap">{message}</pre> : <i>No message provided</i>}
                   </div>
-                  <div className="mt-2 text-sm text-slate-300">Attachments:</div>
-                  <ul className="mt-1 list-disc list-inside text-sm text-slate-300">
+                  <div className="mt-2 text-sm text-text-main opacity-80">Attachments:</div>
+                  <ul className="mt-1 list-disc list-inside text-sm text-text-main opacity-80">
                     {attachments.length === 0 ? <li>None</li> : attachments.map((a, i) => <li key={i}>{a.name}</li>)}
                   </ul>
 
                   <div className="mt-3 grid grid-cols-2 gap-2">
-                    <input type="date" value={scheduledDate} onChange={(e) => setScheduledDate(e.target.value)} className="bg-slate-900 rounded-md p-2" />
-                    <input type="time" value={scheduledTime} onChange={(e) => setScheduledTime(e.target.value)} className="bg-slate-900 rounded-md p-2" />
+                    <input type="date" value={scheduledDate} onChange={(e) => setScheduledDate(e.target.value)} className="bg-card rounded-md p-2" />
+                    <input type="time" value={scheduledTime} onChange={(e) => setScheduledTime(e.target.value)} className="bg-card rounded-md p-2" />
                   </div>
                 </div>
               </section>
 
               <div className="mt-4 mb-2 flex justify-end gap-3">
-                <button type="button" onClick={onClose} className="px-3 py-1 rounded-md bg-slate-700 focus:outline-none focus-visible:ring-3 focus-visible:ring-primary">Cancel</button>
+                <button type="button" onClick={onClose} className="px-3 py-1 rounded-md bg-surface focus:outline-none focus-visible:ring-3 focus-visible:ring-primary">Cancel</button>
                 <button type="submit" className="px-3 py-1 rounded-md bg-indigo-600 focus:outline-none focus-visible:ring-3 focus-visible:ring-primary">Nominate</button>
               </div>
             </div>

@@ -83,7 +83,7 @@ export default function LeadAllocationTable({ tenantId, onAllocated }) {
         </div>
       </div>
 
-      <div className="bg-white dark:bg-slate-900 rounded-[2.5rem] border dark:border-slate-800 shadow-sm overflow-hidden">
+      <div className="bg-white dark:bg-card rounded-[2.5rem] border dark:border-border-soft shadow-sm overflow-hidden">
         <table className="w-full text-left border-collapse">
           <thead>
             <tr className="bg-slate-50 dark:bg-slate-800/50 text-slate-500 text-xs uppercase tracking-widest">

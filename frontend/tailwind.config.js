@@ -8,11 +8,11 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        surface: '#F1F5F9', // Light grey background
-        'surface-white': '#F8FAFC', // Off-white
-        'border-soft': '#E2E8F0', // Soft borders
-        'text-main': '#1E293B', // Main text
-        card: '#FFFFFF',    // White card
+        surface: 'var(--bg-color)',
+        'surface-white': 'var(--bg-color)',
+        'border-soft': 'var(--border-color)',
+        'text-main': 'var(--text-main)',
+        card: 'var(--card-bg)',
         'tm-indigo': '#6366F1',
         'tm-teal': '#00ffcc',
         'tm-teal-2': '#00ccff',

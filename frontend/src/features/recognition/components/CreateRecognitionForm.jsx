@@ -17,7 +17,7 @@ export default function CreateRecognitionForm() {
   }
 
   return (
-    <form onSubmit={onSubmit} className="p-4 bg-white rounded shadow mb-4">
+    <form onSubmit={onSubmit} className="p-4 bg-card rounded shadow-sm mb-4">
       <div className="flex gap-3">
         <input
           placeholder="Nominee ID"

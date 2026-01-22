@@ -72,7 +72,7 @@ export default function BudgetsPage() {
                   type="number"
                   value={amount}
                   onChange={(e) => setAllocations(prev => ({ ...prev, [dept]: parseInt(e.target.value) || 0 }))}
-                  className="flex-1 px-3 py-2 bg-slate-800 border border-slate-600 rounded-md"
+                  className="flex-1 px-3 py-2 bg-card border border-border-soft rounded-md"
                 />
               </div>
             ))}
@@ -81,7 +81,7 @@ export default function BudgetsPage() {
           <div className="flex justify-end gap-4">
             <button
               onClick={() => setShowAllocate(false)}
-              className="px-4 py-2 bg-slate-600 text-white rounded-md hover:bg-slate-500"
+              className="px-4 py-2 bg-surface text-white rounded-md hover:bg-slate-500"
             >
               Cancel
             </button>

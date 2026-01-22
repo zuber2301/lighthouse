@@ -22,7 +22,7 @@ const OnboardTenantModal = ({ isOpen, onClose, onSave }) => {
 
   return (
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
-      <div className="bg-slate-900 w-full max-w-lg rounded-2xl p-8 shadow-2xl border border-slate-800">
+      <div className="bg-card w-full max-w-lg rounded-2xl p-8 shadow-2xl border border-border-soft">
         <h2 className="text-2xl font-bold mb-6">Onboard New Company</h2>
         
         <form onSubmit={handleSubmit} className="space-y-4">

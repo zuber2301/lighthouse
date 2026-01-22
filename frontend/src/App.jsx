@@ -1,6 +1,7 @@
 import React from 'react'
 import { Routes, Route, Navigate } from 'react-router-dom'
 import { AuthProvider } from './lib/AuthContext'
+import { ThemeProvider } from './lib/ThemeContext'
 import ProtectedRoute from './components/ProtectedRoute'
 import AppLayout from './layouts/AppLayout'
 import AuthLayout from './layouts/AuthLayout'
@@ -31,9 +32,10 @@ import RecognitionFeedDemo from './pages/RecognitionFeedDemo'
 export default function App() {
   return (
     <AuthProvider>
-      <Routes>
-        {/* Auth routes */}
-        <Route path="/auth" element={<AuthLayout />}>
+      <ThemeProvider>
+        <Routes>
+          {/* Auth routes */}
+          <Route path="/auth" element={<AuthLayout />}>
           <Route path="login" element={<LoginPage />} />
           <Route path="register" element={<RegisterPage />} />
           <Route path="callback" element={<OAuthCallback />} />
@@ -107,6 +109,7 @@ export default function App() {
         {/* Redirect unknown routes to login */}
         <Route path="*" element={<Navigate to="/auth/login" replace />} />
       </Routes>
+      </ThemeProvider>
     </AuthProvider>
   )
 }

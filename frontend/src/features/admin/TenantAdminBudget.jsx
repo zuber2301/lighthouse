@@ -88,15 +88,15 @@ export default function TenantAdminBudget() {
           title="Command Center" 
           subtitle={`Managing ${selectedTenant?.name || 'Triton Industries'}`} 
         />
-        <div className="flex bg-white p-1 rounded-xl shadow-sm border border-slate-200">
+        <div className="flex bg-card p-1 rounded-xl shadow-sm-sm border border-border-soft">
           {['budget', 'employees', 'culture', 'rewards'].map(tab => (
             <button
               key={tab}
               onClick={() => setActiveTab(tab)}
               className={`px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-wider transition-all ${
                 activeTab === tab 
-                ? 'bg-indigo-600 text-white shadow-md' 
-                : 'text-slate-400 hover:text-slate-600'
+                ? 'bg-indigo-600 text-white shadow-sm-md' 
+                : 'opacity-70 text-text-main hover:text-slate-600'
               }`}
             >
               {tab}
@@ -110,7 +110,7 @@ export default function TenantAdminBudget() {
           {/* Top Stats Cards */}
           <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
             <Card className="flex flex-col justify-between">
-              <p className="text-xs font-bold text-slate-400 uppercase">Master Balance</p>
+              <p className="text-xs font-bold opacity-70 text-text-main uppercase">Master Balance</p>
               <h2 className="text-2xl font-bold text-slate-900 mt-2">₹{masterBalance.toLocaleString()}</h2>
               <div className="mt-4 flex gap-2">
                 <input 
@@ -118,7 +118,7 @@ export default function TenantAdminBudget() {
                   placeholder="Load ₹"
                   value={loadAmount}
                   onChange={e => setLoadAmount(e.target.value)}
-                  className="w-full text-xs border border-slate-200 rounded-lg px-2 py-1 focus:ring-2 focus:ring-indigo-500 outline-none"
+                  className="w-full text-xs border border-border-soft rounded-lg px-2 py-1 focus:ring-2 focus:ring-indigo-500 outline-none"
                 />
                 <button 
                   onClick={() => loadBudget(loadAmount)}
@@ -129,17 +129,17 @@ export default function TenantAdminBudget() {
               </div>
             </Card>
             <Card>
-              <p className="text-xs font-bold text-slate-400 uppercase">Active Users</p>
+              <p className="text-xs font-bold opacity-70 text-text-main uppercase">Active Users</p>
               <h2 className="text-2xl font-bold text-slate-900 mt-2">1,284</h2>
               <p className="text-xs text-emerald-600 font-medium mt-auto">+12 this week</p>
             </Card>
             <Card>
-              <p className="text-xs font-bold text-slate-400 uppercase">Total Recognition</p>
+              <p className="text-xs font-bold opacity-70 text-text-main uppercase">Total Recognition</p>
               <h2 className="text-2xl font-bold text-slate-900 mt-2">856</h2>
               <p className="text-xs text-indigo-600 font-medium mt-auto">Avg 4.2 / user</p>
             </Card>
             <Card>
-              <p className="text-xs font-bold text-slate-400 uppercase">Redemptions</p>
+              <p className="text-xs font-bold opacity-70 text-text-main uppercase">Redemptions</p>
               <h2 className="text-2xl font-bold text-slate-900 mt-2">142</h2>
               <p className="text-xs text-slate-500 font-medium mt-auto">24 pending approval</p>
             </Card>
@@ -189,7 +189,7 @@ export default function TenantAdminBudget() {
             </div>
             <div className="overflow-x-auto">
               <table className="w-full">
-                <thead className="bg-slate-50 text-[10px] uppercase tracking-widest text-slate-400">
+                <thead className="bg-slate-50 text-[10px] uppercase tracking-widest opacity-70 text-text-main">
                   <tr>
                     <th className="px-6 py-3 text-left">Department Lead</th>
                     <th className="px-6 py-3 text-left">Department</th>
@@ -207,7 +207,7 @@ export default function TenantAdminBudget() {
                           </div>
                           <div>
                             <p className="text-sm font-bold text-slate-700">{lead.full_name || lead.name}</p>
-                            <p className="text-[10px] text-slate-400">{lead.email}</p>
+                            <p className="text-[10px] opacity-70 text-text-main">{lead.email}</p>
                           </div>
                         </div>
                       </td>
@@ -224,7 +224,7 @@ export default function TenantAdminBudget() {
                           <input 
                             type="number" 
                             placeholder="Amount"
-                            className="w-24 text-xs border border-slate-200 rounded-lg px-2 py-1 outline-none focus:ring-2 focus:ring-indigo-500"
+                            className="w-24 text-xs border border-border-soft rounded-lg px-2 py-1 outline-none focus:ring-2 focus:ring-indigo-500"
                             value={allocationAmounts[lead.id] || ''}
                             onChange={e => setAllocationAmounts({ ...allocationAmounts, [lead.id]: e.target.value })}
                           />

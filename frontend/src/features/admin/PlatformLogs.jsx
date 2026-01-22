@@ -21,13 +21,13 @@ export default function PlatformLogs() {
     <div className="space-y-6">
       <Card>
         <h2 className="text-xl font-bold">Security & Logs</h2>
-        <p className="text-slate-400">Audit trail of platform-level actions (tenant lifecycle, provider changes, billing updates).</p>
+        <p className="opacity-70 text-text-main">Audit trail of platform-level actions (tenant lifecycle, provider changes, billing updates).</p>
       </Card>
 
       <Card>
         {loading ? <div>Loading...</div> : (
           <table className="w-full text-left">
-            <thead className="text-slate-400 text-sm">
+            <thead className="opacity-70 text-text-main text-sm">
               <tr>
                 <th className="p-3">When</th>
                 <th className="p-3">Admin</th>
@@ -38,12 +38,12 @@ export default function PlatformLogs() {
             </thead>
             <tbody>
               {logs.map(l => (
-                <tr key={l.id} className="border-t border-slate-800">
-                  <td className="p-3 text-slate-400 text-sm">{new Date(l.created_at).toLocaleString()}</td>
+                <tr key={l.id} className="border-t border-border-soft">
+                  <td className="p-3 opacity-70 text-text-main text-sm">{new Date(l.created_at).toLocaleString()}</td>
                   <td className="p-3 font-medium">{l.admin_id || 'system'}</td>
                   <td className="p-3">{l.action}</td>
-                  <td className="p-3 text-slate-400">{l.target_tenant_id || '—'}</td>
-                  <td className="p-3 text-sm text-slate-300"><pre className="whitespace-pre-wrap">{JSON.stringify(l.details || {}, null, 2)}</pre></td>
+                  <td className="p-3 opacity-70 text-text-main">{l.target_tenant_id || '—'}</td>
+                  <td className="p-3 text-sm text-text-main opacity-80"><pre className="whitespace-pre-wrap">{JSON.stringify(l.details || {}, null, 2)}</pre></td>
                 </tr>
               ))}
             </tbody>

@@ -62,15 +62,15 @@ export default function TenantsPage() {
       <PageHeader title="Tenants" subtitle="Select a tenant to manage" />
 
       <div className="mt-4 flex items-center gap-3">
-        <label className="text-xs text-slate-400 mr-2">Tenant</label>
+        <label className="text-xs opacity-70 text-text-main mr-2">Tenant</label>
         <input
           value={q}
           onChange={e => setQ(e.target.value)}
           placeholder="Search by name, subdomain or id"
-          className="px-3 py-2 rounded-md bg-slate-800 text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 w-full max-w-md"
+          className="px-3 py-2 rounded-md bg-card text-white placeholder-text-main opacity-40 focus:outline-none focus:ring-2 focus:ring-indigo-500 w-full max-w-md"
         />
         {q && (
-          <button onClick={() => setQ('')} className="text-sm text-slate-300 hover:text-white">Clear</button>
+          <button onClick={() => setQ('')} className="text-sm text-text-main opacity-80 hover:text-white">Clear</button>
         )}
       </div>
 
@@ -82,7 +82,7 @@ export default function TenantsPage() {
             <button
               key={t.id}
               onClick={() => setModalTenant(t)}
-              className="aspect-square rounded-lg p-4 flex flex-col items-start justify-between text-white transition-shadow shadow-md text-left"
+              className="aspect-square rounded-lg p-4 flex flex-col items-start justify-between text-white transition-shadow-sm shadow-sm-md text-left"
               style={bg}
             >
               <div>
@@ -91,7 +91,7 @@ export default function TenantsPage() {
               </div>
               <div className="w-full">
                 <div className="flex items-center justify-between text-base opacity-90">
-                  <span className="text-slate-100 text-base">{formatMoney(t.master_budget_balance || 0)}</span>
+                  <span className="text-text-main text-base">{formatMoney(t.master_budget_balance || 0)}</span>
                   <span className={`px-2 py-0.5 rounded-full text-[15px] ${t.status === 'active' ? 'bg-emerald-600' : 'bg-amber-600'}`}>{t.status ? (t.status[0].toUpperCase() + t.status.slice(1)) : ''}</span>
                 </div>
                 <div className="mt-2 text-[14px] text-slate-200 truncate">ID: {t.id}</div>
@@ -102,9 +102,9 @@ export default function TenantsPage() {
       </div>
 
       <div className="mt-6 flex items-center justify-center gap-3">
-        <button onClick={() => setPage(p => Math.max(0, p-1))} disabled={page <= 0} className="px-3 py-1 rounded-md bg-slate-800 text-slate-200 hover:bg-slate-700">Previous</button>
-        <div className="text-sm text-slate-300">Page {page+1} / {totalPages}</div>
-        <button onClick={() => setPage(p => Math.min(totalPages-1, p+1))} disabled={page >= totalPages-1} className="px-3 py-1 rounded-md bg-slate-800 text-slate-200 hover:bg-slate-700">Next</button>
+        <button onClick={() => setPage(p => Math.max(0, p-1))} disabled={page <= 0} className="px-3 py-1 rounded-md bg-card text-slate-200 hover:bg-surface">Previous</button>
+        <div className="text-sm text-text-main opacity-80">Page {page+1} / {totalPages}</div>
+        <button onClick={() => setPage(p => Math.min(totalPages-1, p+1))} disabled={page >= totalPages-1} className="px-3 py-1 rounded-md bg-card text-slate-200 hover:bg-surface">Next</button>
       </div>
 
       <TenantModal tenant={modalTenant} onClose={() => setModalTenant(null)} onSelect={(t) => { setSelectedTenantId(t.id); navigate('/tenant-dashboard') }} />

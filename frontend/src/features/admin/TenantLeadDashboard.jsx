@@ -98,7 +98,7 @@ export default function TenantLeadDashboard() {
         <h3 className="font-bold text-lg mb-4">Give Recognition</h3>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Team Member</label>
+            <label className="block text-sm font-medium text-text-main opacity-80 mb-2">Team Member</label>
             <select
               value={recognitionData.userId}
               onChange={(e) => setRecognitionData({...recognitionData, userId: e.target.value})}
@@ -111,7 +111,7 @@ export default function TenantLeadDashboard() {
             </select>
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Points</label>
+            <label className="block text-sm font-medium text-text-main opacity-80 mb-2">Points</label>
             <input
               type="number"
               value={recognitionData.amount}
@@ -121,7 +121,7 @@ export default function TenantLeadDashboard() {
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Note (Optional)</label>
+            <label className="block text-sm font-medium text-text-main opacity-80 mb-2">Note (Optional)</label>
             <input
               type="text"
               value={recognitionData.note}

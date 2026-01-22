@@ -4,8 +4,6 @@ import { navLinkClass } from '../utils/navLinkClass'
 import { useAuth } from '../lib/AuthContext'
 import { useTenant } from '../lib/TenantContext'
 
-import { useTheme } from '../themes/templatemo_602_graph_page/ThemeProvider'
-
 const NAV_ITEMS = {
   PLATFORM_OWNER: [
     { label: 'Dashboard', href: '/platform-admin', icon: '📊' },
@@ -47,28 +45,20 @@ export default function Sidebar() {
 
   const items = NAV_ITEMS[userRole] || NAV_ITEMS.CORPORATE_USER
 
-  const sidebarClass = isAdmin 
-    ? "bg-white/80 backdrop-blur-xl border-r border-slate-200 text-slate-800" 
-    : "bg-slate-900 border-r border-slate-800 text-slate-100"
-
-  const activeLinkClass = isAdmin
-    ? "bg-indigo-600 text-white shadow-lg shadow-indigo-600/20"
-    : "bg-indigo-600 text-white shadow-lg shadow-indigo-500/20"
-  
-  const inactiveLinkClass = isAdmin
-    ? "text-slate-500 hover:bg-slate-100 hover:text-slate-900"
-    : "text-slate-400 hover:bg-slate-800 hover:text-white"
+  const sidebarClass = "bg-card border-r border-border-soft text-text-main"
+  const activeLinkClass = "bg-indigo-600 text-white shadow-lg shadow-indigo-600/30"
+  const inactiveLinkClass = "text-text-main opacity-60 hover:opacity-100 hover:bg-surface"
 
   return (
-    <aside className={`w-64 h-screen ${sidebarClass}`}>
+    <aside className={`w-64 h-screen ${sidebarClass} transition-colors duration-300`}>
       <div className="p-6">
-        <div className={`text-2xl font-bold mb-8 px-2 ${isAdmin ? 'text-indigo-600' : 'text-indigo-400'}`}>LightHouse</div>
+        <div className="text-2xl font-bold mb-8 px-2 text-indigo-600">LightHouse</div>
         <nav className="flex flex-col gap-2" role="navigation" aria-label="Main navigation">
           {items.map((it) => (
             <NavLink
               key={it.href}
               to={it.href}
-              className={({ isActive }) => `flex items-center gap-3 p-3 rounded-xl transition ${isActive ? activeLinkClass : inactiveLinkClass}`}
+              className={({ isActive }) => `flex items-center gap-3 p-3 rounded-xl transition-all duration-200 ${isActive ? activeLinkClass : inactiveLinkClass}`}
             >
               <span className="text-xl">{it.icon}</span>
               <span className="font-medium">{it.label}</span>

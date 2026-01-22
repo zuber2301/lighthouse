@@ -43,15 +43,15 @@ export default function TenantDashboard() {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <Card>
           <h3 className="text-2xl font-bold text-indigo-400">{data.active_users}</h3>
-          <p className="text-slate-400">Active Users</p>
+          <p className="opacity-70 text-text-main">Active Users</p>
         </Card>
         <Card>
           <h3 className="text-2xl font-bold text-emerald-400">{data.recognitions_30d}</h3>
-          <p className="text-slate-400">Recognitions (30d)</p>
+          <p className="opacity-70 text-text-main">Recognitions (30d)</p>
         </Card>
         <Card>
           <h3 className="text-2xl font-bold text-amber-400">{data.points_distributed_30d}</h3>
-          <p className="text-slate-400">Points Distributed (30d)</p>
+          <p className="opacity-70 text-text-main">Points Distributed (30d)</p>
         </Card>
       </div>
 
