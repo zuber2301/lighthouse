@@ -52,7 +52,7 @@ export default function RewardsPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-6">
             {rewards.map((reward) => (
               <Card key={reward.id} className="p-0 overflow-hidden group">
-                <div className="h-40 bg-card flex items-center justify-center text-5xl">
+                 <div className="h-40 bg-card border border-indigo-500/10 flex items-center justify-center text-5xl border border-indigo-500/10">
                    {reward.icon || '🎁'}
                 </div>
                 <div className="p-6">
@@ -70,8 +70,8 @@ export default function RewardsPage() {
                     disabled={user?.points_balance < reward.points_cost}
                     className={`w-full py-2 rounded-lg font-bold transition ${
                       user?.points_balance >= reward.points_cost
-                        ? 'bg-indigo-600 hover:bg-indigo-700 text-white'
-                        : 'bg-card text-slate-500 cursor-not-allowed'
+                        ? 'btn-accent'
+                        : 'bg-card border border-indigo-500/10 text-text-main/60 cursor-not-allowed'
                     }`}
                   >
                     {user?.points_balance >= reward.points_cost ? 'Redeem Now' : 'Insufficient Points'}

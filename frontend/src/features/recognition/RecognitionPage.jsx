@@ -18,7 +18,7 @@ export default function RecognitionPage() {
         <PageHeader
           title="Recognition"
           subtitle="Nominate peers and view recognitions"
-          actions={<button onClick={() => setOpen(true)} className="px-3 py-1 rounded-md bg-indigo-600 focus:outline-none focus-visible:ring-3 focus-visible:ring-primary">Nominate</button>}
+          actions={<button onClick={() => setOpen(true)} className="px-4 py-1.5 rounded-full btn-recognition text-xs font-bold transition-all shadow-lg">Nominate</button>}
         />
 
         <div className="mt-4">

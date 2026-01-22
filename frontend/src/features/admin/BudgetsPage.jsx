@@ -55,7 +55,7 @@ export default function BudgetsPage() {
       <div className="flex justify-end">
         <button
           onClick={() => setShowAllocate(true)}
-          className="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-500"
+          className="px-4 py-2 btn-accent rounded-md hover:brightness-95"
         >
           Allocate Budget
         </button>
@@ -81,14 +81,14 @@ export default function BudgetsPage() {
           <div className="flex justify-end gap-4">
             <button
               onClick={() => setShowAllocate(false)}
-              className="px-4 py-2 bg-surface text-white rounded-md hover:bg-slate-500"
+              className="px-4 py-2 rounded-md bg-card border border-indigo-500/10 text-text-main hover:bg-indigo-500/5"
             >
               Cancel
             </button>
             <button
               onClick={handleAllocate}
               disabled={remaining !== 0}
-              className="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-500 disabled:opacity-50"
+              className="px-4 py-2 btn-accent rounded-md hover:brightness-95 disabled:opacity-50"
             >
               Save Allocation
             </button>

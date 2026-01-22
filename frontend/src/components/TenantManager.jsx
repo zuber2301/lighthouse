@@ -70,11 +70,11 @@ const TenantManager = ({ tenants, onRefresh, onAddTenant }) => {
 
   return (
     <>
-      <div className="bg-white rounded-3xl overflow-hidden">
-        <div className="p-8 border-b border-slate-100 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+      <div className="bg-card border border-indigo-500/5 rounded-3xl overflow-hidden shadow-sm transition-colors duration-300">
+        <div className="p-8 border-b border-indigo-500/5 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
           <div>
-            <h2 className="text-xl font-bold text-slate-900">Tenant Registry</h2>
-            <p className="text-slate-400 mt-1 text-sm font-medium">All companies using LightHouse platform</p>
+            <h2 className="text-xl font-bold text-text-main tracking-tight">Tenant Registry</h2>
+            <p className="opacity-60 text-text-main mt-1 text-sm font-medium">All companies using LightHouse platform</p>
           </div>
           <div className="flex items-center gap-4 w-full md:w-auto">
             <div className="relative flex-1 md:w-64">
@@ -83,15 +83,15 @@ const TenantManager = ({ tenants, onRefresh, onAddTenant }) => {
                 placeholder="Search tenants..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full bg-slate-50 border border-slate-100 rounded-2xl px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all pl-10 text-slate-700 placeholder:text-slate-400"
+                className="w-full bg-surface/50 border border-indigo-500/10 rounded-2xl px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all pl-10 text-text-main placeholder:opacity-40"
               />
-              <svg className="w-4 h-4 absolute left-3 top-3 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-4 h-4 absolute left-3 top-3 opacity-40 text-text-main" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
               </svg>
             </div>
             <button 
               onClick={onAddTenant}
-              className="bg-indigo-600 text-white px-6 py-2 rounded-2xl text-sm font-bold shadow-lg shadow-indigo-600/20 hover:bg-indigo-700 transition whitespace-nowrap"
+              className="btn-accent px-6 py-2 rounded-2xl text-sm font-bold shadow-lg hover:brightness-95 transition-all whitespace-nowrap active:scale-95"
             >
               + Add Company
             </button>
@@ -100,7 +100,7 @@ const TenantManager = ({ tenants, onRefresh, onAddTenant }) => {
 
         <div className="overflow-x-auto">
           <table className="w-full text-left">
-            <thead className="bg-slate-50/50 text-slate-400 text-[10px] uppercase font-bold tracking-widest border-b border-slate-100">
+            <thead className="bg-indigo-500/5 text-text-main text-[10px] uppercase font-bold tracking-widest border-b border-indigo-500/5">
               <tr>
                 <th className="px-8 py-5">Company</th>
                 <th className="px-8 py-5">Subdomain</th>
@@ -111,24 +111,24 @@ const TenantManager = ({ tenants, onRefresh, onAddTenant }) => {
                 <th className="px-8 py-5 text-right">Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-50">
+            <tbody className="divide-y divide-indigo-500/5">
               {filteredTenants.map((tenant) => (
-                <tr key={tenant.id} className="hover:bg-slate-50/50 transition duration-150">
+                <tr key={tenant.id} className="hover:bg-indigo-500/5 transition duration-150">
                   <td className="px-8 py-5">
-                    <div className="font-bold text-slate-700">{tenant.name}</div>
+                    <div className="font-bold text-text-main">{tenant.name}</div>
                   </td>
                   <td className="px-8 py-5">
-                    <span className="text-xs font-bold text-indigo-500 bg-indigo-50 px-2 py-1 rounded-lg">
+                    <span className="text-[10px] font-bold text-indigo-500 bg-indigo-500/10 px-2.5 py-1 rounded-lg border border-indigo-500/10 uppercase tracking-tight">
                       {tenant.subdomain}.lighthouse.com
                     </span>
                   </td>
                   <td className="px-8 py-5">
-                    <div className="text-xs font-bold text-slate-600">{tenant.plan}</div>
-                    <div className="text-[10px] text-slate-400 font-medium">Users: {tenant.user_count ?? '—'}</div>
+                    <div className="text-xs font-bold text-text-main">{tenant.plan}</div>
+                    <div className="text-[10px] opacity-60 text-text-main font-medium mt-0.5">Users: {tenant.user_count ?? '—'}</div>
                   </td>
                   <td className="px-8 py-5">
                     <div className={`inline-flex px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider ${
-                      tenant.status === 'active' ? 'bg-emerald-100 text-emerald-600' : 'bg-rose-100 text-rose-600'
+                      tenant.status === 'active' ? 'bg-emerald-500/10 text-emerald-500' : 'bg-rose-500/10 text-rose-500'
                     }`}>
                       {tenant.status}
                     </div>
@@ -136,16 +136,16 @@ const TenantManager = ({ tenants, onRefresh, onAddTenant }) => {
                   <td className="px-8 py-5">
                     {renderSparkline(tenant.activity_last_7_days)}
                   </td>
-                  <td className="px-8 py-5 text-slate-400 text-xs font-medium">
+                  <td className="px-8 py-5 opacity-60 text-text-main text-xs font-medium">
                     {new Date(tenant.created_at).toLocaleDateString()}
                   </td>
                   <td className="px-8 py-5 text-right space-x-2">
                     <button 
                       onClick={() => handleStatusToggle(tenant.id, tenant.status)}
-                      className={`text-[10px] font-bold px-3 py-1.5 rounded-xl border transition ${
+                      className={`text-[10px] font-bold px-3 py-1.5 rounded-xl border transition-all ${
                         tenant.status === 'active' 
-                          ? 'text-rose-600 border-rose-100 hover:bg-rose-50' 
-                          : 'text-emerald-600 border-emerald-100 hover:bg-emerald-50'
+                          ? 'text-rose-500 border-rose-500/20 hover:bg-rose-500/10' 
+                          : 'text-emerald-500 border-emerald-500/20 hover:bg-emerald-500/10'
                       }`}
                     >
                       {tenant.status === 'active' ? 'SUSPEND' : 'ACTIVATE'}
@@ -154,7 +154,7 @@ const TenantManager = ({ tenants, onRefresh, onAddTenant }) => {
                     <button
                       onClick={() => openLoadModal(tenant)}
                       title="Load Master Budget"
-                      className="text-[10px] px-3 py-1.5 rounded-xl bg-slate-100 text-slate-600 font-bold hover:bg-slate-200 transition"
+                      className="text-[10px] px-3 py-1.5 rounded-xl bg-indigo-500/5 border border-indigo-500/10 text-text-main font-bold hover:bg-indigo-500/10 transition-all opacity-80"
                     >
                       LOAD BUDGET
                     </button>
@@ -162,9 +162,9 @@ const TenantManager = ({ tenants, onRefresh, onAddTenant }) => {
                     <button
                       onClick={() => handleImpersonate(tenant.id)}
                       title="Impersonate tenant"
-                      className="text-[10px] px-3 py-1.5 rounded-xl bg-indigo-50 text-indigo-600 font-bold hover:bg-indigo-100 transition"
+                      className="text-[10px] px-3 py-1.5 rounded-xl btn-accent font-bold hover:brightness-95 transition-all"
                     >
-                      👁️ VIEW
+                      VIEW
                     </button>
                   </td>
                 </tr>

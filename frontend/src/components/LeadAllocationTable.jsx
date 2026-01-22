@@ -72,44 +72,44 @@ export default function LeadAllocationTable({ tenantId, onAllocated }) {
 
   return (
     <div className="space-y-6">
-      <div className="bg-indigo-900 rounded-3xl p-6 text-white flex justify-between items-center">
+      <div className="bg-indigo-600 rounded-3xl p-6 text-accent-contrast flex justify-between items-center shadow-lg shadow-indigo-600/20">
         <div>
-          <p className="text-indigo-200 text-sm font-bold uppercase tracking-widest">Available for Allocation</p>
+          <p className="text-accent-contrast opacity-70 text-[10px] font-bold uppercase tracking-widest">Available for Allocation</p>
           <h2 className="text-3xl font-black mt-1">₹{(masterBalance/100).toLocaleString(undefined,{minimumFractionDigits:2})}</h2>
         </div>
-        <div className="bg-white/10 p-4 rounded-2xl">
-          <p className="text-xs opacity-80 uppercase font-bold">Total Leads</p>
-          <p className="text-2xl font-bold text-center">{leads.length}</p>
+        <div className="bg-card/10 border border-indigo-500/10 p-4 rounded-2xl backdrop-blur-sm">
+          <p className="text-[10px] opacity-80 uppercase font-bold tracking-tight">Total Leads</p>
+          <p className="text-2xl font-black text-center">{leads.length}</p>
         </div>
       </div>
 
-      <div className="bg-white dark:bg-card rounded-[2.5rem] border dark:border-border-soft shadow-sm overflow-hidden">
+      <div className="bg-card border border-indigo-500/10 rounded-[2.5rem] shadow-sm overflow-hidden">
         <table className="w-full text-left border-collapse">
           <thead>
-            <tr className="bg-slate-50 dark:bg-slate-800/50 text-slate-500 text-xs uppercase tracking-widest">
+            <tr className="bg-indigo-500/5 text-text-main text-[10px] uppercase tracking-widest opacity-60">
               <th className="px-8 py-5 font-bold">Department Lead</th>
               <th className="px-8 py-5 font-bold">Current Budget</th>
               <th className="px-8 py-5 font-bold text-right">Actions</th>
             </tr>
           </thead>
-          <tbody className="divide-y dark:divide-slate-800">
+          <tbody className="divide-y divide-indigo-500/5">
             {leads.map((lead) => (
-              <tr key={lead.id} className="hover:bg-slate-50 dark:hover:bg-slate-800/30 transition">
+              <tr key={lead.id} className="hover:bg-indigo-500/5 transition duration-150">
                 <td className="px-8 py-6">
                   <div className="flex items-center gap-4">
-                    <div className="w-10 h-10 rounded-full bg-slate-200 flex items-center justify-center font-bold text-slate-500">{lead.full_name?.charAt(0)}</div>
+                    <div className="w-10 h-10 rounded-full bg-indigo-500/10 flex items-center justify-center font-bold text-indigo-500">{lead.full_name?.charAt(0)}</div>
                     <div>
-                      <p className="font-bold text-slate-800 dark:text-slate-100">{lead.full_name}</p>
-                      <p className="text-xs text-slate-500">{lead.email}</p>
+                      <p className="font-bold text-text-main">{lead.full_name}</p>
+                      <p className="text-xs opacity-50 text-text-main">{lead.email}</p>
                     </div>
                   </div>
                 </td>
                 <td className="px-8 py-6">
-                  <span className="text-lg font-mono font-bold text-slate-700 dark:text-slate-300">₹{((lead.lead_budget_balance||0)/100).toLocaleString(undefined,{minimumFractionDigits:2})}</span>
+                  <span className="text-lg font-mono font-bold text-text-main">₹{((lead.lead_budget_balance||0)/100).toLocaleString(undefined,{minimumFractionDigits:2})}</span>
                 </td>
                 <td className="px-8 py-6 text-right">
-                  <button onClick={() => openModal(lead)} className="inline-flex items-center gap-2 px-5 py-2.5 bg-slate-800 text-white rounded-xl text-sm font-bold hover:bg-black transition">
-                    <span className="text-lg">➜</span> Allocate Funds
+                  <button onClick={() => openModal(lead)} className="inline-flex items-center gap-2 px-5 py-2.5 btn-accent rounded-xl text-sm font-bold hover:brightness-95 transition shadow-md shadow-indigo-600/10">
+                    Allocate Funds
                   </button>
                 </td>
               </tr>
@@ -119,31 +119,42 @@ export default function LeadAllocationTable({ tenantId, onAllocated }) {
 
         {leads.length === 0 && (
           <div className="p-20 text-center">
-              <div className="inline-flex p-4 bg-slate-100 dark:bg-slate-800 rounded-full mb-4">
-                <span className="text-slate-400 text-2xl">＋</span>
+              <div className="inline-flex p-4 bg-indigo-500/5 rounded-full mb-4">
+                <span className="text-indigo-500/40 text-2xl">＋</span>
               </div>
-            <p className="text-slate-500 font-medium">No Department Leads found for this tenant.</p>
+            <p className="text-text-main opacity-50 font-medium">No Department Leads found for this tenant.</p>
           </div>
         )}
       </div>
 
       {modalOpen && activeLead && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-2xl p-6 w-full max-w-md">
-            <h3 className="text-lg font-bold mb-2">Allocate to {activeLead.full_name}</h3>
-            <p className="text-sm text-slate-500 mb-4">Master pool: ₹{(masterBalance/100).toLocaleString(undefined,{minimumFractionDigits:2})}</p>
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="bg-card border border-indigo-500/10 rounded-3xl p-8 w-full max-w-md shadow-2xl">
+            <h3 className="text-xl font-bold mb-1 text-text-main">Allocate Funds</h3>
+            <p className="text-sm opacity-60 text-text-main mb-6">Master pool: ₹{(masterBalance/100).toLocaleString(undefined,{minimumFractionDigits:2})}</p>
 
-            <div className="mb-3">
-              <label className="block text-sm font-medium text-slate-700">Amount (₹)</label>
-              <input type="number" step="0.01" min="0" max={maxRupees()} value={amount} onChange={handleAmountChange} className={`mt-1 w-full px-3 py-2 border rounded-md ${parseFloat(amount||0) > maxRupees() ? 'border-red-500 text-red-600' : ''}`} />
-              {parseFloat(amount||0) > maxRupees() && <p className="text-red-500 text-sm mt-1">Amount exceeds master pool</p>}
+            <div className="mb-6">
+              <label className="block text-xs font-bold uppercase tracking-widest text-text-main opacity-60 mb-2">Amount (₹)</label>
+              <input 
+                type="number" 
+                step="0.01" 
+                min="0" 
+                max={maxRupees()} 
+                value={amount} 
+                onChange={handleAmountChange} 
+                className={`w-full px-4 py-3 bg-surface border rounded-xl outline-none focus:ring-2 focus:ring-indigo-500 text-text-main transition-all ${parseFloat(amount||0) > maxRupees() ? 'border-rose-500 ring-rose-500/20' : 'border-indigo-500/10'}`} 
+                placeholder="Enter amount"
+              />
+              {parseFloat(amount||0) > maxRupees() && <p className="text-rose-500 text-[10px] font-bold mt-1 uppercase tracking-tight">Amount exceeds master pool</p>}
             </div>
 
-            {error && <div className="text-red-600 mb-2">{error}</div>}
+            {error && <div className="text-rose-500 text-xs font-bold mb-4 bg-rose-500/10 p-3 rounded-lg border border-rose-500/20">{error}</div>}
 
-            <div className="flex justify-end gap-3">
-              <button onClick={closeModal} className="px-4 py-2 rounded bg-slate-200">Cancel</button>
-              <button disabled={!canSubmit()} onClick={handleAllocate} className={`px-4 py-2 rounded font-bold ${canSubmit() ? 'bg-indigo-600 text-white' : 'bg-slate-300 text-slate-500'}`}>{submitting ? 'Allocating...' : 'Allocate'}</button>
+            <div className="flex gap-3 mt-8">
+              <button onClick={closeModal} className="flex-1 px-4 py-3 rounded-xl bg-surface text-text-main font-bold hover:bg-indigo-500/5 transition-all outline-none border border-indigo-500/10">Cancel</button>
+              <button disabled={!canSubmit()} onClick={handleAllocate} className={`flex-1 px-4 py-3 rounded-xl font-bold transition-all shadow-lg ${canSubmit() ? 'btn-accent shadow-indigo-600/20 hover:brightness-95' : 'bg-indigo-500/10 text-text-main opacity-20'}`}>
+                {submitting ? 'Allocating...' : 'Confirm Allocation'}
+              </button>
             </div>
           </div>
         </div>

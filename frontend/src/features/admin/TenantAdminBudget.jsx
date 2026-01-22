@@ -88,15 +88,15 @@ export default function TenantAdminBudget() {
           title="Command Center" 
           subtitle={`Managing ${selectedTenant?.name || 'Triton Industries'}`} 
         />
-        <div className="flex bg-card p-1 rounded-xl shadow-sm-sm border border-border-soft">
+        <div className="flex bg-card border border-indigo-500/10 p-1 rounded-xl shadow-sm-sm border border-border-soft">
           {['budget', 'employees', 'culture', 'rewards'].map(tab => (
             <button
               key={tab}
               onClick={() => setActiveTab(tab)}
               className={`px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-wider transition-all ${
                 activeTab === tab 
-                ? 'bg-indigo-600 text-white shadow-sm-md' 
-                : 'opacity-70 text-text-main hover:text-slate-600'
+                ? 'btn-accent shadow-sm-md' 
+                : 'opacity-70 text-text-main hover:text-text-main'
               }`}
             >
               {tab}
@@ -111,18 +111,18 @@ export default function TenantAdminBudget() {
           <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
             <Card className="flex flex-col justify-between">
               <p className="text-xs font-bold opacity-70 text-text-main uppercase">Master Balance</p>
-              <h2 className="text-2xl font-bold text-slate-900 mt-2">₹{masterBalance.toLocaleString()}</h2>
+              <h2 className="text-2xl font-bold text-text-main mt-2">₹{masterBalance.toLocaleString()}</h2>
               <div className="mt-4 flex gap-2">
                 <input 
                   type="number" 
                   placeholder="Load ₹"
                   value={loadAmount}
                   onChange={e => setLoadAmount(e.target.value)}
-                  className="w-full text-xs border border-border-soft rounded-lg px-2 py-1 focus:ring-2 focus:ring-indigo-500 outline-none"
+                  className="w-full text-xs bg-surface border border-indigo-500/10 rounded-lg px-2 py-1 focus:ring-2 focus:ring-indigo-500 outline-none text-text-main"
                 />
                 <button 
                   onClick={() => loadBudget(loadAmount)}
-                  className="bg-indigo-600 text-white text-[10px] font-bold px-3 py-1 rounded-lg hover:bg-indigo-700"
+                  className="btn-accent text-[10px] font-bold px-3 py-1 rounded-lg hover:brightness-95 transition-colors"
                 >
                   LOAD
                 </button>
@@ -130,18 +130,18 @@ export default function TenantAdminBudget() {
             </Card>
             <Card>
               <p className="text-xs font-bold opacity-70 text-text-main uppercase">Active Users</p>
-              <h2 className="text-2xl font-bold text-slate-900 mt-2">1,284</h2>
-              <p className="text-xs text-emerald-600 font-medium mt-auto">+12 this week</p>
+              <h2 className="text-2xl font-bold text-text-main mt-2">1,284</h2>
+              <p className="text-xs text-emerald-500 font-medium mt-auto">+12 this week</p>
             </Card>
             <Card>
               <p className="text-xs font-bold opacity-70 text-text-main uppercase">Total Recognition</p>
-              <h2 className="text-2xl font-bold text-slate-900 mt-2">856</h2>
-              <p className="text-xs text-indigo-600 font-medium mt-auto">Avg 4.2 / user</p>
+              <h2 className="text-2xl font-bold text-text-main mt-2">856</h2>
+              <p className="text-xs text-indigo-500 font-medium mt-auto">Avg 4.2 / user</p>
             </Card>
             <Card>
               <p className="text-xs font-bold opacity-70 text-text-main uppercase">Redemptions</p>
-              <h2 className="text-2xl font-bold text-slate-900 mt-2">142</h2>
-              <p className="text-xs text-slate-500 font-medium mt-auto">24 pending approval</p>
+              <h2 className="text-2xl font-bold text-text-main mt-2">142</h2>
+              <p className="text-xs opacity-60 text-text-main font-medium mt-auto">24 pending approval</p>
             </Card>
           </div>
 
@@ -158,21 +158,21 @@ export default function TenantAdminBudget() {
             {/* Middle Right: Initiatives/Badges Quick View */}
             <Card>
               <div className="flex justify-between items-center mb-4">
-                <h3 className="text-sm font-bold text-slate-800">Active Initiatives</h3>
-                <button className="text-[10px] text-indigo-600 font-bold hover:underline">VIEW ALL</button>
+                <h3 className="text-sm font-bold text-text-main">Active Initiatives</h3>
+                <button className="text-[10px] text-indigo-500 font-bold hover:underline">VIEW ALL</button>
               </div>
               <div className="space-y-4">
                 {[
-                  { label: "Q1 Safety Sprint", color: "bg-amber-100 text-amber-600", icon: "⚓" },
-                  { label: "Code Quality Month", color: "bg-indigo-100 text-indigo-600", icon: "💻" },
-                  { label: "Wellness Week", color: "bg-emerald-100 text-emerald-600", icon: "🧘" }
+                  { label: "Q1 Safety Sprint", color: "bg-amber-500/10 text-amber-500", icon: "⚓" },
+                  { label: "Code Quality Month", color: "bg-indigo-500/10 text-indigo-500", icon: "💻" },
+                  { label: "Wellness Week", color: "bg-emerald-500/10 text-emerald-500", icon: "🧘" }
                 ].map((init, i) => (
-                  <div key={i} className="flex items-center gap-3 p-3 rounded-2xl bg-slate-50 border border-slate-100">
+                  <div key={i} className="flex items-center gap-3 p-3 rounded-2xl bg-indigo-500/5 border border-indigo-500/10">
                     <span className="text-lg">{init.icon}</span>
                     <div className="flex-1">
-                      <p className="text-xs font-bold text-slate-700">{init.label}</p>
-                      <div className="h-1 w-full bg-slate-200 rounded-full mt-1 overflow-hidden">
-                        <div className={`h-full ${init.color.split(' ')[0].replace('100', '500')}`} style={{ width: '60%' }} />
+                      <p className="text-xs font-bold text-text-main">{init.label}</p>
+                      <div className="h-1 w-full bg-indigo-500/10 rounded-full mt-1 overflow-hidden">
+                        <div className={`h-full ${init.color.split(' ')[1].replace('500', '600')}`} style={{ width: '60%' }} />
                       </div>
                     </div>
                   </div>
@@ -183,13 +183,13 @@ export default function TenantAdminBudget() {
 
           {/* Bottom: Lead Allocation Table */}
           <Card className="overflow-hidden p-0">
-            <div className="p-6 border-b border-slate-100 flex justify-between items-center">
-              <h3 className="font-bold text-slate-800">Department Lead Allocations</h3>
-              <button className="text-xs bg-slate-100 text-slate-600 font-bold px-3 py-1 rounded-lg">EXPORT CSV</button>
+            <div className="p-6 border-b border-indigo-500/10 flex justify-between items-center">
+              <h3 className="font-bold text-text-main">Department Lead Allocations</h3>
+              <button className="text-xs bg-indigo-500/10 text-indigo-500 font-bold px-3 py-1 rounded-lg hover:bg-indigo-500/20 transition-colors">EXPORT CSV</button>
             </div>
             <div className="overflow-x-auto">
               <table className="w-full">
-                <thead className="bg-slate-50 text-[10px] uppercase tracking-widest opacity-70 text-text-main">
+                <thead className="bg-indigo-500/5 text-[10px] uppercase tracking-widest opacity-70 text-text-main">
                   <tr>
                     <th className="px-6 py-3 text-left">Department Lead</th>
                     <th className="px-6 py-3 text-left">Department</th>
@@ -197,40 +197,40 @@ export default function TenantAdminBudget() {
                     <th className="px-6 py-3 text-right">Transfer Funds</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-100">
+                <tbody className="divide-y divide-indigo-500/10">
                   {leads.map(lead => (
-                    <tr key={lead.id} className="hover:bg-slate-50 transition-colors">
+                    <tr key={lead.id} className="hover:bg-indigo-500/5 transition-colors">
                       <td className="px-6 py-4">
                         <div className="flex items-center gap-3">
-                          <div className="w-8 h-8 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-600 text-xs font-bold">
+                          <div className="w-8 h-8 rounded-full bg-indigo-500/10 flex items-center justify-center text-indigo-500 text-xs font-bold">
                             {lead.full_name?.charAt(0) || lead.name?.charAt(0)}
                           </div>
                           <div>
-                            <p className="text-sm font-bold text-slate-700">{lead.full_name || lead.name}</p>
+                            <p className="text-sm font-bold text-text-main">{lead.full_name || lead.name}</p>
                             <p className="text-[10px] opacity-70 text-text-main">{lead.email}</p>
                           </div>
                         </div>
                       </td>
                       <td className="px-6 py-4">
-                        <span className="text-xs font-medium px-2 py-0.5 rounded bg-slate-100 text-slate-600">
+                        <span className="text-xs font-medium px-2 py-0.5 rounded bg-indigo-500/10 text-indigo-500 uppercase tracking-tight">
                           {lead.department || 'General'}
                         </span>
                       </td>
                       <td className="px-6 py-4 text-right">
-                        <p className="text-sm font-bold text-slate-700">₹{lead.budget.toLocaleString()}</p>
+                        <p className="text-sm font-bold text-text-main">₹{lead.budget.toLocaleString()}</p>
                       </td>
                       <td className="px-6 py-4">
                         <div className="flex justify-end gap-2">
                           <input 
                             type="number" 
                             placeholder="Amount"
-                            className="w-24 text-xs border border-border-soft rounded-lg px-2 py-1 outline-none focus:ring-2 focus:ring-indigo-500"
+                            className="w-24 text-xs bg-surface border border-indigo-500/10 rounded-lg px-2 py-1 outline-none focus:ring-2 focus:ring-indigo-500 text-text-main"
                             value={allocationAmounts[lead.id] || ''}
                             onChange={e => setAllocationAmounts({ ...allocationAmounts, [lead.id]: e.target.value })}
                           />
                           <button 
                             onClick={() => allocateToLead(lead.id, allocationAmounts[lead.id])}
-                            className="bg-indigo-600 text-white text-[10px] font-bold px-3 py-1 rounded-lg hover:bg-indigo-700"
+                            className="btn-accent text-[10px] font-bold px-3 py-1 rounded-lg hover:brightness-95 transition-colors"
                           >
                             SEND
                           </button>
@@ -245,11 +245,11 @@ export default function TenantAdminBudget() {
         </>
       )}
 
-      {activeTab !== 'budget' && (
+          {activeTab !== 'budget' && (
         <Card className="flex flex-col items-center justify-center py-20 text-center">
-          <div className="w-16 h-16 rounded-full bg-slate-100 flex items-center justify-center text-2xl mb-4">🏗️</div>
-          <h3 className="text-lg font-bold text-slate-800">Section Under Construction</h3>
-          <p className="text-sm text-slate-500 mt-2 max-w-sm">
+          <div className="w-16 h-16 rounded-full bg-card/20 flex items-center justify-center text-2xl mb-4">🏗️</div>
+          <h3 className="text-lg font-bold text-text-main">Section Under Construction</h3>
+          <p className="text-sm text-text-main/60 mt-2 max-w-sm">
             We're building the premium {activeTab} management experience for Triton Industries.
           </p>
           <button 

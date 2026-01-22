@@ -10,7 +10,7 @@ export default function TenantSelector() {
   }
 
   if (!tenants || tenants.length === 0) return (
-    <div className="text-sm text-slate-400">Tenant: —</div>
+    <div className="text-sm text-text-main opacity-60">Tenant: —</div>
   )
 
   return (
@@ -18,7 +18,7 @@ export default function TenantSelector() {
       <select 
         value={selectedTenantId} 
         onChange={onChange} 
-        className="text-xs bg-slate-800/50 border border-indigo-500/30 text-indigo-300 px-3 py-1.5 rounded-full focus:outline-none focus:ring-1 focus:ring-indigo-500 transition-all hover:bg-slate-800"
+        className="text-xs bg-surface/50 border border-indigo-500/10 text-text-main px-3 py-1.5 rounded-full focus:outline-none focus:ring-1 focus:ring-indigo-500 transition-all hover:bg-surface"
       >
         <option value="">Select Tenant Context</option>
         {tenants.map(t => (

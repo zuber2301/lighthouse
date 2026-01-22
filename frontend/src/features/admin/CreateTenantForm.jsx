@@ -119,7 +119,7 @@ export default function CreateTenantForm({ onCreated = null, redirectOnSuccess =
 
   return (
     <div className="max-w-2xl mx-auto p-6">
-      <div className="bg-card rounded-lg p-6 border border-border-soft">
+      <div className="bg-card border border-indigo-500/10 rounded-lg p-6 border border-border-soft">
         <h1 className="text-2xl font-bold text-text-main mb-6">Onboard New Company</h1>
 
         <form onSubmit={handleSubmit} className="space-y-6">
@@ -178,8 +178,8 @@ export default function CreateTenantForm({ onCreated = null, redirectOnSuccess =
           )}
 
           <div className="flex gap-4 pt-4">
-            <button type="button" onClick={() => navigate('/platform-admin')} className="flex-1 px-4 py-2 bg-surface hover:bg-slate-500 text-text-main rounded-md transition-colors duration-150 focus:outline-none focus:ring-2 focus:ring-slate-500">Cancel</button>
-            <button type="submit" disabled={isLoading} className="flex-1 px-4 py-2 bg-indigo-600 hover:bg-indigo-500 disabled:bg-surface disabled:cursor-not-allowed text-white rounded-md transition-colors duration-150 focus:outline-none focus:ring-2 focus:ring-indigo-500">{isLoading ? 'Creating Tenant...' : 'Create Tenant'}</button>
+            <button type="button" onClick={() => navigate('/platform-admin')} className="flex-1 px-4 py-3 bg-card border border-indigo-500/10 text-text-main rounded-xl transition-all duration-150 font-bold text-sm">Cancel</button>
+            <button type="submit" disabled={isLoading} className="flex-1 px-4 py-3 btn-accent disabled:opacity-50 disabled:cursor-not-allowed rounded-xl transition-all duration-150 font-bold text-sm shadow-lg shadow-indigo-600/20">{isLoading ? 'Creating Tenant...' : 'Create Tenant'}</button>
           </div>
         </form>
       </div>

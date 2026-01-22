@@ -63,15 +63,15 @@ export default function BudgetLoadLogs({ tenantId }) {
       </div>
 
       {logs.length === 0 ? (
-        <p className="text-slate-400">No recent budget activity.</p>
+        <p className="text-text-main opacity-60">No recent budget activity.</p>
       ) : (
         <ul className="space-y-3">
           {logs.map(l => (
-            <li key={l.id} className="flex justify-between items-start hover:bg-slate-50 p-3 rounded cursor-pointer" onClick={() => setSelectedLog(l)}>
+            <li key={l.id} className="flex justify-between items-start hover:bg-surface p-3 rounded cursor-pointer" onClick={() => setSelectedLog(l)}>
               <div>
-                <div className="text-sm text-slate-600">{l.created_at ? new Date(l.created_at).toLocaleString() : ''}</div>
+                <div className="text-sm text-text-main opacity-60">{l.created_at ? new Date(l.created_at).toLocaleString() : ''}</div>
                 <div className="font-medium">{l.transaction_type}</div>
-                <div className="text-sm text-slate-500">By: {l.platform_owner?.full_name || l.platform_owner?.email || 'system'}</div>
+                <div className="text-sm text-text-main opacity-60">By: {l.platform_owner?.full_name || l.platform_owner?.email || 'system'}</div>
               </div>
               <div className="font-bold">₹{(l.amount||0).toLocaleString(undefined,{minimumFractionDigits:2})}</div>
             </li>
@@ -80,23 +80,23 @@ export default function BudgetLoadLogs({ tenantId }) {
       )}
 
       <div className="flex justify-between items-center mt-4">
-        <div className="text-sm text-slate-500">Page {page+1} of {Math.max(1, Math.ceil(total / limit))} — {total} total</div>
+        <div className="text-sm text-text-main opacity-60">Page {page+1} of {Math.max(1, Math.ceil(total / limit))} — {total} total</div>
         <div className="flex gap-2">
-          <button disabled={page<=0} onClick={()=>setPage(p=>Math.max(0,p-1))} className="px-3 py-1 rounded bg-slate-200">Prev</button>
-          <button disabled={(page+1) >= Math.ceil(total/limit)} onClick={()=>setPage(p=>p+1)} className="px-3 py-1 rounded bg-slate-200">Next</button>
+          <button disabled={page<=0} onClick={()=>setPage(p=>Math.max(0,p-1))} className="px-3 py-1 rounded bg-card border border-indigo-500/10 text-text-main">Prev</button>
+          <button disabled={(page+1) >= Math.ceil(total/limit)} onClick={()=>setPage(p=>p+1)} className="px-3 py-1 rounded bg-card border border-indigo-500/10 text-text-main">Next</button>
         </div>
       </div>
 
       {selectedLog && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
-          <div className="bg-white rounded-2xl p-6 w-full max-w-lg">
+          <div className="bg-card border border-indigo-500/10 rounded-2xl p-6 w-full max-w-lg border border-indigo-500/10">
             <h3 className="text-xl font-bold mb-2">Budget Log Detail</h3>
-            <div className="text-sm text-slate-600 mb-2">{selectedLog.created_at ? new Date(selectedLog.created_at).toLocaleString() : ''}</div>
+            <div className="text-sm text-text-main opacity-60 mb-2">{selectedLog.created_at ? new Date(selectedLog.created_at).toLocaleString() : ''}</div>
             <div className="mb-2"><strong>Type:</strong> {selectedLog.transaction_type}</div>
             <div className="mb-2"><strong>Amount:</strong> ₹{(selectedLog.amount||0).toLocaleString(undefined,{minimumFractionDigits:2})}</div>
             <div className="mb-2"><strong>By:</strong> {selectedLog.platform_owner?.full_name || selectedLog.platform_owner?.email || 'system'}</div>
             <div className="flex justify-end gap-2 mt-4">
-              <button onClick={() => setSelectedLog(null)} className="px-4 py-2 rounded bg-slate-200">Close</button>
+              <button onClick={() => setSelectedLog(null)} className="px-4 py-2 rounded bg-card border border-indigo-500/10 text-text-main">Close</button>
             </div>
           </div>
         </div>

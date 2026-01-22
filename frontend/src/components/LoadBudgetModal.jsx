@@ -52,11 +52,11 @@ const LoadBudgetModal = ({ open, onClose, tenant, onLoaded }) => {
   return (
     <Modal open={open} onClose={onClose}>
       <div>
-        <h3 className="text-lg font-bold mb-2">Load Master Budget</h3>
-        <p className="text-sm text-slate-400 mb-4">Tenant: <span className="font-semibold">{tenant?.name}</span></p>
+        <h3 className="text-lg font-bold mb-2 text-text-main">Load Master Budget</h3>
+        <p className="text-sm text-text-main opacity-70 mb-4">Tenant: <span className="font-semibold">{tenant?.name}</span></p>
 
         <div className="mb-4">
-          <label className="block text-sm text-slate-300 mb-1">Amount</label>
+          <label className="block text-sm text-text-main/60 mb-1">Amount</label>
           <CurrencyInput
             value={amount}
             onChange={(v) => setAmount(v)}
@@ -67,8 +67,8 @@ const LoadBudgetModal = ({ open, onClose, tenant, onLoaded }) => {
         {error && <div className="text-rose-400 text-sm mb-3">{error}</div>}
 
         <div className="flex justify-end gap-2">
-          <button onClick={onClose} className="px-4 py-2 rounded bg-slate-700 text-slate-200">Cancel</button>
-          <button onClick={handleSubmit} disabled={loading} className="px-4 py-2 rounded bg-indigo-600 text-white font-bold">
+          <button onClick={onClose} className="px-4 py-2 rounded bg-card border border-indigo-500/10 text-text-main">Cancel</button>
+          <button onClick={handleSubmit} disabled={loading} className="px-4 py-2 rounded btn-accent font-bold">
             {loading ? 'Loading...' : 'Load & Confirm'}
           </button>
         </div>

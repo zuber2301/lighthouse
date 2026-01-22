@@ -22,7 +22,7 @@ const OnboardTenantModal = ({ isOpen, onClose, onSave }) => {
 
   return (
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
-      <div className="bg-card w-full max-w-lg rounded-2xl p-8 shadow-2xl border border-border-soft">
+      <div className="bg-card border border-border-soft w-full max-w-lg rounded-2xl p-8 shadow-2xl">
         <h2 className="text-2xl font-bold mb-6">Onboard New Company</h2>
         
         <form onSubmit={handleSubmit} className="space-y-4">
@@ -30,7 +30,7 @@ const OnboardTenantModal = ({ isOpen, onClose, onSave }) => {
             <label className="block text-sm font-medium mb-1">Company Name</label>
             <input 
               type="text"
-              className="w-full px-4 py-2 rounded-lg border bg-slate-800 border-slate-700 outline-none focus:ring-2 focus:ring-indigo-500"
+              className="w-full px-4 py-2 rounded-lg border bg-card/20 border-indigo-500/10 outline-none focus:ring-2 focus:ring-indigo-500 text-text-main placeholder:text-text-main/60"
               placeholder="e.g. Acme Corp"
               value={formData.name}
               onChange={(e) => setFormData({...formData, name: e.target.value})}
@@ -43,13 +43,13 @@ const OnboardTenantModal = ({ isOpen, onClose, onSave }) => {
             <div className="flex items-center">
               <input 
                 type="text"
-                className="flex-1 px-4 py-2 rounded-l-lg border bg-slate-800 border-slate-700 outline-none focus:ring-2 focus:ring-indigo-500"
+                className="flex-1 px-4 py-2 rounded-l-lg border bg-surface/50 border-indigo-500/10 outline-none focus:ring-2 focus:ring-indigo-500 text-text-main placeholder:text-text-main/60"
                 placeholder="acme"
                 value={formData.subdomain}
                 onChange={(e) => setFormData({...formData, subdomain: e.target.value})}
                 required
               />
-              <span className="bg-slate-100 dark:bg-slate-800 px-3 py-2 border border-l-0 dark:border-slate-700 rounded-r-lg text-slate-500">.lighthouse.com</span>
+              <span className="bg-surface dark:bg-card px-3 py-2 border-l-0 border border-indigo-500/10 rounded-r-lg text-text-main opacity-70">.lighthouse.com</span>
             </div>
           </div>
 
@@ -57,7 +57,7 @@ const OnboardTenantModal = ({ isOpen, onClose, onSave }) => {
             <label className="block text-sm font-medium mb-1">Primary Admin Email</label>
             <input 
               type="email"
-              className="w-full px-4 py-2 rounded-lg border bg-slate-800 border-slate-700 outline-none focus:ring-2 focus:ring-indigo-500"
+              className="w-full px-4 py-2 rounded-lg border bg-card/20 border-indigo-500/10 outline-none focus:ring-2 focus:ring-indigo-500 text-text-main placeholder:text-text-main/60"
               placeholder="admin@acme.com"
               value={formData.adminEmail}
               onChange={(e) => setFormData({...formData, adminEmail: e.target.value})}
@@ -67,7 +67,7 @@ const OnboardTenantModal = ({ isOpen, onClose, onSave }) => {
           <div>
             <label className="block text-sm font-medium mb-1">Subscription Plan</label>
             <select 
-              className="w-full px-4 py-2 rounded-lg border bg-slate-800 border-slate-700 outline-none focus:ring-2 focus:ring-indigo-500"
+              className="w-full px-4 py-2 rounded-lg border bg-card/20 border-indigo-500/10 outline-none focus:ring-2 focus:ring-indigo-500 text-text-main"
               value={formData.planId}
               onChange={(e) => setFormData({...formData, planId: e.target.value})}
             >
@@ -78,10 +78,10 @@ const OnboardTenantModal = ({ isOpen, onClose, onSave }) => {
           </div>
 
           <div className="flex gap-3 justify-end pt-4">
-            <button type="button" onClick={onClose} className="px-6 py-2 text-slate-400 font-medium hover:text-white transition">
+            <button type="button" onClick={onClose} className="px-6 py-2 text-text-main/60 font-medium hover:text-text-main transition">
               Cancel
             </button>
-            <button type="submit" className="px-6 py-2 bg-indigo-600 text-white rounded-lg font-bold hover:bg-indigo-700 transition">
+            <button type="submit" className="px-6 py-2 btn-accent rounded-lg font-bold hover:brightness-95 transition">
               Create Tenant
             </button>
           </div>

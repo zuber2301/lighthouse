@@ -13,7 +13,7 @@ export default function RecognitionList({ items }) {
             <th className="py-2">Date</th>
           </tr>
         </thead>
-        <tbody className="divide-y divide-slate-800">
+        <tbody className="divide-y divide-border-soft">
           {items.map((it, idx) => (
             <tr key={idx} className="align-top">
               <td className="py-3">
@@ -22,7 +22,7 @@ export default function RecognitionList({ items }) {
               </td>
               <td className="py-3 font-semibold">+{it.points}</td>
               <td className="py-3 opacity-70 text-text-main">{it.tag}</td>
-              <td className="py-3"><span className="text-sm text-slate-200">{it.status ?? 'Approved'}</span></td>
+              <td className="py-3"><span className="text-sm text-text-main/60">{it.status ?? 'Approved'}</span></td>
               <td className="py-3 opacity-70 text-text-main">{it.when}</td>
             </tr>
           ))}

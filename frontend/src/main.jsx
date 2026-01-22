@@ -4,7 +4,8 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import { BrowserRouter } from 'react-router-dom'
 import App from './App'
-import './styles/tailwind.css'
+// Use main CSS (Tailwind + project styles)
+import './index.css'
 // Ensure Authorization header is injected for platform API calls
 import './lib/fetchAuth'
 // Dev helper: if VITE_DEV_TOKEN is provided at build/runtime, store it in localStorage if none exists

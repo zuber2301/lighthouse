@@ -42,14 +42,14 @@ export default function Header() {
   }
 
   // Use theme variables for styling
-  const headerClass = "bg-card/80 border-b border-border-soft text-text-main"
+  const headerClass = "bg-header-bg/80 backdrop-blur-xl border-b border-border-soft text-text-main shadow-sm"
   const separatorClass = "bg-border-soft"
 
   return (
-    <header className={`flex items-center justify-between px-6 py-4 backdrop-blur-xl sticky top-0 z-40 ${headerClass} transition-colors duration-300`}>
+    <header className={`flex items-center justify-between px-6 py-4 sticky top-0 z-40 ${headerClass} transition-colors duration-300`}>
       <div className="flex items-center gap-6">
-        <Link to="/" className="text-xl font-bold tracking-tight hover:opacity-80 transition-opacity text-text-main">
-          Light<span className="text-indigo-500">House</span>
+        <Link to="/" className="text-xl font-bold tracking-tight hover:opacity-80 transition-opacity text-tm-gradient">
+          Portal<span className="text-white">Admin</span>
         </Link>
         
         {!isCorporate && (
@@ -59,28 +59,39 @@ export default function Header() {
       </div>
 
       <div className="flex items-center gap-4">
-        {/* Theme Toggle */}
-        <div className="flex items-center gap-1 bg-surface rounded-full p-1 border border-border-soft shadow-inner">
+        {/* Theme Toggle - Modern Segmented Control with Visual Previews */}
+        <div className="flex items-center p-1 bg-indigo-500/5 rounded-full border border-indigo-500/10 shadow-inner">
           <button 
             onClick={() => setTheme('light')}
-            className={`flex items-center justify-center p-1.5 rounded-full transition-all duration-200 ${theme === 'light' ? 'bg-indigo-600 text-white shadow-md' : 'text-text-main opacity-50 hover:opacity-100 hover:bg-white/10'}`}
+            className={`flex items-center gap-2 px-3 py-1.5 text-[10px] font-black uppercase tracking-widest rounded-full transition-all duration-500 ${theme === 'light' ? 'btn-accent scale-105' : 'text-text-main opacity-30 hover:opacity-100 hover:bg-indigo-500/5'}`}
             title="Light Mode"
           >
-            <span className="text-xs">☀️</span>
+            <span className="w-2 h-2 rounded-full bg-white border border-gray-200" />
+            Light
           </button>
           <button 
             onClick={() => setTheme('dim')}
-            className={`flex items-center justify-center p-1.5 rounded-full transition-all duration-200 ${theme === 'dim' ? 'bg-indigo-600 text-white shadow-md' : 'text-text-main opacity-50 hover:opacity-100 hover:bg-white/10'}`}
+            className={`flex items-center gap-2 px-3 py-1.5 text-[10px] font-black uppercase tracking-widest rounded-full transition-all duration-500 ${theme === 'dim' ? 'btn-accent scale-105' : 'text-text-main opacity-30 hover:opacity-100 hover:bg-indigo-500/5'}`}
             title="Dim Mode"
           >
-            <span className="text-xs">🌓</span>
+            <span className="w-2 h-2 rounded-full bg-[#1E1E2F] border border-indigo-400/30" />
+            Dim
           </button>
           <button 
             onClick={() => setTheme('dark')}
-            className={`flex items-center justify-center p-1.5 rounded-full transition-all duration-200 ${theme === 'dark' ? 'bg-indigo-600 text-white shadow-md' : 'text-text-main opacity-50 hover:opacity-100 hover:bg-white/10'}`}
+            className={`flex items-center gap-2 px-3 py-1.5 text-[10px] font-black uppercase tracking-widest rounded-full transition-all duration-500 ${theme === 'dark' ? 'btn-accent scale-105' : 'text-text-main opacity-30 hover:opacity-100 hover:bg-indigo-500/5'}`}
             title="Dark Mode"
           >
-            <span className="text-xs">🌑</span>
+            <span className="w-2 h-2 rounded-full bg-black border border-indigo-900" />
+            Dark
+          </button>
+          <button 
+            onClick={() => setTheme('graph')}
+            className={`flex items-center gap-2 px-3 py-1.5 text-[10px] font-black uppercase tracking-widest rounded-full transition-all duration-500 ${theme === 'graph' ? 'btn-accent scale-105' : 'text-text-main opacity-30 hover:opacity-100 hover:bg-indigo-500/5'}`}
+            title="Graph Mode"
+          >
+            <span className="w-2 h-2 rounded-full bg-[#0a0e27] border border-[#00ffcc]" />
+            Graph
           </button>
         </div>
 
@@ -99,7 +110,7 @@ export default function Header() {
         {(userRole !== 'PLATFORM_OWNER' || selectedTenant) && (
           <button 
             onClick={() => navigate('/recognition')} 
-            className="hidden sm:flex px-4 py-1.5 rounded-full text-xs font-bold bg-indigo-600 hover:bg-indigo-500 transition-all text-white shadow-lg shadow-indigo-600/20"
+            className="hidden sm:flex px-4 py-1.5 rounded-full text-xs font-bold btn-recognition hover:brightness-95 transition-all shadow-lg"
           >
             Give Recognition
           </button>
@@ -113,12 +124,12 @@ export default function Header() {
             onClick={() => setIsDropdownOpen(!isDropdownOpen)}
             className="flex items-center gap-2 p-1 rounded-full transition-colors focus:outline-none hover:bg-surface"
           >
-            <div className="w-8 h-8 rounded-full bg-indigo-600 flex items-center justify-center text-white font-bold text-xs ring-2 ring-indigo-500/30">
+            <div className="w-8 h-8 rounded-full bg-indigo-600 flex items-center justify-center text-accent-contrast font-bold text-xs ring-2 ring-indigo-500/30">
               {firstLetter}
             </div>
             <div className="hidden md:block text-left mr-1">
               <div className="text-xs font-semibold text-text-main">{displayName}</div>
-              <div className="text-[10px] uppercase tracking-tighter text-slate-500">{formatRole(userRole)}</div>
+              <div className="text-[10px] uppercase tracking-tighter text-text-main/60">{formatRole(userRole)}</div>
             </div>
           </button>
 
@@ -127,7 +138,7 @@ export default function Header() {
             <div className="absolute right-0 mt-3 w-56 border rounded-xl shadow-2xl z-50 overflow-hidden bg-card border-border-soft">
               <div className="p-4 border-b border-border-soft">
                 <div className="text-sm font-bold text-text-main">{displayName}</div>
-                <div className="text-xs text-slate-500">{user?.email}</div>
+                <div className="text-xs text-text-main/60">{user?.email}</div>
                 <div className="mt-2 inline-block px-2 py-0.5 rounded bg-indigo-500/10 text-indigo-500 text-[10px] font-bold uppercase">
                   {formatRole(userRole)}
                 </div>

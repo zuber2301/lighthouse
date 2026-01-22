@@ -3,13 +3,13 @@ import React, { useState } from 'react'
 export function ChartCard({ title, children, options }) {
   const [active, setActive] = useState(0)
   return (
-    <div className="bg-card border border-white/6 rounded-xl p-6 min-h-[300px] hover:-translate-y-1 transform transition-all duration-200 focus-within:shadow-tm-neon">
+    <div className="bg-card border border-indigo-500/10 rounded-xl p-6 min-h-[300px] hover:-translate-y-1 transform transition-all duration-200 focus-within:shadow-tm-neon">
       <div className="flex justify-between items-center mb-4">
         <h3 className="text-lg font-semibold">{title}</h3>
         {options ? (
           <div className="flex gap-2">
             {options.map((o, i) => (
-              <button key={i} onClick={() => setActive(i)} aria-pressed={active === i} className={`px-3 py-1 rounded-md text-sm ${active === i ? 'bg-white/10' : 'bg-white/5'} focus:outline-none focus-visible:ring-2 focus-visible:ring-tm-teal`}>{o}</button>
+              <button key={i} onClick={() => setActive(i)} aria-pressed={active === i} className={`px-3 py-1 rounded-md text-sm ${active === i ? 'bg-card/10 border border-indigo-500/10' : 'bg-card/5 border border-indigo-500/10'} focus:outline-none focus-visible:ring-2 focus-visible:ring-tm-teal`}>{o}</button>
             ))}
           </div>
         ) : null}

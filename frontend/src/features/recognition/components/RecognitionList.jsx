@@ -16,7 +16,7 @@ export default function RecognitionList({ pages, fetchNextPage, hasNextPage, isF
       {pages?.map((page, i) => (
         <div key={i} className="space-y-3">
           {page.map((r) => (
-            <div key={r.id} className="p-4 bg-card rounded shadow-sm flex items-start gap-3">
+            <div key={r.id} className="p-4 bg-card border border-indigo-500/10 rounded shadow-sm flex items-start gap-3">
               <Avatar name={r.nominee_name || r.nominee_id} />
               <div className="flex-1">
                 <div className="flex items-center justify-between">
@@ -33,8 +33,8 @@ export default function RecognitionList({ pages, fetchNextPage, hasNextPage, isF
                 {r.message && <div className="mt-2 text-sm text-text-main opacity-80">{r.message}</div>}
                 <div className="mt-3 flex gap-2">
                   {r.status === 'PENDING' && (
-                    <button onClick={() => approve.mutate(r.id)} className="px-3 py-1 bg-blue-600 text-white rounded text-sm focus:outline-none focus-visible:ring-3 focus-visible:ring-primary">Approve</button>
-                  )}
+                      <button onClick={() => approve.mutate(r.id)} className="px-3 py-1 btn-accent rounded text-sm focus:outline-none focus-visible:ring-3 focus-visible:ring-primary">Approve</button>
+                    )}
                 </div>
               </div>
             </div>
@@ -46,7 +46,7 @@ export default function RecognitionList({ pages, fetchNextPage, hasNextPage, isF
         <button
           onClick={() => fetchNextPage()}
           disabled={!hasNextPage || isFetchingNextPage}
-          className="px-4 py-2 bg-blue-600 text-white rounded focus:outline-none focus-visible:ring-3 focus-visible:ring-primary"
+          className="px-4 py-2 btn-accent rounded focus:outline-none focus-visible:ring-3 focus-visible:ring-primary"
         >
           {isFetchingNextPage ? 'Loading...' : hasNextPage ? 'Load more' : 'No more'}
         </button>

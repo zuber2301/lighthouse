@@ -5,34 +5,155 @@
 :root {
   --bg-color: #f8fafc; /* slate-50 */
   --text-main: #0f172a; /* slate-900 */
+  --text-secondary: #64748b;
   --card-bg: #ffffff;
-  --border-color: #e2e8f0; /* slate-200 */
+  --border-color: rgba(226, 232, 240, 0.8); /* slate-200 with slight transparency */
   --sidebar-bg: #ffffff;
   --header-bg: #ffffff;
+  --accent: #6366F1; /* tm-indigo */
+  --accent-contrast: #ffffff;
+  --card-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  --radius: 12px;
+  --btn-primary: #6366F1;
+  --btn-hover: #4f46e5;
+  --success: #16a34a;
+  --warning: #ca8a04;
+  --error: #dc2626;
 }
 
 [data-theme='dim'] {
-  --bg-color: #0f172a; /* slate-900 */
-  --text-main: #f1f5f9; /* slate-100 */
-  --card-bg: #1e293b; /* slate-800 */
-  --border-color: #334155; /* slate-700 */
-  --sidebar-bg: #0f172a;
-  --header-bg: #0f172a;
+  --bg-color: #1E1E2F;
+  --text-main: #FFFFFF;
+  --text-secondary: #C0C0D0;
+  --card-bg: #2E2E42;
+  --border-color: #3A3A4D;
+  --sidebar-bg: #252537;
+  --header-bg: #252537;
+  --accent: #4FC3F7;
+  --accent-contrast: #FFFFFF;
+  --card-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+  --btn-primary: #FF6F61;
+  --btn-hover: #5AC8FA;
+  --success: #81C784;
+  --warning: #FFB74D;
+  --error: #E57373;
 }
 
 [data-theme='dark'] {
-  --bg-color: #020617; /* slate-950 equivalent to blackish blue */
-  --text-main: #f8fafc; /* slate-50 */
-  --card-bg: #0f172a; /* slate-900 */
-  --border-color: #1e293b; /* slate-800 */
-  --sidebar-bg: #020617;
-  --header-bg: #020617;
+  --bg-color: #08101a; /* deep but not pitch-black */
+  --text-main: #e6eef8; 
+  --text-secondary: #94a3b8;
+  --card-bg: #0f1624; 
+  --border-color: rgba(99, 102, 241, 0.12);
+  --sidebar-bg: #070a12;
+  --header-bg: rgba(2, 6, 23, 0.6);
+  --accent: #6366F1;
+  --accent-contrast: #ffffff;
+  --card-shadow: 0 4px 12px rgba(0, 0, 0, 0.6);
+  --btn-primary: #6366F1;
+  --btn-hover: #4f46e5;
+  --success: #10a37f;
+  --warning: #ca8a04;
+  --error: #dc2626;
+}
+
+[data-theme='graph'] {
+  --bg-color: #0a0e27;
+  --text-main: #ffffff;
+  --text-secondary: #c0c0d0;
+  --card-bg: #161b3d;
+  --border-color: rgba(0, 255, 204, 0.15);
+  --sidebar-bg: #0a0e27;
+  --header-bg: rgba(10, 14, 39, 0.9);
+  --accent: #00ffcc;
+  --accent-contrast: #0a0e27;
+  --card-shadow: 0 8px 30px rgba(0, 255, 204, 0.08);
+  --btn-primary: #00ffcc;
+  --btn-hover: #00ccff;
+  --success: #00ffcc;
+  --warning: #ffb74d;
+  --error: #ff6b6b;
+  --radius: 20px;
 }
 
 body {
   background-color: var(--bg-color);
   color: var(--text-main);
   transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+@layer components {
+  .card-base {
+    background-color: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius);
+    box-shadow: var(--card-shadow);
+    transition: all 0.3s ease;
+  }
+
+  .btn-accent {
+    @apply inline-flex items-center justify-center font-bold text-accent-contrast;
+    background-color: var(--accent);
+    box-shadow: var(--card-shadow);
+    border-radius: var(--radius);
+    transition: all 0.2s ease;
+  }
+  .btn-accent:hover {
+    filter: brightness(1.1);
+    transform: translateY(-1px);
+  }
+  .btn-accent:active { transform: translateY(0.5px); }
+
+  .btn-recognition {
+    @apply btn-accent;
+    box-shadow: 0 0 15px rgba(99, 102, 241, 0.4);
+  }
+  .btn-recognition:hover {
+    box-shadow: 0 0 20px rgba(99, 102, 241, 0.6);
+  }
+
+  .text-accent-contrast { color: var(--accent-contrast); }
+
+  .bg-tm-gradient {
+    @apply bg-gradient-to-br from-tm-teal to-tm-teal-2;
+  }
+
+  .text-tm-gradient {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-white to-tm-teal;
+  }
+
+  .shadow-tm-neon {
+    box-shadow: 0 8px 30px rgba(0, 255, 204, 0.15), 0 0 40px rgba(0, 255, 204, 0.08);
+  }
+
+  .tm-shape {
+    position: absolute;
+    border: 1px solid rgba(0, 255, 204, 0.2);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  @keyframes tm-float {
+    0%, 100% { transform: translate(0, 0) rotate(0deg); }
+    50% { transform: translate(20px, -20px) rotate(5deg); }
+  }
+
+  .animate-tm-float {
+    animation: tm-float 15s ease-in-out infinite;
+  }
+
+  .btn-danger {
+    @apply inline-flex items-center justify-center font-bold text-accent-contrast;
+    background-color: #dc2626; /* red-600 */
+    box-shadow: 0 8px 24px rgba(220,38,38,0.06);
+    border-radius: var(--radius);
+  }
+  .btn-success {
+    @apply inline-flex items-center justify-center font-bold text-accent-contrast;
+    background-color: #16a34a; /* green-600 */
+    box-shadow: 0 8px 24px rgba(16,163,127,0.06);
+    border-radius: var(--radius);
+  }
 }
 
 html, body, #root { height: 100%; }

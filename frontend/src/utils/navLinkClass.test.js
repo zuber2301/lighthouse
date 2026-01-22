@@ -4,8 +4,7 @@ import { navLinkClass } from './navLinkClass'
 describe('navLinkClass', () => {
   test('returns active class when isActive is true', () => {
     const result = navLinkClass(true)
-    expect(result).toContain('bg-slate-800')
-    expect(result).toContain('text-indigo-300')
+    expect(result).toContain('btn-accent')
     expect(result).toContain('py-2 px-3 rounded-md text-sm')
     expect(result).toContain('focus:outline-none')
     expect(result).toContain('focus-visible:ring-3')
@@ -14,14 +13,14 @@ describe('navLinkClass', () => {
 
   test('returns inactive class when isActive is false', () => {
     const result = navLinkClass(false)
-    expect(result).toContain('text-slate-200')
-    expect(result).toContain('hover:bg-slate-800')
-    expect(result).toContain('focus-visible:bg-slate-800')
+    expect(result).toContain('text-text-main')
+    expect(result).toContain('hover:bg-indigo-500/5')
+    expect(result).toContain('focus-visible:bg-indigo-500/5')
     expect(result).toContain('py-2 px-3 rounded-md text-sm')
     expect(result).toContain('focus:outline-none')
     expect(result).toContain('focus-visible:ring-3')
     expect(result).toContain('focus-visible:ring-primary')
-    expect(result).not.toContain('bg-slate-800 text-indigo-300')
+    expect(result).not.toContain('btn-accent')
   })
 
   test('includes base classes in both active and inactive states', () => {

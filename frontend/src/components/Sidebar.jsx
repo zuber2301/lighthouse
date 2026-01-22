@@ -44,14 +44,19 @@ export default function Sidebar() {
 
   const items = NAV_ITEMS[userRole] || NAV_ITEMS.CORPORATE_USER
 
-  const sidebarClass = "bg-card border-r border-border-soft text-text-main"
-  const activeLinkClass = "bg-indigo-600 text-white shadow-lg shadow-indigo-600/30"
-  const inactiveLinkClass = "text-text-main opacity-60 hover:opacity-100 hover:bg-surface"
+  const sidebarClass = "bg-sidebar border-r border-border-soft text-text-main shadow-sm"
+  const activeLinkClass = "bg-tm-gradient text-tm-bg-dark shadow-tm-neon font-bold"
+  const inactiveLinkClass = "text-text-main opacity-60 hover:opacity-100 hover:bg-white/5 transition-all duration-200"
 
   return (
     <aside className={`w-64 h-screen ${sidebarClass} transition-colors duration-300`}>
       <div className="p-6">
-        <div className="text-2xl font-bold mb-8 px-2 text-indigo-600">LightHouse</div>
+        <div className="flex items-center gap-3 mb-8 px-2">
+          <div className="w-8 h-8 rounded-lg bg-tm-gradient flex items-center justify-center shadow-tm-neon">
+            <span className="text-tm-bg-dark text-xs">LH</span>
+          </div>
+          <div className="text-xl font-bold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-white to-tm-teal">LightHouse</div>
+        </div>
         <nav className="flex flex-col gap-2" role="navigation" aria-label="Main navigation">
           {items.map((it) => (
             <NavLink
@@ -66,10 +71,10 @@ export default function Sidebar() {
 
           {userRole === 'PLATFORM_OWNER' && selectedTenant && (
             <NavLink to={`/tenants/${selectedTenant.id}`} className={({ isActive }) => `flex items-center gap-3 p-3 rounded-xl transition ${
-              isActive ? 'bg-slate-200 text-slate-900' : 'text-slate-500 hover:bg-slate-100'
+              isActive ? 'bg-indigo-600/20 text-indigo-500' : 'text-text-main opacity-50 hover:bg-indigo-500/5 hover:opacity-100'
             }`}>
               <span className="text-xl">🏢</span>
-              <span className="font-medium text-xs">Back to {selectedTenant.name}</span>
+              <span className="font-medium text-[10px] uppercase tracking-wider">Manage {selectedTenant.name}</span>
             </NavLink>
           )}
         </nav>

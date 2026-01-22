@@ -3,6 +3,7 @@ import api from '../../lib/api'
 import Card from '../../components/Card'
 import PageHeader from '../../components/PageHeader'
 import { useTenant } from '../../lib/TenantContext'
+import confetti from 'canvas-confetti'
 
 export default function TenantLeadDashboard() {
   const { selectedTenant } = useTenant()
@@ -70,6 +71,14 @@ export default function TenantLeadDashboard() {
         ))
         setBudget(data.lead_budget_remaining / 100)
         setRecognitionData({ userId: '', amount: '', note: '' })
+        
+        confetti({
+          particleCount: 150,
+          spread: 70,
+          origin: { y: 0.6 },
+          colors: ['#6366F1', '#00ffcc', '#ff6b6b']
+        })
+
         fetchTeamData() // Refresh to get latest data
       }
     } catch (error) {
@@ -87,9 +96,9 @@ export default function TenantLeadDashboard() {
 
       {/* Budget Display */}
       <Card className="mb-6">
-        <div className="bg-green-900 text-white p-6 rounded-xl">
+        <div className="bg-emerald-900/20 text-emerald-400 p-6 rounded-xl">
           <h2 className="text-sm uppercase tracking-widest opacity-70">Your Recognition Budget</h2>
-          <h1 className="text-3xl font-bold">₹{budget.toLocaleString()}</h1>
+          <h1 className="text-3xl font-bold text-text-main">₹{budget.toLocaleString()}</h1>
         </div>
       </Card>
 
@@ -99,10 +108,10 @@ export default function TenantLeadDashboard() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div>
             <label className="block text-sm font-medium text-text-main opacity-80 mb-2">Team Member</label>
-            <select
+              <select
               value={recognitionData.userId}
               onChange={(e) => setRecognitionData({...recognitionData, userId: e.target.value})}
-              className="w-full border border-gray-300 rounded-lg px-3 py-2"
+              className="w-full border border-indigo-500/10 rounded-lg px-3 py-2 bg-surface text-text-main"
             >
               <option value="">Select a team member</option>
               {team.map(member => (
@@ -116,7 +125,7 @@ export default function TenantLeadDashboard() {
               type="number"
               value={recognitionData.amount}
               onChange={(e) => setRecognitionData({...recognitionData, amount: e.target.value})}
-              className="w-full border border-gray-300 rounded-lg px-3 py-2"
+              className="w-full border border-indigo-500/10 rounded-lg px-3 py-2 bg-surface text-text-main"
               placeholder="100"
             />
           </div>
@@ -126,14 +135,14 @@ export default function TenantLeadDashboard() {
               type="text"
               value={recognitionData.note}
               onChange={(e) => setRecognitionData({...recognitionData, note: e.target.value})}
-              className="w-full border border-gray-300 rounded-lg px-3 py-2"
+              className="w-full border border-indigo-500/10 rounded-lg px-3 py-2 bg-surface text-text-main"
               placeholder="Great work on the project!"
             />
           </div>
         </div>
         <button
           onClick={recognizeUser}
-          className="mt-4 bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700"
+          className="mt-4 btn-recognition px-6 py-2 rounded-full font-bold transition-all shadow-lg"
           disabled={!recognitionData.userId || !recognitionData.amount}
         >
           Give Recognition
@@ -145,14 +154,14 @@ export default function TenantLeadDashboard() {
         <h3 className="font-bold text-lg mb-4">Team Performance</h3>
         <div className="grid gap-4">
           {team.map(member => (
-            <div key={member.id} className="flex items-center justify-between p-4 bg-gray-50 rounded-xl">
+            <div key={member.id} className="flex items-center justify-between p-4 bg-card/5 rounded-xl">
               <div>
-                <p className="font-bold">{member.name}</p>
-                <p className="text-sm text-slate-500">Points Balance: {member.points_balance}</p>
+                <p className="font-bold text-text-main">{member.name}</p>
+                <p className="text-sm text-text-main opacity-60">Points Balance: {member.points_balance}</p>
               </div>
               <div className="text-right">
-                <span className="text-2xl font-bold text-green-600">{member.points_balance}</span>
-                <p className="text-xs text-slate-500">points</p>
+                <span className="text-2xl font-bold text-emerald-500">{member.points_balance}</span>
+                <p className="text-xs text-text-main opacity-60">points</p>
               </div>
             </div>
           ))}

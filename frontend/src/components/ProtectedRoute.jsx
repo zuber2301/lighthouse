@@ -21,8 +21,8 @@ export default function ProtectedRoute({ children, allowedRoles, redirectTo = '/
 
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-slate-950">
-        <div className="text-slate-100">Loading...</div>
+      <div className="min-h-screen flex items-center justify-center bg-surface">
+        <div className="text-text-main">Loading...</div>
       </div>
     )
   }

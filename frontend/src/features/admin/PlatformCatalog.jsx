@@ -60,13 +60,13 @@ export default function PlatformCatalog() {
                 <tr key={p.id} className="border-t border-border-soft">
                   <td className="p-3 font-medium">{p.name}</td>
                   <td className="p-3">
-                    <button onClick={() => toggleEnabled(p)} className={`px-3 py-1 rounded ${p.enabled ? 'bg-emerald-600 text-white' : 'bg-rose-600 text-white'}`}>
+                    <button onClick={() => toggleEnabled(p)} className={`${p.enabled ? 'btn-success' : 'btn-danger'} px-3 py-1 rounded` }>
                       {p.enabled ? 'Enabled' : 'Disabled'}
                     </button>
                   </td>
                   <td className="p-3 opacity-70 text-text-main">{p.min_plan || 'All'}</td>
                   <td className="p-3">
-                    <input type="number" defaultValue={(p.margin_paise || 0) / 100} step="0.01" min="0" onBlur={(e) => updateMargin(p, e.target.value)} className="w-28 px-2 py-1 bg-card rounded" />
+                    <input type="number" defaultValue={(p.margin_paise || 0) / 100} step="0.01" min="0" onBlur={(e) => updateMargin(p, e.target.value)} className="w-28 px-2 py-1 bg-card border border-indigo-500/10 rounded" />
                   </td>
                   <td className="p-3 text-right opacity-70 text-text-main">ID: {p.id.slice(0,8)}</td>
                 </tr>

@@ -8,6 +8,13 @@ const personas = [
   { name: 'Corporate User', email: 'user@triton.com', role: 'CORPORATE_USER' },
 ]
 
+const roleColors = {
+  'Platform Owner': '#FFD54F',
+  'Tenant Admin': '#4FC3F7',
+  'Tenant Lead': '#BA68C8',
+  'Corporate User': '#90CAF9',
+}
+
 export default function DevPersonaSwitcher({ onSwitch } = {}) {
   // Only render in dev mode
   if (!import.meta.env.DEV) return null
@@ -41,19 +48,28 @@ export default function DevPersonaSwitcher({ onSwitch } = {}) {
   return (
     <div className="fixed bottom-4 right-4 z-[9999]">
       {!collapsed ? (
-        <div className="p-4 bg-card border border-indigo-500 rounded-xl shadow-2xl">
+        <div className="p-4 bg-card border border-indigo-500/10 rounded-xl shadow-2xl">
           <div className="flex items-center justify-between mb-3">
             <p className="text-xs font-bold text-indigo-400 uppercase tracking-tighter">Dev Persona Switcher</p>
-            <button onClick={() => setCollapsed(true)} className="text-slate-300 px-2 py-1 rounded hover:bg-slate-800">▾</button>
+            <button onClick={() => setCollapsed(true)} className="text-text-main opacity-60 px-2 py-1 rounded hover:bg-card border border-indigo-500/10/5">▾</button>
           </div>
           <div className="flex flex-col gap-2">
             {personas.map((p) => (
               <button
                 key={p.role}
                 onClick={() => handleSwitch(p)}
-                className="text-left text-xs px-3 py-2 bg-slate-800 hover:bg-indigo-600 rounded transition text-white"
+                className="flex items-center text-left text-xs transition-all hover:scale-[1.02] active:scale-[0.98]"
               >
-                {p.name}
+                <span style={{ 
+                  backgroundColor: roleColors[p.name], 
+                  borderRadius: '12px', 
+                  padding: '4px 10px',
+                  color: '#000',
+                  fontWeight: 'bold',
+                  boxShadow: '0 2px 8px rgba(0,0,0,0.2)'
+                }}>
+                  {p.name}
+                </span>
               </button>
             ))}
             <button

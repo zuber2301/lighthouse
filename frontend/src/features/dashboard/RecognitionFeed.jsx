@@ -8,7 +8,7 @@ export default function RecognitionFeed() {
         <div className="col-span-2">
           <RecentRecognitions />
         </div>
-        <div className="col-span-1">
+          <div className="col-span-1">
           <div className="bg-card p-4 rounded-lg">
             <div className="text-sm opacity-70 text-text-main">Top Tags</div>
             <div className="mt-3 flex flex-col gap-2">

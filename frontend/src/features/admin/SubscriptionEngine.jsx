@@ -9,10 +9,10 @@ const SubscriptionEngine = () => {
   return (
     <div className="p-8">
       <h1 className="text-3xl font-bold mb-8">Subscription Engine</h1>
-      <div className="bg-card dark:bg-card rounded-2xl border dark:border-border-soft overflow-hidden">
+      <div className="bg-card border border-indigo-500/10 dark:bg-card border border-indigo-500/10 rounded-2xl border dark:border-border-soft overflow-hidden">
         <table className="w-full text-left">
-          <thead className="bg-slate-50 dark:bg-card/50">
-            <tr className="text-slate-500 text-sm">
+          <thead className="bg-surface dark:bg-card border border-indigo-500/10/50">
+            <tr className="text-text-main/60 text-sm">
               <th className="p-4">Tenant</th>
               <th className="p-4">Plan</th>
               <th className="p-4">Status</th>
@@ -27,7 +27,7 @@ const SubscriptionEngine = () => {
                 <td className="p-4">
                    <span className={p.status === 'Active' ? 'text-emerald-500' : 'text-rose-500'}>● {p.status}</span>
                 </td>
-                <td className="p-4 text-slate-500">{p.renewal}</td>
+                <td className="p-4 text-text-main/60">{p.renewal}</td>
               </tr>
             ))}
           </tbody>

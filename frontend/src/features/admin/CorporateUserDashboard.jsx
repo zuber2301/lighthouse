@@ -86,7 +86,7 @@ export default function CorporateUserDashboard() {
       <motion.div 
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="relative overflow-hidden bg-gradient-to-br from-indigo-600 via-indigo-700 to-violet-800 rounded-[2rem] p-8 text-white shadow-sm-2xl shadow-sm-indigo-500/20"
+        className="relative overflow-hidden bg-gradient-to-br from-indigo-600 via-indigo-700 to-violet-800 rounded-[2rem] p-8 text-accent-contrast shadow-sm-2xl shadow-sm-indigo-500/20"
       >
         <div className="relative z-10 flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
           <div>
@@ -101,17 +101,17 @@ export default function CorporateUserDashboard() {
             </div>
           </div>
           
-          <button 
-            onClick={() => window.location.href = '/rewards'}
-            className="group relative px-8 py-4 bg-card text-indigo-600 rounded-2xl font-black text-lg shadow-sm-xl hover:scale-105 hover:-translate-y-1 transition-all active:scale-95 flex items-center gap-3"
-          >
+            <button 
+              onClick={() => window.location.href = '/rewards'}
+              className="group relative px-8 py-4 bg-card text-indigo-600 rounded-2xl font-black text-lg shadow-sm-xl hover:scale-105 hover:-translate-y-1 transition-all active:scale-95 flex items-center gap-3"
+            >
             <span>Redeem Now</span>
             <span className="group-hover:translate-x-1 transition-transform">🎁</span>
           </button>
         </div>
         
         {/* Decorative elements */}
-        <div className="absolute -right-20 -top-20 w-80 h-80 bg-card/10 rounded-full blur-3xl animate-pulse"></div>
+        <div className="absolute -right-20 -top-20 w-80 h-80 bg-card border border-indigo-500/10 rounded-full blur-3xl animate-pulse"></div>
         <div className="absolute -left-10 -bottom-10 w-40 h-40 bg-indigo-400/20 rounded-full blur-2xl"></div>
       </motion.div>
 
@@ -125,7 +125,7 @@ export default function CorporateUserDashboard() {
             <button className="text-sm font-bold text-indigo-400 hover:text-indigo-300 transition" onClick={() => window.location.href = '/feed'}>View all</button>
           </div>
           
-          <div className="bg-card/50 backdrop-blur-sm border border-border-soft rounded-3xl p-2 h-[500px] overflow-hidden">
+          <div className="bg-card/50 border border-indigo-500/10 backdrop-blur-sm border border-border-soft rounded-3xl p-2 h-[500px] overflow-hidden">
              <RecognitionFeed />
           </div>
         </div>
@@ -133,7 +133,7 @@ export default function CorporateUserDashboard() {
         {/* Sidebar Widgets */}
         <div className="space-y-8">
           {/* Milestone Progress */}
-          <Card className="p-8 bg-card/50 border-border-soft rounded-[2rem] relative overflow-hidden group">
+          <Card className="p-8 bg-card/5 border border-indigo-500/100 border-border-soft rounded-[2rem] relative overflow-hidden group">
             <h3 className="text-xl font-black text-text-main mb-6 flex items-center gap-2">
               🏆 Next Badge
             </h3>
@@ -142,7 +142,7 @@ export default function CorporateUserDashboard() {
                  <div className="w-24 h-24 bg-gradient-to-br from-amber-400 to-orange-600 rounded-full flex items-center justify-center text-4xl shadow-sm-lg ring-4 ring-orange-500/20 group-hover:scale-110 transition-transform duration-500">
                     🥇
                  </div>
-                 <div className="absolute -top-1 -right-1 bg-indigo-600 text-[10px] font-black px-2 py-1 rounded-full border-2 border-slate-900">
+                 <div className="absolute -top-1 -right-1 bg-indigo-600 text-[10px] font-black px-2 py-1 rounded-full border-2 border-indigo-500/5">
                     LV 4
                  </div>
                </div>
@@ -170,7 +170,7 @@ export default function CorporateUserDashboard() {
              <h3 className="text-lg font-black text-text-main">📜 Recent Activity</h3>
              <div className="space-y-3">
                 {redemptionHistory.slice(0, 3).map((item, i) => (
-                  <div key={i} className="flex items-center gap-4 p-4 bg-card/40 border border-border-soft/50 rounded-2xl hover:bg-surface/60 transition group">
+                  <div key={i} className="flex items-center gap-4 p-4 bg-card/4 border border-indigo-500/100 border border-border-soft/50 rounded-2xl hover:bg-surface/60 transition group">
                      <div className="h-10 w-10 rounded-xl bg-surface flex items-center justify-center text-xl group-hover:scale-110 transition">
                         🎁
                      </div>
@@ -182,7 +182,7 @@ export default function CorporateUserDashboard() {
                   </div>
                 ))}
                 {redemptionHistory.length === 0 && (
-                  <div className="p-8 text-center bg-card/40 border border-dashed border-border-soft rounded-2xl">
+                  <div className="p-8 text-center bg-card/4 border border-indigo-500/100 border border-dashed border-border-soft rounded-2xl">
                      <p className="text-sm opacity-50 text-text-main font-medium">No redemptions yet. Time to shop! 🛒</p>
                   </div>
                 )}
