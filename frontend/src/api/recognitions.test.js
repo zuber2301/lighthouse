@@ -1,8 +1,14 @@
 import { expect, test, vi, describe, beforeEach } from 'vitest'
 import { fetchRecognitions, createRecognition } from './recognitions'
+import api from './axiosClient'
 
-// Mock fetch globally
-global.fetch = vi.fn()
+// Mock axiosClient
+vi.mock('./axiosClient', () => ({
+  default: {
+    get: vi.fn(),
+    post: vi.fn(),
+  },
+}))
 
 describe('Recognition API', () => {
   beforeEach(() => {
@@ -16,19 +22,18 @@ describe('Recognition API', () => {
         { id: '2', nominee: 'Jane Smith', points: 25 },
       ]
 
-      global.fetch.mockResolvedValueOnce({
-        ok: true,
-        json: () => Promise.resolve(mockRecognitions),
+      api.get.mockResolvedValueOnce({
+        data: mockRecognitions,
       })
 
       const result = await fetchRecognitions()
 
-      expect(global.fetch).toHaveBeenCalledWith('/api/recognitions')
+      expect(api.get).toHaveBeenCalledWith('/recognition')
       expect(result).toEqual(mockRecognitions)
     })
 
     test('returns empty array when fetch fails', async () => {
-      global.fetch.mockRejectedValueOnce(new Error('Network error'))
+      api.get.mockRejectedValueOnce(new Error('Network error'))
 
       const result = await fetchRecognitions()
 
@@ -36,9 +41,11 @@ describe('Recognition API', () => {
     })
 
     test('returns empty array when response is not ok', async () => {
-      global.fetch.mockResolvedValueOnce({
-        ok: false,
-        statusText: 'Internal Server Error',
+      api.get.mockRejectedValueOnce({
+        response: {
+          status: 500,
+          statusText: 'Internal Server Error',
+        },
       })
 
       const result = await fetchRecognitions()
@@ -52,29 +59,24 @@ describe('Recognition API', () => {
       const payload = { nominee: 'John Doe', points: 50, message: 'Great work!' }
       const mockResponse = { id: '1', ...payload, status: 'pending' }
 
-      global.fetch.mockResolvedValueOnce({
-        ok: true,
-        json: () => Promise.resolve(mockResponse),
+      api.post.mockResolvedValueOnce({
+        data: mockResponse,
       })
 
       const result = await createRecognition(payload)
 
-      expect(global.fetch).toHaveBeenCalledWith('/api/recognitions', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload),
-      })
+      expect(api.post).toHaveBeenCalledWith('/recognition', payload)
       expect(result).toEqual(mockResponse)
     })
 
     test('throws error when response is not ok', async () => {
       const payload = { nominee: 'John Doe', points: 50, message: 'Great work!' }
 
-      global.fetch.mockResolvedValueOnce({
-        ok: false,
-        status: 400,
-        statusText: 'Bad Request',
-        text: () => Promise.resolve('Invalid data'),
+      api.post.mockRejectedValueOnce({
+        response: {
+          status: 400,
+          data: 'Invalid data',
+        },
       })
 
       await expect(createRecognition(payload)).rejects.toThrow('Invalid data')
@@ -83,11 +85,8 @@ describe('Recognition API', () => {
     test('throws error with status text when no response text', async () => {
       const payload = { nominee: 'John Doe', points: 50, message: 'Great work!' }
 
-      global.fetch.mockResolvedValueOnce({
-        ok: false,
-        status: 500,
-        statusText: 'Internal Server Error',
-        text: () => Promise.resolve(''),
+      api.post.mockRejectedValueOnce({
+        message: 'Internal Server Error',
       })
 
       await expect(createRecognition(payload)).rejects.toThrow('Internal Server Error')
@@ -96,7 +95,7 @@ describe('Recognition API', () => {
     test('handles network errors', async () => {
       const payload = { nominee: 'John Doe', points: 50, message: 'Great work!' }
 
-      global.fetch.mockRejectedValueOnce(new Error('Network error'))
+      api.post.mockRejectedValueOnce(new Error('Network error'))
 
       await expect(createRecognition(payload)).rejects.toThrow('Network error')
     })

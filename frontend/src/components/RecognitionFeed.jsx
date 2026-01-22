@@ -24,7 +24,7 @@ const RecognitionCard = ({ data }) => (
             <span className="leading-none truncate">{data.badge_name}</span>
           </span>
 
-          <span className="text-emerald-300 text-sm font-semibold">+{data.points}</span>
+          <span className="text-emerald-300 text-sm font-semibold">+{data.points} Points</span>
         </div>
 
         <p className="mt-2 text-sm text-slate-300 italic text-center line-clamp-3">"{data.message}"</p>

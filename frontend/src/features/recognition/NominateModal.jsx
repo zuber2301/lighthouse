@@ -205,7 +205,7 @@ export default function NominateModal({ open, onClose, onSubmit }) {
 
               <div className="mt-4 mb-2 flex justify-end gap-3">
                 <button type="button" onClick={onClose} className="px-3 py-1 rounded-md bg-surface focus:outline-none focus-visible:ring-3 focus-visible:ring-primary">Cancel</button>
-                <button type="submit" className="px-3 py-1 rounded-md bg-indigo-600 focus:outline-none focus-visible:ring-3 focus-visible:ring-primary">Nominate</button>
+                <button type="submit" className="px-3 py-1 rounded-md bg-indigo-600 focus:outline-none focus-visible:ring-3 focus-visible:ring-primary">Submit Recognition</button>
               </div>
             </div>
         </div>

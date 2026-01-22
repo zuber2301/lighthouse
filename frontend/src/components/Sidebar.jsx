@@ -36,7 +36,6 @@ const NAV_ITEMS = {
 }
 
 export default function Sidebar() {
-  const themed = useTheme()
   const { user: authUser } = useAuth()
   const { selectedTenant } = useTenant()
 
