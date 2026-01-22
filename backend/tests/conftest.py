@@ -194,3 +194,17 @@ async def budget_pool(db_session, test_tenant, platform_admin_user):
     await db_session.commit()
     await db_session.refresh(pool)
     return pool
+@pytest_asyncio.fixture
+async def corporate_user(db_session, test_tenant):
+    """Create a corporate user for testing."""
+    user = User(
+        email=f"corp_user_{uuid.uuid4().hex}@test.com",
+        full_name="Corporate User",
+        role=UserRole.CORPORATE_USER,
+        tenant_id=test_tenant.id,
+        is_active=True
+    )
+    db_session.add(user)
+    await db_session.commit()
+    await db_session.refresh(user)
+    return user
