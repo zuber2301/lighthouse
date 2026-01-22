@@ -46,44 +46,63 @@ export default function PlatformAdminPage() {
   }
 
   return (
-    <div className="space-y-6">
-      <div className="bg-gradient-to-br from-tm-bg-dark to-surface p-6 rounded-xl">
-        <PageHeader title="Platform Owner" subtitle="Global SaaS control plane" />
-
-        {/* Stats Cards */}
-        <div className="mt-6 grid grid-cols-1 md:grid-cols-4 gap-6">
-          <Card>
-            <h3 className="text-2xl font-bold text-indigo-400">₹{((stats.INR || 0) / 100).toLocaleString()}</h3>
-            <p className="text-slate-400">Aggregated MRR</p>
-          </Card>
-          <Card>
-            <h3 className="text-2xl font-bold text-emerald-400">{stats.total_active_users || 0}</h3>
-            <p className="text-slate-400">Total Active Users</p>
-          </Card>
-          <Card>
-            <h3 className="text-2xl font-bold text-amber-400">{formatUptime(stats.uptime_seconds)}</h3>
-            <p className="text-slate-400">System Uptime</p>
-          </Card>
-          <Card>
-            <h3 className="text-2xl font-bold text-pink-400">Top Tenants</h3>
-            <ul className="mt-2 text-sm text-slate-300 space-y-1">
-              {(stats.top_tenants || []).map(t => (
-                <li key={t.id} className="flex justify-between">
-                  <span>{t.name}</span>
-                  <span className="text-slate-400">{t.recognitions} recs</span>
-                </li>
-              ))}
-            </ul>
-          </Card>
+    <div className="space-y-8 max-w-7xl mx-auto">
+      <div className="flex justify-between items-end">
+        <PageHeader title="Operator View" subtitle="Global SaaS control plane" />
+        <div className="flex gap-2">
+          <button 
+            onClick={() => navigate('/platform-admin/logs')}
+            className="px-4 py-2 rounded-xl bg-white border border-slate-200 text-slate-600 text-xs font-bold hover:bg-slate-50 transition-all shadow-sm"
+          >
+            Sytem Logs
+          </button>
+          <button 
+            onClick={() => navigate('/platform-admin/subscriptions')}
+            className="px-4 py-2 rounded-xl bg-indigo-600 border border-indigo-700 text-white text-xs font-bold hover:bg-indigo-700 transition-all shadow-md"
+          >
+            Pricing Engine
+          </button>
         </div>
       </div>
 
+      {/* Stats Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+        <Card className="border-l-4 border-l-indigo-500">
+          <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Aggregated MRR</p>
+          <h3 className="text-2xl font-bold text-slate-900 mt-2">₹{((stats.INR || 0) / 100).toLocaleString()}</h3>
+          <p className="text-xs text-indigo-600 font-medium mt-1">Growth: +12.5%</p>
+        </Card>
+        <Card className="border-l-4 border-l-emerald-500">
+          <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Total Active Users</p>
+          <h3 className="text-2xl font-bold text-slate-900 mt-2">{stats.total_active_users || 0}</h3>
+          <p className="text-xs text-emerald-600 font-medium mt-1">Across {tenants.length} tenants</p>
+        </Card>
+        <Card className="border-l-4 border-l-amber-500">
+          <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">System Uptime</p>
+          <h3 className="text-2xl font-bold text-slate-900 mt-2">{formatUptime(stats.uptime_seconds)}</h3>
+          <p className="text-xs text-amber-600 font-medium mt-1">Status: Operational</p>
+        </Card>
+        <Card className="border-l-4 border-l-rose-500">
+          <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Top Tenants</p>
+          <ul className="mt-2 text-[11px] text-slate-600 space-y-1">
+            {(stats.top_tenants || []).slice(0, 3).map(t => (
+              <li key={t.id} className="flex justify-between border-b border-slate-50 pb-1">
+                <span className="font-semibold">{t.name}</span>
+                <span className="text-slate-400">{t.recognitions} recs</span>
+              </li>
+            ))}
+          </ul>
+        </Card>
+      </div>
+
       {/* Tenant Management */}
-      <TenantManager 
-        tenants={tenants} 
-        onRefresh={fetchTenants}
-        onAddTenant={handleAddTenant}
-      />
+      <div className="bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden">
+        <TenantManager 
+          tenants={tenants} 
+          onRefresh={fetchTenants}
+          onAddTenant={handleAddTenant}
+        />
+      </div>
     </div>
   )
 }

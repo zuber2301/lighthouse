@@ -1,4 +1,5 @@
 import asyncio
+import uuid
 import pytest
 from httpx import AsyncClient
 from sqlalchemy import select
@@ -35,11 +36,12 @@ async def test_create_recognition_success():
             await db_session.commit()
             await db_session.refresh(tenant)
 
-        res = await db_session.execute(select(User).where(User.email == 'tenant_admin_integ@example.com'))
-        admin = res.scalar_one_or_none()
+        res = await db_session.execute(select(User).where(User.email.like('tenant_admin_integ%')))
+        admins = res.scalars().all()
+        admin = admins[0] if admins else None
         if not admin:
             admin = User(
-                email="tenant_admin_integ@example.com",
+                email=f"tenant_admin_integ_{uuid.uuid4().hex[:8]}@example.com",
                 full_name="Tenant Admin",
                 role=UserRole.TENANT_ADMIN,
                 tenant_id=tenant.id,
@@ -53,7 +55,7 @@ async def test_create_recognition_success():
 
         # create nominee
         nominee = User(
-            email="suresh_test@example.com",
+            email=f"suresh_test_{uuid.uuid4().hex[:8]}@example.com",
             full_name="Suresh Test",
             role=UserRole.CORPORATE_USER,
             tenant_id=tenant_id,
@@ -64,7 +66,7 @@ async def test_create_recognition_success():
         await db_session.refresh(nominee)
 
         # create a badge for the tenant
-        badge = Badge(tenant_id=tenant_id, name="Test Badge", points_value=10)
+        badge = Badge(tenant_id=tenant_id, name=f"Test Badge {uuid.uuid4().hex[:8]}", points_value=10)
         db_session.add(badge)
         await db_session.commit()
         await db_session.refresh(badge)
@@ -80,7 +82,7 @@ async def test_create_recognition_success():
             'message': 'Great work',
             'is_public': True
         }
-        r = await client.post('/recognitions/', json=payload, headers=headers)
+        r = await client.post('/recognition/', json=payload, headers=headers)
         assert r.status_code == 201, r.text
         body = r.json()
         assert body['nominee_id'] == nominee.id
@@ -101,11 +103,11 @@ async def test_nominee_not_found_returns_400():
             await db_session.commit()
             await db_session.refresh(tenant)
 
-        res = await db_session.execute(select(User).where(User.email == 'tenant_admin_integ2@example.com'))
+        res = await db_session.execute(select(User).where(User.email == 'tenant_admin_integ2_2G6tnX4L@example.com'))
         admin = res.scalar_one_or_none()
         if not admin:
             admin = User(
-                email="tenant_admin_integ2@example.com",
+                email="tenant_admin_integ2_2G6tnX4L@example.com",
                 full_name="Tenant Admin 2",
                 role=UserRole.TENANT_ADMIN,
                 tenant_id=tenant.id,
@@ -128,7 +130,7 @@ async def test_nominee_not_found_returns_400():
             'message': 'No such user',
             'is_public': True
         }
-        r = await client.post('/recognitions/', json=payload, headers=headers)
+        r = await client.post('/recognition/', json=payload, headers=headers)
         assert r.status_code == 400
 
 
@@ -146,11 +148,11 @@ async def test_tenant_mismatch_forbidden():
             await db_session.commit()
             await db_session.refresh(tenant)
 
-        res = await db_session.execute(select(User).where(User.email == 'tenant_admin_integ3@example.com'))
+        res = await db_session.execute(select(User).where(User.email == 'tenant_admin_integ3_XJzSDtUk@example.com'))
         admin = res.scalar_one_or_none()
         if not admin:
             admin = User(
-                email="tenant_admin_integ3@example.com",
+                email="tenant_admin_integ3_XJzSDtUk@example.com",
                 full_name="Tenant Admin 3",
                 role=UserRole.TENANT_ADMIN,
                 tenant_id=tenant.id,
@@ -174,6 +176,6 @@ async def test_tenant_mismatch_forbidden():
             'message': 'Tenant mismatch test',
             'is_public': True
         }
-        r = await client.post('/recognitions/', json=payload, headers=headers)
+        r = await client.post('/recognition/', json=payload, headers=headers)
         # With a fake tenant in the token the server should reject because nominee lookup fails
         assert r.status_code == 400

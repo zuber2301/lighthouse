@@ -8,8 +8,12 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        surface: '#1e293b', // slate-800
-        card: '#1f2937',    // custom card
+        surface: '#F1F5F9', // Light grey background
+        'surface-white': '#F8FAFC', // Off-white
+        'border-soft': '#E2E8F0', // Soft borders
+        'text-main': '#1E293B', // Main text
+        card: '#FFFFFF',    // White card
+        'tm-indigo': '#6366F1',
         'tm-teal': '#00ffcc',
         'tm-teal-2': '#00ccff',
         'tm-pink': '#ff6b6b',

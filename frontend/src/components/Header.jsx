@@ -18,6 +18,7 @@ export default function Header() {
 
   const userRole = user?.role || 'CORPORATE_USER'
   const isCorporate = userRole === 'CORPORATE_USER'
+  const isAdmin = userRole === 'PLATFORM_OWNER' || userRole === 'TENANT_ADMIN'
   const displayName = user?.full_name || user?.email || 'User'
   const firstLetter = displayName.charAt(0).toUpperCase()
   const { selectedTenant } = useTenant()
@@ -38,16 +39,22 @@ export default function Header() {
     return role?.replace('_', ' ').toLowerCase().replace(/\b\w/g, l => l.toUpperCase())
   }
 
+  const headerClass = isAdmin 
+    ? "bg-white/80 border-b border-slate-200 text-slate-800"
+    : "border-b border-white/5 bg-slate-950/70 text-white"
+
+  const separatorClass = isAdmin ? "bg-slate-200" : "bg-white/10"
+
   return (
-    <header className="flex items-center justify-between px-6 py-4 border-b border-white/5 bg-slate-950/70 backdrop-blur-xl sticky top-0 z-40">
+    <header className={`flex items-center justify-between px-6 py-4 backdrop-blur-xl sticky top-0 z-40 ${headerClass}`}>
       <div className="flex items-center gap-6">
-        <Link to="/" className="text-xl font-bold tracking-tight text-white hover:opacity-80 transition-opacity">
+        <Link to="/" className={`text-xl font-bold tracking-tight hover:opacity-80 transition-opacity ${isAdmin ? 'text-slate-900' : 'text-white'}`}>
           Light<span className="text-indigo-500">House</span>
         </Link>
         
         {/* Simplified Tenant Context for Admins */}
         {!isCorporate && (
-          <div className="h-6 w-[1px] bg-white/10" />
+          <div className={`h-6 w-[1px] ${separatorClass}`} />
         )}
         {!isCorporate && <TenantSelector />}
       </div>
@@ -72,41 +79,38 @@ export default function Header() {
           </button>
         )}
 
-        <div className="h-6 w-[1px] bg-white/10 mx-1" />
+        <div className={`h-6 w-[1px] mx-1 ${separatorClass}`} />
         
         {/* User Avatar and Dropdown */}
         <div className="relative" ref={dropdownRef}>
           <button
             onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-            className="flex items-center gap-2 p-1 rounded-full hover:bg-white/5 transition-colors focus:outline-none"
+            className={`flex items-center gap-2 p-1 rounded-full transition-colors focus:outline-none ${isAdmin ? 'hover:bg-slate-100' : 'hover:bg-white/5'}`}
           >
             <div className="w-8 h-8 rounded-full bg-indigo-600 flex items-center justify-center text-white font-bold text-xs ring-2 ring-indigo-500/30">
               {firstLetter}
             </div>
             <div className="hidden md:block text-left mr-1">
-              <div className="text-xs font-semibold text-slate-200">{displayName}</div>
-              <div className="text-[10px] text-slate-500 uppercase tracking-tighter">{formatRole(userRole)}</div>
+              <div className={`text-xs font-semibold ${isAdmin ? 'text-slate-800' : 'text-slate-200'}`}>{displayName}</div>
+              <div className={`text-[10px] uppercase tracking-tighter ${isAdmin ? 'text-slate-400' : 'text-slate-500'}`}>{formatRole(userRole)}</div>
             </div>
           </button>
 
           {/* Dropdown Menu */}
           {isDropdownOpen && (
-            <div className="absolute right-0 mt-3 w-56 bg-slate-900 border border-slate-800 rounded-xl shadow-2xl z-50 overflow-hidden">
-              <div className="p-4 border-b border-slate-800">
-                <div className="text-sm font-bold text-white">{displayName}</div>
+            <div className={`absolute right-0 mt-3 w-56 border rounded-xl shadow-2xl z-50 overflow-hidden ${isAdmin ? 'bg-white border-slate-200' : 'bg-slate-900 border-slate-800'}`}>
+              <div className={`p-4 border-b ${isAdmin ? 'border-slate-100' : 'border-slate-800'}`}>
+                <div className={`text-sm font-bold ${isAdmin ? 'text-slate-900' : 'text-white'}`}>{displayName}</div>
                 <div className="text-xs text-slate-400">{user?.email}</div>
                 <div className="mt-2 inline-block px-2 py-0.5 rounded bg-indigo-500/10 text-indigo-400 text-[10px] font-bold uppercase">
                   {formatRole(userRole)}
                 </div>
               </div>
-              <div className="p-1">
+              <div className="p-2">
                 <button
                   onClick={handleLogout}
-                  className="w-full text-left px-3 py-2 text-sm text-rose-400 hover:bg-rose-500/10 rounded-lg transition-colors flex items-center gap-2"
+                  className={`w-full text-left px-3 py-2 rounded-lg text-xs font-medium transition-colors ${isAdmin ? 'text-rose-600 hover:bg-rose-50' : 'text-slate-400 hover:bg-white/5 hover:text-white'}`}
                 >
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-                  </svg>
                   Logout
                 </button>
               </div>

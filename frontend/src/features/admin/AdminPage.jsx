@@ -16,7 +16,7 @@ export default function AdminPage() {
               <p className="text-slate-400">Global SaaS control plane - manage all tenants</p>
             </Card>
           </Link>
-          <Link to="/admin/budgets" className="block">
+          <Link to="/tenant-admin" className="block">
             <Card className="hover:bg-slate-700 transition-colors cursor-pointer">
               <h3 className="text-lg font-semibold mb-2">Budgets</h3>
               <p className="text-slate-400">Manage budget pools and department allocations</p>

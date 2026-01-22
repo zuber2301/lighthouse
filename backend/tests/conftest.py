@@ -107,6 +107,7 @@ async def db_session(test_engine, create_tables):
             tenant = tenancy.CURRENT_TENANT.get(None)
             if tenant is None:
                 return
+            print(f"DEBUG DB Filter: {tenant} (type: {type(tenant)})")
             exec_opts = getattr(execute_state, "execution_options", {}) or {}
             if exec_opts.get("ignore_tenant"):
                 return

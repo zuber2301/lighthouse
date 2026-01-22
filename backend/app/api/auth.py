@@ -74,7 +74,7 @@ async def login(request: LoginRequest, db: AsyncSession = Depends(get_db)):
     access_token_expires = timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
     token_data = {
         "sub": str(user.id),
-        "tenant_id": str(user.tenant_id) if user.tenant_id else settings.DEV_DEFAULT_TENANT,
+        "tenant_id": str(user.tenant_id) if user.tenant_id else (None if user.role == UserRole.PLATFORM_OWNER else settings.DEV_DEFAULT_TENANT),
         "role": user.role.value if hasattr(user.role, 'value') else user.role
     }
     access_token = jwt.encode(token_data, settings.JWT_SECRET, algorithm=settings.JWT_ALGORITHM)
@@ -170,7 +170,7 @@ async def google_callback(code: str, state: str, db: AsyncSession = Depends(get_
         access_token_expires = timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
         token_data = {
             "sub": str(user.id),
-            "tenant_id": str(user.tenant_id) if user.tenant_id else settings.DEV_DEFAULT_TENANT,
+            "tenant_id": str(user.tenant_id) if user.tenant_id else (None if user.role == UserRole.PLATFORM_OWNER else settings.DEV_DEFAULT_TENANT),
             "role": user.role.value if hasattr(user.role, 'value') else user.role
         }
         access_token = jwt.encode(token_data, settings.JWT_SECRET, algorithm=settings.JWT_ALGORITHM)

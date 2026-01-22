@@ -24,7 +24,7 @@ class Settings(BaseSettings):
     FRONTEND_URL: str = "http://localhost:5173"
 
     # Platform admin email (maps to PLATFORM_OWNER for dev-created users)
-    PLATFORM_ADMIN_EMAIL: str = "super@lighthouse.com"
+    PLATFORM_ADMIN_EMAIL: str = "super_user@lighthouse.com"
     # Optional Redis URL for caching, social feed, rate limiting, etc.
     REDIS_URL: str | None = None
     # Social feed length cap

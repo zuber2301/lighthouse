@@ -49,8 +49,8 @@ async def create_recognition(db: AsyncSession, tenant_id: str, nominator_id: str
 async def approve_recognition(db: AsyncSession, tenant_id: str, recognition_id: UUID, approver_id: str):
     # lock the recognition row to prevent double-approval
     stmt = select(Recognition).where(
-        Recognition.id == recognition_id,
-        Recognition.tenant_id == tenant_id,
+        Recognition.id == str(recognition_id),
+        Recognition.tenant_id == str(tenant_id),
         Recognition.status == RecognitionStatus.PENDING,
     ).with_for_update()
 
@@ -60,7 +60,7 @@ async def approve_recognition(db: AsyncSession, tenant_id: str, recognition_id: 
         raise NoResultFound("Recognition not found or already processed")
 
     # Get approver's department
-    approver_stmt = select(User).where(User.id == approver_id, User.tenant_id == tenant_id)
+    approver_stmt = select(User).where(User.id == str(approver_id), User.tenant_id == str(tenant_id))
     approver_res = await db.execute(approver_stmt)
     approver = approver_res.scalar_one_or_none()
     if not approver or not approver.department:

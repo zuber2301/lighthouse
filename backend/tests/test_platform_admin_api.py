@@ -1,5 +1,6 @@
 import pytest
 import pytest_asyncio
+import uuid
 from httpx import AsyncClient
 from fastapi import FastAPI
 from app.main import app
@@ -63,8 +64,8 @@ class TestPlatformAdminAPI:
 
         tenant_data = {
             "name": "New Test Company",
-            "subdomain": "newtestcompany",
-            "admin_email": "admin@newtestcompany.com",
+            "subdomain": f"newcompany_{uuid.uuid4().hex[:8]}",
+            "admin_email": f"admin_{uuid.uuid4().hex[:8]}@newtestcompany.com",
             "admin_name": "New Admin",
             "plan_id": subscription_plan.id
         }
@@ -154,7 +155,7 @@ class TestTenantAdminAPI:
 
         admin_data = {
             "tenant_id": test_tenant.id,
-            "email": "newadmin@testcompany.com",
+            "email": f"newadmin_{uuid.uuid4().hex[:8]}@testcompany.com",
             "full_name": "New Tenant Admin"
         }
 

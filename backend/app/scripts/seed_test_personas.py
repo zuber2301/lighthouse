@@ -88,9 +88,9 @@ async def seed_test_personas():
         # Create users if missing. Use bypass context to avoid tenant scoping interference.
         pwd = get_password_hash("Password123")
         users = [
-            {"email": "hr@triton.com", "role": UserRole.CORPORATE_USER, "full_name": "HR User"},
+            {"email": "tenant_admin@triton.com", "role": UserRole.TENANT_ADMIN, "full_name": "Triton Admin"},
             {"email": "eng-lead@triton.com", "role": UserRole.TENANT_LEAD, "full_name": "Engineering Lead"},
-            {"email": "dev@triton.com", "role": UserRole.CORPORATE_USER, "full_name": "Dev Persona"},
+            {"email": "user@triton.com", "role": UserRole.CORPORATE_USER, "full_name": "Triton User"},
         ]
 
         with tenancy.bypass_tenant_context():
@@ -99,7 +99,10 @@ async def seed_test_personas():
                     result = await session.execute(select(User).where(User.email == u["email"]))
                     existing = result.scalar()
                     if existing:
-                        print(f"User exists: {u['email']}")
+                        print(f"User exists: {u['email']}. Updating role/name...")
+                        existing.role = u["role"]
+                        existing.full_name = u.get("full_name")
+                        existing.tenant_id = tenant.id
                         continue
 
                     new_user = User(

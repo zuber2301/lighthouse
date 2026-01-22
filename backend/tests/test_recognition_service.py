@@ -12,7 +12,7 @@ class TestRecognitionService:
         """Test creating a recognition successfully."""
         # Create a nominee
         nominee = User(
-            email="nominee@test.com",
+            email=f"nominee_{uuid4().hex[:8]}@test.com",
             full_name="Test Nominee",
             role=UserRole.CORPORATE_USER,
             tenant_id=test_tenant.id,
@@ -66,7 +66,7 @@ class TestRecognitionService:
         # Create nominee in different tenant
         other_tenant_id = str(uuid4())
         nominee = User(
-            email="nominee@other.com",
+            email=f"nominee_{uuid4().hex[:8]}@other.com",
             full_name="Other Nominee",
             role=UserRole.CORPORATE_USER,
             tenant_id=other_tenant_id,
