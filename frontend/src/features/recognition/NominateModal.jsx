@@ -212,29 +212,6 @@ export default function NominateModal({ open, onClose, onSubmit, initialCategory
 
             <div className="mt-6 flex items-center justify-between">
             <div className="flex flex-col md:flex-row gap-4">
-              <div className="flex items-start gap-3">
-                <div className={`w-8 h-8 rounded-full flex items-center justify-center ${step===1 ? 'bg-indigo-500 text-white' : 'bg-surface text-text-main'}`}>1</div>
-                <div>
-                  <div className="text-sm font-semibold">Recipient</div>
-                  <div className="text-xs opacity-50">Select recipients in the left column</div>
-                </div>
-              </div>
-
-              <div className="flex items-start gap-3">
-                <div className={`w-8 h-8 rounded-full flex items-center justify-center ${step===2 ? 'bg-indigo-500 text-white' : 'bg-surface text-text-main'}`}>2</div>
-                <div>
-                  <div className="text-sm font-semibold">Design E-Card</div>
-                  <div className="text-xs opacity-50">Choose design and preview in the middle column</div>
-                </div>
-              </div>
-
-              <div className="flex items-start gap-3">
-                <div className={`w-8 h-8 rounded-full flex items-center justify-center ${step===3 ? 'bg-emerald-500 text-white' : 'bg-surface text-text-main'}`}>3</div>
-                <div>
-                  <div className="text-sm font-semibold">Review & Send</div>
-                  <div className="text-xs opacity-50">Finalize selections and send recognition</div>
-                </div>
-              </div>
             </div>
 
             <div className="flex items-center gap-3">
@@ -271,8 +248,13 @@ export default function NominateModal({ open, onClose, onSubmit, initialCategory
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-stretch">
           {/* Left column: Entry Form */}
           <div className="space-y-6 bg-card border border-border-soft p-6 rounded-2xl shadow-inner ring-2 ring-indigo-500/20 shadow-[0_0_20px_rgba(99,102,241,0.06)]">
+            <div className="flex items-center gap-3">
+              <div className={`w-8 h-8 rounded-full flex items-center justify-center ${step===1 ? 'bg-indigo-500 text-white' : 'bg-surface text-text-main'}`}>1</div>
+              <div>
+                <div className="text-sm font-semibold">Recipient</div>
+              </div>
+            </div>
             <section>
-              <div className="text-[15px] font-normal tracking-tight text-white mb-3">Recipient</div>
               <div className="relative">
                 <input 
                   value={search} 
@@ -282,7 +264,7 @@ export default function NominateModal({ open, onClose, onSubmit, initialCategory
                 />
                 <svg className="w-4 h-4 absolute right-3 top-3.5 opacity-30" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" strokeWidth={3} strokeLinecap="round" strokeLinejoin="round"/></svg>
               </div>
-              
+
               {search.trim() ? (
                 <div className="mt-3 max-h-40 overflow-y-auto space-y-1 pr-1 custom-scrollbar">
                   {users.map((u) => (
@@ -410,7 +392,12 @@ export default function NominateModal({ open, onClose, onSubmit, initialCategory
 
           {/* Middle column: Design chooser + preview */}
           <div className="space-y-6 bg-card border border-border-soft p-6 rounded-2xl shadow-inner ring-2 ring-indigo-500/20 shadow-[0_0_20px_rgba(99,102,241,0.06)]">
-            <div className="text-[15px] font-normal tracking-tight text-white border-b border-border-soft pb-3">Design</div>
+            <div className="flex items-center gap-3">
+              <div className={`w-8 h-8 rounded-full flex items-center justify-center ${step===2 ? 'bg-indigo-500 text-white' : 'bg-surface text-text-main'}`}>2</div>
+              <div>
+                <div className="text-sm font-semibold">Design E-Card</div>
+              </div>
+            </div>
             <div>
               { (category === 'E-Card' || openedAsECard) ? (
                 <>
@@ -434,7 +421,12 @@ export default function NominateModal({ open, onClose, onSubmit, initialCategory
           <div className="flex flex-col gap-6">
             {/* Stepper + Review area */}
             <div className="space-y-6 bg-card border border-border-soft p-6 rounded-2xl shadow-inner ring-2 ring-indigo-500/20 shadow-[0_0_20px_rgba(99,102,241,0.06)]">
-              <div className="text-[15px] font-normal tracking-tight text-white border-b border-border-soft pb-3">Review Recognition</div>
+              <div className="flex items-center gap-3">
+                <div className={`w-8 h-8 rounded-full flex items-center justify-center ${step===3 ? 'bg-emerald-500 text-white' : 'bg-surface text-text-main'}`}>3</div>
+                <div>
+                  <div className="text-sm font-semibold">Review & Send</div>
+                </div>
+              </div>
               {/* Top stepper shows the flow; right-column step list removed to avoid duplication */}
 
               <div className="pt-4 border-t border-border-soft">
