@@ -17,6 +17,7 @@ from app.schemas.recognition import RecognitionCreate, RecognitionOut
 from app.models.users import User
 from app.models.transactions import Transaction, TransactionType
 from app.models.points_ledger import PointsLedger
+from app.models.budgets import TenantBudget
 from app.core.redis_client import get_social_feed, push_social_feed
 import datetime
 
@@ -241,6 +242,17 @@ async def give_check(
             note=payload.message,
         )
         db.add(tx)
+
+        # Update tenant-level budget consumed tracking (create if missing)
+        tb_stmt = select(TenantBudget).where(TenantBudget.tenant_id == tenant)
+        tb_res = await db.execute(tb_stmt)
+        tb = tb_res.scalar_one_or_none()
+        if not tb:
+            tb = TenantBudget(tenant_id=tenant, total_loaded_paise=0, total_consumed_paise=points * 100)
+            db.add(tb)
+        else:
+            tb.total_consumed_paise = int((tb.total_consumed_paise or 0) + (points * 100))
+            db.add(tb)
 
         ledger = PointsLedger(
             tenant_id=tenant,

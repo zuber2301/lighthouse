@@ -5,6 +5,7 @@ from app.db.session import get_db
 from app.core.rbac import require_role
 from app.core.auth import get_current_user, User as CurrentUser
 from app.models.tenants import Tenant
+from app.models.budgets import TenantBudget
 from app.models.users import User, UserRole
 from app.models.platform import PlatformSettings
 from app.models.budgets import BudgetPool
@@ -15,6 +16,8 @@ from app.models.global_providers import GlobalProvider
 from app.models.audit_logs import PlatformAuditLog
 from app.models.transactions import Transaction, TransactionType
 from app.models.recognition import Recognition
+from app.models.budget_load_logs import BudgetLoadLog
+from app.models.budgets import TenantBudget
 from typing import Optional, List
 import datetime
 import uuid
@@ -124,6 +127,20 @@ async def list_tenants(db: AsyncSession = Depends(get_db), user: CurrentUser = D
             "master_budget_balance_paise": int(getattr(t, 'master_budget_balance', 0) or 0),
             "master_budget_balance": float((Decimal(int(getattr(t, 'master_budget_balance', 0) or 0)) / Decimal(100)).quantize(Decimal('0.01')))
         })
+        # attach tenant budget totals if available
+        tb_q = await db.execute(select(TenantBudget).where(TenantBudget.tenant_id == t.id))
+        tb = tb_q.scalar_one_or_none()
+        if tb:
+            tenants[-1]["budget_allocated_paise"] = int(tb.total_loaded_paise or 0)
+            tenants[-1]["budget_consumed_paise"] = int(tb.total_consumed_paise or 0)
+            # frontend expects `budget_allocated`/`budget_consumed` as paise integers
+            tenants[-1]["budget_allocated"] = int(tb.total_loaded_paise or 0)
+            tenants[-1]["budget_consumed"] = int(tb.total_consumed_paise or 0)
+        else:
+            tenants[-1]["budget_allocated_paise"] = 0
+            tenants[-1]["budget_consumed_paise"] = 0
+            tenants[-1]["budget_allocated"] = 0
+            tenants[-1]["budget_consumed"] = 0
     return tenants
 
 
@@ -368,6 +385,60 @@ async def get_platform_overview(request: Request, db: AsyncSession = Depends(get
         'uptime_seconds': uptime_seconds,
         'top_tenants': top
     }
+
+
+@router.post('/recalculate-budgets')
+async def recalculate_budgets(tenant_id: Optional[str] = None, db: AsyncSession = Depends(get_db), user: CurrentUser = Depends(require_role("PLATFORM_OWNER", "SUPER_ADMIN"))):
+    """Recalculate tenant budget totals from historical BudgetLoadLog and Transaction records.
+
+    If `tenant_id` is provided, only that tenant is recalculated. Otherwise all tenants are processed.
+    This updates/creates `TenantBudget` records with `total_loaded_paise` and `total_consumed_paise`.
+    """
+    # Collect tenants to process
+    if tenant_id:
+        q = await db.execute(select(Tenant).where(Tenant.id == tenant_id))
+        tenants = [q.scalar_one_or_none()] if q.scalar_one_or_none() else []
+    else:
+        q = await db.execute(select(Tenant))
+        tenants = q.scalars().all()
+
+    results = []
+    for t in tenants:
+        if not t:
+            continue
+        # Sum budget loads (BudgetLoadLog.amount is stored in currency units e.g. INR)
+        bl_q = await db.execute(select(func.coalesce(func.sum(BudgetLoadLog.amount), 0)).where(BudgetLoadLog.tenant_id == t.id))
+        total_loaded_rupees = bl_q.scalar() or 0
+        # convert to paise (integer)
+        try:
+            loaded_paise = int(Decimal(total_loaded_rupees) * Decimal(100))
+        except Exception:
+            loaded_paise = int(float(total_loaded_rupees) * 100)
+
+        # Sum consumed transactions: ALLOCATE and RECOGNITION reduce master budget
+        tx_q = await db.execute(select(func.coalesce(func.sum(Transaction.amount), 0)).where(Transaction.tenant_id == t.id, Transaction.type.in_([TransactionType.ALLOCATE, TransactionType.RECOGNITION])))
+        consumed_paise = int(tx_q.scalar() or 0)
+
+        # Upsert TenantBudget
+        tb_q = await db.execute(select(TenantBudget).where(TenantBudget.tenant_id == t.id))
+        tb = tb_q.scalar_one_or_none()
+        if not tb:
+            tb = TenantBudget(tenant_id=t.id, total_loaded_paise=loaded_paise, total_consumed_paise=consumed_paise)
+            db.add(tb)
+        else:
+            tb.total_loaded_paise = int(loaded_paise)
+            tb.total_consumed_paise = int(consumed_paise)
+            db.add(tb)
+
+        results.append({
+            "tenant_id": str(t.id),
+            "name": t.name,
+            "loaded_paise": int(loaded_paise),
+            "consumed_paise": int(consumed_paise),
+        })
+
+    await db.commit()
+    return {"updated": len(results), "items": results}
 
 
 @router.post("/rewards")

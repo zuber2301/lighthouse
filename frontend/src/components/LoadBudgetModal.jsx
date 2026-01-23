@@ -52,11 +52,11 @@ const LoadBudgetModal = ({ open, onClose, tenant, onLoaded }) => {
   return (
     <Modal open={open} onClose={onClose} className="max-w-md">
       <div>
-        <h3 className="text-xl font-black text-text-main tracking-tight">Load Master Budget</h3>
-        <p className="text-sm text-text-main opacity-50 mb-6 mt-1 uppercase tracking-widest font-bold">Tenant: <span className="text-indigo-500 opacity-100 italic">{tenant?.name}</span></p>
+        <h3 className="text-xl font-normal text-text-main tracking-tight">Load Master Budget</h3>
+        <p className="text-sm text-text-main opacity-60 mb-6 mt-1 uppercase tracking-widest font-normal">Tenant: <span className="text-indigo-500 opacity-100 italic">{tenant?.name}</span></p>
 
         <div className="mb-6">
-          <label className="block text-[13px] font-black uppercase tracking-widest text-text-main/40 mb-2">Amount (INR)</label>
+          <label className="block text-[13px] font-normal uppercase tracking-widest text-text-main/40 mb-2">Amount (INR)</label>
           <CurrencyInput
             value={amount}
             onChange={(v) => setAmount(v)}
@@ -66,9 +66,11 @@ const LoadBudgetModal = ({ open, onClose, tenant, onLoaded }) => {
 
         {error && <div className="text-rose-400 text-[11px] font-bold uppercase tracking-widest mb-4 bg-rose-500/5 p-3 rounded-xl border border-rose-500/10">Error: {error}</div>}
 
-        <div className="flex justify-end gap-3 pt-2">
-          <button onClick={onClose} className="px-5 py-2.5 rounded-xl border border-indigo-500/10 text-text-main text-xs font-black uppercase tracking-widest hover:bg-slate-500/5 transition-all">Cancel</button>
-          <button onClick={handleSubmit} disabled={loading} className="px-5 py-2.5 rounded-xl btn-accent font-black text-xs uppercase tracking-widest shadow-lg active:scale-95 transition-all">
+        <div className="flex justify-start gap-2 pt-2">
+          <button onClick={onClose} className="px-4 py-2 rounded-xl btn-warning text-sm font-semibold shadow-sm active:scale-95 transition-all">
+            Cancel
+          </button>
+          <button onClick={handleSubmit} disabled={loading} className="px-4 py-2 rounded-xl btn-success text-sm font-semibold shadow-lg active:scale-95 transition-all">
             {loading ? 'Processing...' : 'Load Budget'}
           </button>
         </div>

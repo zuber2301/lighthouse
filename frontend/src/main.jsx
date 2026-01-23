@@ -46,7 +46,7 @@ root.render(
           </ToastProvider>
         </LiveAnnouncerProvider>
         <DevPersonaSwitcher />
-        <ReactQueryDevtools initialIsOpen={false} />
+        <ReactQueryDevtools initialIsOpen={false} position="bottom" />
       </QueryClientProvider>
     </BrowserRouter>
   </React.StrictMode>

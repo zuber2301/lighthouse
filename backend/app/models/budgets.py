@@ -1,4 +1,4 @@
-from sqlalchemy import Column, String, Integer, ForeignKey, Numeric
+from sqlalchemy import Column, String, Integer, ForeignKey, Numeric, BigInteger
 import uuid
 from sqlalchemy.orm import relationship
 
@@ -35,3 +35,16 @@ class BudgetLedger(Base, TenantMixin, TimestampMixin):
     delta_amount = Column(Numeric(12, 2), nullable=False)  # positive for allocation, negative for usage
     reason = Column(String(20), nullable=False)  # ALLOCATION / RECOGNITION
     reference_id = Column(String(36), nullable=False)  # id of allocation or recognition
+
+
+class TenantBudget(Base, TimestampMixin):
+    __tablename__ = "tenant_budgets"
+    id = Column(String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
+    tenant_id = Column(String(36), ForeignKey('tenants.id'), nullable=False, unique=True)
+    total_loaded_paise = Column(BigInteger, nullable=False, default=0)
+    total_consumed_paise = Column(BigInteger, nullable=False, default=0)
+
+    # convenience properties
+    @property
+    def balance_paise(self):
+        return int((self.total_loaded_paise or 0) - (self.total_consumed_paise or 0))

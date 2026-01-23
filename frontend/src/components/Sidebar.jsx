@@ -84,7 +84,7 @@ export default function Sidebar() {
                   <div className={`p-1.5 rounded-lg ${isActive ? 'bg-accent/20' : 'bg-white/5'}`}>
                     <it.icon className="w-5 h-5 text-white" />
                   </div>
-                  <span className="font-normal text-[16px] text-white">{it.label}</span>
+                  <span className="font-normal text-[18px] text-white">{it.label}</span>
                 </>
               )}
             </NavLink>
@@ -96,7 +96,7 @@ export default function Sidebar() {
                 <div className="p-1.5 rounded-lg bg-white/5">
                   <TenantIcon className="w-5 h-5 text-white" />
                 </div>
-                <span className="font-normal text-[16px] text-white">Manage {selectedTenant.name}</span>
+                <span className="font-normal text-[18px] text-white">Manage {selectedTenant.name}</span>
               </>
             </NavLink>
           )}

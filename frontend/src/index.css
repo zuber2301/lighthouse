@@ -243,6 +243,41 @@ p, label, span, a, li, button, input, textarea, select {
     box-shadow: 0 8px 24px rgba(16,163,127,0.06);
     border-radius: var(--radius);
   }
+  .btn-warning {
+    @apply inline-flex items-center justify-center font-bold text-accent-contrast;
+    background-color: var(--warning); /* orange */
+    box-shadow: 0 8px 24px rgba(202,138,4,0.06);
+    border-radius: var(--radius);
+  }
 }
 
-html, body, #root { height: 100%; }
+  html, body, #root { height: 100%; }
+
+  /* Theme-appropriate React Query Devtools Toggle */
+  button[aria-label="Open React Query Devtools"] {
+    background-color: #6366f1 !important;
+    border-radius: 12px !important;
+    box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4) !important;
+    transition: all 0.2s ease !important;
+  }
+  
+  button[aria-label="Open React Query Devtools"]:hover {
+    transform: scale(1.1) !important;
+    background-color: #4f46e5 !important;
+  }
+
+  button[aria-label="Open React Query Devtools"] svg {
+    display: none !important;
+  }
+
+  button[aria-label="Open React Query Devtools"]::before {
+    content: 'LH';
+    color: white;
+    font-size: 14px;
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+  }

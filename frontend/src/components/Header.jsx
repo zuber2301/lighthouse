@@ -60,10 +60,10 @@ export default function Header() {
       <header className={`flex items-center justify-between px-6 py-4 sticky top-0 z-40 ${headerClass} transition-colors duration-300`}>
       <div className="flex items-center gap-8">
         <Link to="/" className="flex items-center gap-3 hover:opacity-80 transition-opacity group">
-          <div className="w-9 h-9 rounded-lg bg-accent flex items-center justify-center shadow-accent-neon active:scale-95 transition-transform">
-            <span className="text-white text-[16px]">LH</span>
+            <div className="w-9 h-9 rounded-lg bg-accent flex items-center justify-center shadow-accent-neon active:scale-95 transition-transform">
+            <span className="text-white text-[18px]">LH</span>
           </div>
-          <div className="text-2xl font-normal tracking-tight text-white">LightHouse</div>
+          <div className="text-[26px] font-normal tracking-tight text-white">LightHouse</div>
         </Link>
         
         {!isCorporate && (
@@ -77,7 +77,7 @@ export default function Header() {
         <div className="relative" ref={themeDropdownRef}>
           <button
             onClick={() => setIsThemeDropdownOpen(!isThemeDropdownOpen)}
-            className="flex items-center gap-2 px-4 py-2 bg-indigo-500/5 hover:bg-indigo-500/10 border border-indigo-500/20 rounded-full transition-all text-[15px] font-bold text-text-main"
+            className="flex items-center gap-2 px-4 py-2 bg-indigo-500/5 hover:bg-indigo-500/10 border border-indigo-500/20 rounded-full transition-all text-[17px] font-bold text-text-main"
           >
             <span className="opacity-70">🎨</span>
             <span>Theme</span>
@@ -124,10 +124,10 @@ export default function Header() {
 
         {/* PROMINENT POINTS BALANCE FOR CORPORATE USERS */}
         {isCorporate && (
-          <div className="hidden sm:flex items-center gap-2 px-4 py-2 bg-indigo-500/10 border border-indigo-500/20 rounded-full">
-            <span className="text-sm">💰</span>
-            <span className="font-bold text-indigo-500 text-[15px]">{user?.points_balance?.toLocaleString() || 0}</span>
-            <span className="text-[10px] uppercase tracking-wider text-indigo-500/60 font-black">Pts</span>
+            <div className="hidden sm:flex items-center gap-2 px-4 py-2 bg-indigo-500/10 border border-indigo-500/20 rounded-full">
+            <span className="text-[16px]">💰</span>
+            <span className="font-bold text-indigo-500 text-[17px]">{user?.points_balance?.toLocaleString() || 0}</span>
+            <span className="text-[12px] uppercase tracking-wider text-indigo-500/60 font-black">Pts</span>
           </div>
         )}
 
@@ -136,21 +136,21 @@ export default function Header() {
           <div className="hidden sm:flex items-center gap-2">
             <button
               onClick={() => navigate(`/recognition?tab=${encodeURIComponent('Individual award')}&_=${Date.now()}`)}
-              className="px-6 py-2 rounded-full btn-recognition text-sm font-bold transition-all shadow-lg active:scale-95"
+              className="px-6 py-2 rounded-full btn-recognition text-[16px] font-bold transition-all shadow-lg active:scale-95"
             >
               Give Individual award
             </button>
 
             <button
               onClick={() => navigate(`/recognition?tab=${encodeURIComponent('E-Card')}&_=${Date.now()}`)}
-              className="px-6 py-2 rounded-full btn-recognition text-sm font-bold transition-all shadow-lg active:scale-95"
+              className="px-6 py-2 rounded-full btn-recognition text-[16px] font-bold transition-all shadow-lg active:scale-95"
             >
               Give E-Card
             </button>
 
             <button
               onClick={() => setIsGroupModalOpen(true)}
-              className="px-6 py-2 rounded-full btn-recognition text-sm font-bold transition-all shadow-lg active:scale-95"
+              className="px-6 py-2 rounded-full btn-recognition text-[16px] font-bold transition-all shadow-lg active:scale-95"
             >
               Give Group award
             </button>
@@ -165,12 +165,12 @@ export default function Header() {
             onClick={() => setIsDropdownOpen(!isDropdownOpen)}
             className="flex items-center gap-2.5 p-1 rounded-full transition-colors focus:outline-none hover:bg-surface active:scale-95"
           >
-            <div className="w-9 h-9 rounded-full bg-indigo-600 flex items-center justify-center text-accent-contrast font-black text-sm ring-2 ring-indigo-500/30 shadow-md">
+            <div className="w-9 h-9 rounded-full bg-indigo-600 flex items-center justify-center text-accent-contrast font-black text-[16px] ring-2 ring-indigo-500/30 shadow-md">
               {firstLetter}
             </div>
             <div className="hidden md:block text-left mr-1">
-              <div className="text-[14px] font-bold text-text-main leading-none">{displayName}</div>
-              <div className="text-[10px] uppercase tracking-widest text-text-main/50 font-black mt-0.5">{formatRole(userRole)}</div>
+              <div className="text-[16px] font-bold text-text-main leading-none">{displayName}</div>
+              <div className="text-[12px] uppercase tracking-widest text-text-main/50 font-black mt-0.5">{formatRole(userRole)}</div>
             </div>
           </button>
 
@@ -178,9 +178,9 @@ export default function Header() {
           {isDropdownOpen && (
             <div className="absolute right-0 mt-3 w-60 border bg-card border-border-soft rounded-2xl shadow-2xl z-50 overflow-hidden py-1 animate-in fade-in slide-in-from-top-2 duration-200">
               <div className="p-4 border-b border-border-soft bg-indigo-500/5">
-                <div className="text-[15px] font-black text-text-main">{displayName}</div>
+                <div className="text-[17px] font-black text-text-main">{displayName}</div>
                 <div className="text-xs text-text-main/50 font-normal truncate">{user?.email}</div>
-                <div className="mt-2 inline-block px-2.5 py-1 rounded-lg bg-indigo-500/20 text-indigo-500 text-[9px] font-black uppercase tracking-widest">
+                <div className="mt-2 inline-block px-2.5 py-1 rounded-lg bg-indigo-500/20 text-indigo-500 text-[11px] font-black uppercase tracking-widest">
                   {formatRole(userRole)}
                 </div>
               </div>

@@ -9,6 +9,7 @@ from app.models.users import User, UserRole
 from app.models.transactions import Transaction, TransactionType
 from app.models.redemptions import Redemption
 from app.models.budget_load_logs import BudgetLoadLog
+from app.models.budgets import TenantBudget
 from typing import Optional, List
 from app.schemas.tenant_dashboard import TenantDashboardResponse
 import datetime
@@ -101,7 +102,18 @@ async def load_master_budget(request: LoadBudgetRequest, db: AsyncSession = Depe
     db.add(transaction)
     await db.commit()
     
-    return {"master_balance": tenant.master_budget_balance}
+    # Update or create TenantBudget tracking totals
+    tb_q = await db.execute(select(TenantBudget).where(TenantBudget.tenant_id == user.tenant_id))
+    tb = tb_q.scalar_one_or_none()
+    if not tb:
+        tb = TenantBudget(tenant_id=user.tenant_id, total_loaded_paise=amount_paise, total_consumed_paise=0)
+        db.add(tb)
+    else:
+        tb.total_loaded_paise = int((tb.total_loaded_paise or 0) + amount_paise)
+        db.add(tb)
+    await db.commit()
+
+    return {"master_balance": tenant.master_budget_balance, "budget_allocated_paise": int(tb.total_loaded_paise), "budget_consumed_paise": int(tb.total_consumed_paise)}
 
 
 @router.post("/budget/allocate")

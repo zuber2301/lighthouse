@@ -48,17 +48,17 @@ export default function PlatformAdminPage() {
   return (
     <div className="space-y-8 max-w-7xl mx-auto">
       <div className="flex justify-between items-end">
-        <PageHeader title="Operator View" subtitle="Global SaaS control plane" />
+        <PageHeader title="Super User View" subtitle="Global SaaS control plane" />
         <div className="flex gap-3 mb-8">
           <button 
             onClick={() => navigate('/platform-admin/logs')}
-            className="px-5 py-2.5 rounded-2xl bg-indigo-500/5 border border-indigo-500/10 text-text-main text-[13px] font-black uppercase tracking-widest hover:bg-indigo-500/10 transition-all shadow-lg active:scale-95"
+            className="px-5 py-2.5 rounded-2xl bg-indigo-500/5 border border-indigo-500/10 text-text-main text-[13px] font-normal uppercase tracking-widest hover:bg-indigo-500/10 transition-all shadow-lg active:scale-95"
           >
             System Logs
           </button>
           <button 
             onClick={() => navigate('/platform-admin/subscriptions')}
-            className="px-5 py-2.5 rounded-2xl btn-accent text-[13px] font-black uppercase tracking-widest hover:brightness-95 transition-all shadow-xl shadow-indigo-600/20 active:scale-95"
+            className="px-5 py-2.5 rounded-2xl btn-accent text-[13px] font-normal uppercase tracking-widest hover:brightness-95 transition-all shadow-xl shadow-indigo-600/20 active:scale-95"
           >
             Pricing Engine
           </button>
