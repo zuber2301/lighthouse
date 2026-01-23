@@ -61,6 +61,7 @@ const LoadBudgetModal = ({ open, onClose, tenant, onLoaded }) => {
             value={amount}
             onChange={(v) => setAmount(v)}
             placeholder="e.g. 1000000"
+            className="w-full md:w-1/2 p-3 rounded-xl bg-indigo-500/5 border border-indigo-500/10 text-text-main placeholder:text-text-main/30 focus:outline-none focus:ring-2 focus:ring-indigo-500/30 transition-all font-normal"
           />
         </div>
 
