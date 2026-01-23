@@ -56,7 +56,8 @@ export default function Header() {
   const separatorClass = "bg-border-soft"
 
   return (
-    <header className={`flex items-center justify-between px-6 py-4 sticky top-0 z-40 ${headerClass} transition-colors duration-300`}>
+    <>
+      <header className={`flex items-center justify-between px-6 py-4 sticky top-0 z-40 ${headerClass} transition-colors duration-300`}>
       <div className="flex items-center gap-8">
         <Link to="/" className="flex items-center gap-3 hover:opacity-80 transition-opacity group">
           <div className="w-9 h-9 rounded-lg bg-accent flex items-center justify-center shadow-accent-neon active:scale-95 transition-transform">
@@ -196,6 +197,8 @@ export default function Header() {
           )}
         </div>
       </div>
+    </header>
+
       {isGroupModalOpen && (
         <GroupAwardModal
           open={isGroupModalOpen}
@@ -212,6 +215,6 @@ export default function Header() {
           }}
         />
       )}
-    </header>
+    </>
   )
 }

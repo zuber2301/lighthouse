@@ -38,7 +38,14 @@ export default function DevPersonaSwitcher({ onSwitch } = {}) {
       try { localStorage.setItem('user', JSON.stringify(data.user)) } catch (e) {}
       try { if (data.user && data.user.tenant_id) localStorage.setItem('tenant_id', data.user.tenant_id) } catch (e) {}
       if (onSwitch) onSwitch(data.user)
-      window.location.reload()
+      
+      // Role-based redirection instead of simple reload
+      let dest = '/dashboard'
+      if (data.user.role === 'PLATFORM_OWNER') dest = '/platform-admin'
+      else if (data.user.role === 'TENANT_ADMIN') dest = '/tenant-admin'
+      else if (data.user.role === 'TENANT_LEAD') dest = '/tenant-lead'
+      
+      window.location.href = dest
     } catch (err) {
       console.error('Dev persona switch failed', err)
       alert('Dev persona login failed: ' + (err.response?.data || err.message || err))

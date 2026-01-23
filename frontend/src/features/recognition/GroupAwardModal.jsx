@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import Modal from '../../components/Modal'
 import GroupRecipientPool from './GroupRecipientPool'
-import api from '../../lib/api'
+import api from '../../api/axiosClient'
 
 export default function GroupAwardModal({ open, onClose, onSubmit, initialData }) {
   const [step, setStep] = useState(1)
@@ -79,7 +79,7 @@ export default function GroupAwardModal({ open, onClose, onSubmit, initialData }
   }
 
   function getAwardPoints(level) {
-    if (!level) return 0
+    if (!level || typeof level !== 'string') return 0
     const parts = level.split('-')
     if (parts.length > 1) {
       const num = parseInt(parts[1].trim())
