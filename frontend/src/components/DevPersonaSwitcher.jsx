@@ -53,7 +53,7 @@ export default function DevPersonaSwitcher({ onSwitch } = {}) {
   }
 
   return (
-    <div className="fixed bottom-4 right-4 z-[9999]">
+    <div className="fixed bottom-4 right-4 z-40">
       {!collapsed ? (
         <div className="p-4 bg-card border border-indigo-500/10 rounded-xl shadow-2xl">
           <div className="flex items-center justify-between mb-3">

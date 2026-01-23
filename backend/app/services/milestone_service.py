@@ -15,38 +15,45 @@ class MilestonePayload:
         self.badge_id = badge_id
         self.is_public = is_public
 
-async def process_daily_milestones():
+async def process_daily_milestones(db: AsyncSession = None):
     """
     Check for birthdays and anniversaries today and create system-generated recognitions.
     """
-    async with AsyncSessionLocal() as db:
-        today = datetime.utcnow()
-        month = today.month
-        day = today.day
+    if db is None:
+        async with AsyncSessionLocal() as session:
+            await _process_milestones_logic(session)
+    else:
+        await _process_milestones_logic(db)
 
-        # Find users with milestones today
-        # Note: We filter for users with a tenant_id to avoid processing platform admins
-        stmt = select(User).where(
-            and_(
-                User.is_active == True,
-                User.tenant_id != None
-            )
+async def _process_milestones_logic(db: AsyncSession):
+    today = datetime.utcnow()
+    month = today.month
+    day = today.day
+
+    # Find users with milestones today
+    # Note: We filter for users with a tenant_id to avoid processing platform admins
+    stmt = select(User).where(
+        and_(
+            User.is_active == True,
+            User.tenant_id != None
         )
-        res = await db.execute(stmt)
-        users = res.scalars().all()
+    )
+    res = await db.execute(stmt)
+    users = res.scalars().all()
 
-        for user in users:
-            # Check Birthday
-            if user.date_of_birth and user.date_of_birth.month == month and user.date_of_birth.day == day:
-                await create_system_recognition(db, user, "BIRTHDAY")
-            
-            # Check Anniversary
-            if user.hire_date and user.hire_date.month == month and user.hire_date.day == day:
-                years = today.year - user.hire_date.year
-                if years > 0:
-                    await create_system_recognition(db, user, "ANNIVERSARY", years=years)
+    for user in users:
+        # Check Birthday
+        if user.date_of_birth and user.date_of_birth.month == month and user.date_of_birth.day == day:
+            age = today.year - user.date_of_birth.year
+            await create_system_recognition(db, user, "BIRTHDAY", years=age)
+        
+        # Check Anniversary
+        if user.hire_date and user.hire_date.month == month and user.hire_date.day == day:
+            years = today.year - user.hire_date.year
+            if years > 0:
+                await create_system_recognition(db, user, "ANNIVERSARY", years=years)
 
-        await db.commit()
+    await db.commit()
 
 async def create_system_recognition(db: AsyncSession, user: User, m_type: str, years: int = None):
     # Find a PLATFORM_OWNER to be the "nominator" for system recognitions
@@ -60,11 +67,21 @@ async def create_system_recognition(db: AsyncSession, user: User, m_type: str, y
     else:
         nominator_id = system_nominator.id
 
+    # Add ordinal suffix (1st, 2nd, 3rd, etc.)
+    ordinal = "th"
+    if years:
+        if 11 <= (years % 100) <= 13:
+            ordinal = "th"
+        else:
+            ordinal = {1: "st", 2: "nd", 3: "rd"}.get(years % 10, "th")
+
     if m_type == "BIRTHDAY":
-        message = f"Happy Birthday, {user.full_name}! 🎂 We're so glad to have you on the team. Wishing you a wonderful year ahead!"
+        age_str = f" {years}{ordinal}" if years else ""
+        message = f"Happy{age_str} Birthday, {user.full_name}! 🎂 We're so glad to have you on the team. Wishing you a wonderful year ahead!"
         value_tag = "Community"
     else:
-        message = f"Happy {years} year Work Anniversary, {user.full_name}! 🎉 Thank you for your incredible contribution to {user.department or 'the company'} over the years."
+        years_str = f"{years}{ordinal}" if years else f"{years}"
+        message = f"Happy {years_str} Work Anniversary, {user.full_name}! 🎉 Thank you for your incredible contribution to {user.department or 'the company'} over the years."
         value_tag = "Legacy"
 
     payload = MilestonePayload(

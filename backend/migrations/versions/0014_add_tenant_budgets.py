@@ -16,18 +16,24 @@ depends_on = None
 
 
 def upgrade() -> None:
-    op.create_table(
-        'tenant_budgets',
-        sa.Column('id', sa.String(36), nullable=False),
-        sa.Column('tenant_id', sa.String(36), nullable=False),
-        sa.Column('created_at', sa.DateTime(), nullable=True),
-        sa.Column('updated_at', sa.DateTime(), nullable=True),
-        sa.Column('total_loaded_paise', sa.BigInteger(), nullable=False, server_default='0'),
-        sa.Column('total_consumed_paise', sa.BigInteger(), nullable=False, server_default='0'),
-        sa.ForeignKeyConstraint(['tenant_id'], ['tenants.id'], ),
-        sa.PrimaryKeyConstraint('id')
-    )
+    bind = op.get_bind()
+    inspector = sa.inspect(bind)
+    if 'tenant_budgets' not in inspector.get_table_names():
+        op.create_table(
+            'tenant_budgets',
+            sa.Column('id', sa.String(36), nullable=False),
+            sa.Column('tenant_id', sa.String(36), nullable=False),
+            sa.Column('created_at', sa.DateTime(), nullable=True),
+            sa.Column('updated_at', sa.DateTime(), nullable=True),
+            sa.Column('total_loaded_paise', sa.BigInteger(), nullable=False, server_default='0'),
+            sa.Column('total_consumed_paise', sa.BigInteger(), nullable=False, server_default='0'),
+            sa.ForeignKeyConstraint(['tenant_id'], ['tenants.id'], ),
+            sa.PrimaryKeyConstraint('id')
+        )
 
 
 def downgrade() -> None:
-    op.drop_table('tenant_budgets')
+    bind = op.get_bind()
+    inspector = sa.inspect(bind)
+    if 'tenant_budgets' in inspector.get_table_names():
+        op.drop_table('tenant_budgets')

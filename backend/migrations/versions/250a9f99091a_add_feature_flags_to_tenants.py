@@ -17,8 +17,19 @@ depends_on = None
 
 
 def upgrade() -> None:
-    op.add_column('tenants', sa.Column('feature_flags', sa.JSON(), nullable=True))
+    bind = op.get_bind()
+    inspector = sa.inspect(bind)
+    cols = []
+    if 'tenants' in inspector.get_table_names():
+        cols = [c['name'] for c in inspector.get_columns('tenants')]
+    if 'feature_flags' not in cols:
+        op.add_column('tenants', sa.Column('feature_flags', sa.JSON(), nullable=True))
 
 
 def downgrade() -> None:
-    op.drop_column('tenants', 'feature_flags')
+    bind = op.get_bind()
+    inspector = sa.inspect(bind)
+    if 'tenants' in inspector.get_table_names():
+        cols = [c['name'] for c in inspector.get_columns('tenants')]
+        if 'feature_flags' in cols:
+            op.drop_column('tenants', 'feature_flags')

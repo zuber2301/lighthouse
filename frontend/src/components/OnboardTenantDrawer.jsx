@@ -22,7 +22,12 @@ const OnboardTenantDrawer = ({ isOpen, onClose, onRefresh }) => {
     setLoading(true)
     setError('')
     try {
-      await api.post('/platform/tenants', formData)
+      // Clean up empty fields that might cause 422 on backend
+      const payload = { ...formData }
+      if (!payload.plan_id) delete payload.plan_id
+      if (!payload.industry) delete payload.industry
+      
+      await api.post('/platform/tenants', payload)
       onRefresh()
       onClose()
       setFormData({ name: '', subdomain: '', admin_email: '', admin_name: '', industry: '', plan_id: '' })
@@ -117,24 +122,24 @@ const OnboardTenantDrawer = ({ isOpen, onClose, onRefresh }) => {
               />
             </div>
           </div>
-        </form>
 
-        <div className="p-6 border-t border-border-soft bg-surface/50 flex gap-3">
-          <button
-            type="button"
-            onClick={onClose}
-            className="flex-1 px-4 py-3 rounded-xl border border-border-soft text-text-main/60 hover:bg-white/5 transition-all text-sm font-semibold"
-          >
-            Cancel
-          </button>
-          <button
-            onClick={handleSubmit}
-            disabled={loading}
-            className="flex-2 btn-accent px-8 py-3 rounded-xl text-white font-semibold transition-all shadow-lg shadow-indigo-500/20 disabled:opacity-50"
-          >
-            {loading ? 'Provisioning...' : 'Provision Tenant'}
-          </button>
-        </div>
+          <div className="flex gap-3 pt-6 border-t border-border-soft mt-8">
+            <button
+              type="button"
+              onClick={onClose}
+              className="flex-1 px-4 py-3 rounded-xl border border-border-soft text-text-main/60 hover:bg-white/5 transition-all text-sm font-semibold"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              disabled={loading}
+              className="flex-2 btn-accent px-8 py-3 rounded-xl text-white font-semibold transition-all shadow-lg shadow-indigo-500/20 disabled:opacity-50"
+            >
+              {loading ? 'Provisioning...' : 'Provision Tenant'}
+            </button>
+          </div>
+        </form>
       </div>
     </div>
   )
