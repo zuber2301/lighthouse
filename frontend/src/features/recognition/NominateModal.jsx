@@ -1,10 +1,12 @@
 import React, { useState, useEffect, useRef } from 'react'
+import { useSearchParams } from 'react-router-dom'
 import Modal from '../../components/Modal'
 import api from '../../api/axiosClient'
 // E-Card Designer removed; use simple design choices instead
 const CATEGORIES = ['Individual Award', 'Group Award', 'E-Card']
 
 export default function NominateModal({ open, onClose, onSubmit, initialCategory }) {
+  const [searchParams, setSearchParams] = useSearchParams()
   // Recipient (support multiple)
   const [search, setSearch] = useState('')
   const [nominees, setNominees] = useState([])
@@ -14,6 +16,32 @@ export default function NominateModal({ open, onClose, onSubmit, initialCategory
   // Category
   const [category, setCategory] = useState(initialCategory || CATEGORIES[0])
   const [points, setPoints] = useState(50)
+
+  // Handle query params for pre-filling (e.g. from Celebration Widget)
+  useEffect(() => {
+    if (open) {
+      const userId = searchParams.get('userId')
+      const note = searchParams.get('note')
+
+      if (userId) {
+        // Fetch user info to show in the pill
+        api.get(`/user/search?id=${userId}`).then(res => {
+          const u = res.data?.[0] || { id: userId, name: 'Recipient' }
+          setNominees([u])
+        })
+      }
+      if (note) {
+        setMessage(note)
+      }
+      
+      // Clear params so they don't persist on next open
+      // Use replace:true to not add to history
+      const newParams = new URLSearchParams(searchParams)
+      newParams.delete('userId')
+      newParams.delete('note')
+      setSearchParams(newParams, { replace: true })
+    }
+  }, [open, searchParams, setSearchParams])
 
   // Sync category if initialCategory changes
   useEffect(() => {

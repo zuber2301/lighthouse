@@ -10,6 +10,7 @@ export default function TenantLeadDashboard() {
   const [team, setTeam] = useState([])
   const [budget, setBudget] = useState(0)
   const [loading, setLoading] = useState(true)
+  const [upcomingMilestones, setUpcomingMilestones] = useState([])
   const [recognitionData, setRecognitionData] = useState({
     userId: '',
     amount: '',
@@ -20,7 +21,17 @@ export default function TenantLeadDashboard() {
   useEffect(() => {
     fetchTeamData()
     fetchBudget()
+    fetchUpcomingMilestones()
   }, [])
+
+  const fetchUpcomingMilestones = async () => {
+    try {
+      const response = await api.get('/milestones/upcoming?days=30')
+      setUpcomingMilestones(response.data || [])
+    } catch (error) {
+      console.error('Failed to fetch upcoming milestones:', error)
+    }
+  }
 
   const fetchTeamData = async () => {
     try {
@@ -103,6 +114,35 @@ export default function TenantLeadDashboard() {
           <h1 className="text-3xl font-bold text-text-main">₹{budget.toLocaleString()}</h1>
         </div>
       </Card>
+
+      {/* Upcoming Milestones */}
+      {upcomingMilestones.length > 0 && (
+        <Card className="mb-6 border-l-4 border-l-amber-400 bg-amber-500/5">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="font-bold text-lg text-amber-700/80">Upcoming Team Milestones</h3>
+            <span className="text-[10px] font-bold text-amber-600 uppercase tracking-widest bg-amber-500/10 px-3 py-1 rounded-full border border-amber-500/10">Next 30 Days</span>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {upcomingMilestones.map((m, i) => (
+              <div key={i} className="p-4 bg-white/40 border border-amber-500/10 rounded-2xl flex justify-between items-center group hover:shadow-md transition-all">
+                <div>
+                  <p className="font-bold text-text-main">{m.full_name}</p>
+                  <p className="text-[11px] text-amber-600/70 uppercase font-black tracking-tighter">
+                    {m.type === 'BIRTHDAY' ? 'Birthday' : `${m.years}y Anniversary`} • {m.days_away} days
+                  </p>
+                </div>
+                <button 
+                  onClick={() => setRecognitionData({ ...recognitionData, userId: m.user_id, category: 'Individual Award', note: m.type === 'BIRTHDAY' ? `Happy Birthday, ${m.full_name}!` : `Happy ${m.years}y Work Anniversary!` })}
+                   className="p-2 bg-amber-500/10 text-amber-600 rounded-lg hover:bg-amber-500 hover:text-white transition-all shadow-sm active:scale-90"
+                  title="Prepare Award"
+                >
+                  🎁
+                </button>
+              </div>
+            ))}
+          </div>
+        </Card>
+      )}
 
       {/* Recognition Form */}
       <Card className="mb-6">

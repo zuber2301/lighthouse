@@ -11,10 +11,36 @@ export default function TenantAdminBudget() {
   const [leads, setLeads] = useState([])
   const [loading, setLoading] = useState(true)
   const [activeTab, setActiveTab] = useState('budget')
+  const [forecast, setForecast] = useState([])
 
   useEffect(() => {
     fetchBudgetStatus()
+    fetchForecast()
   }, [])
+
+  const fetchForecast = async () => {
+    try {
+      const response = await api.get('/milestones/upcoming?days=90')
+      const items = response.data || []
+      
+      // Group by month
+      const months = {}
+      items.forEach(m => {
+        // Simple logic for days_away to months
+        const targetDate = new Date()
+        targetDate.setDate(targetDate.getDate() + m.days_away)
+        const monthLabel = targetDate.toLocaleDateString('default', { month: 'long', year: 'numeric' })
+        
+        if (!months[monthLabel]) months[monthLabel] = { count: 0, points: 0 }
+        months[monthLabel].count += 1
+        months[monthLabel].points += 100 // System standard
+      })
+      
+      setForecast(Object.entries(months).map(([label, data]) => ({ label, ...data })))
+    } catch (e) {
+      console.error('Forecast failed', e)
+    }
+  }
 
   const fetchBudgetStatus = async () => {
     try {
@@ -180,6 +206,40 @@ export default function TenantAdminBudget() {
               </div>
             </Card>
           </div>
+
+          {/* Milestone Budget Forecast */}
+          {forecast.length > 0 && (
+            <Card className="bg-gradient-to-br from-indigo-500/5 to-purple-500/5 border-l-4 border-l-purple-500">
+               <div className="flex justify-between items-center mb-6">
+                <div>
+                  <h3 className="font-bold text-text-main">Automated Milestone Forecast</h3>
+                  <p className="text-[11px] opacity-70">Projected budget for Birthday & Anniversary awards (100 pts ea.)</p>
+                </div>
+                <div className="text-right">
+                  <span className="text-2xl font-black text-purple-600">
+                    {forecast.reduce((sum, f) => sum + f.points, 0).toLocaleString()}
+                  </span>
+                  <p className="text-[10px] font-bold opacity-60 uppercase tracking-tighter">Total 90-Day Pts</p>
+                </div>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                {forecast.map((f, i) => (
+                  <div key={i} className="p-4 bg-white/50 border border-purple-500/10 rounded-2xl flex items-center justify-between">
+                    <div>
+                      <p className="text-[10px] font-black uppercase text-purple-600 tracking-widest">{f.label}</p>
+                      <p className="text-lg font-bold text-text-main">{f.count} <span className="text-sm font-normal opacity-60">Milestones</span></p>
+                    </div>
+                    <div className="text-right">
+                      <p className="text-sm font-bold text-text-main">{f.points.toLocaleString()} pts</p>
+                      <div className="h-1.5 w-16 bg-purple-500/10 rounded-full mt-1 overflow-hidden">
+                        <div className="h-full bg-purple-500" style={{ width: `${(f.count / Math.max(...forecast.map(x => x.count))) * 100}%` }} />
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </Card>
+          )}
 
           {/* Bottom: Lead Allocation Table */}
           <Card className="overflow-hidden p-0">

@@ -104,16 +104,37 @@ async def approve_recognition(db: AsyncSession, tenant_id: str, recognition_id: 
     if not rec:
         raise NoResultFound("Recognition not found or already processed")
 
-    # Get approver's department
-    approver_stmt = select(User).where(User.id == str(approver_id), User.tenant_id == str(tenant_id))
-    approver_res = await db.execute(approver_stmt)
+    # Get approver's data to check for department-based budgeting
+    # Platform Owners might not have a tenant_id, so we check for both.
+    stmt = select(User).where(User.id == str(approver_id))
+    approver_res = await db.execute(stmt)
     approver = approver_res.scalar_one_or_none()
-    if not approver or not approver.department:
-        raise ValueError("Approver not found or no department")
+    
+    if not approver:
+        raise ValueError("Approver not found")
+        
+    # If it's a tenant-level approval, ensure role matches or it's a platform owner
+    from app.models.users import UserRole
+    if approver.role != UserRole.PLATFORM_OWNER:
+        if str(approver.tenant_id) != str(tenant_id):
+             raise ValueError("Approver tenant mismatch")
 
-    department = approver.department
+    if not approver.department:
+        # System/Automated recognitions might use a fallback department or skip budget
+        # For now, let's require a department if we use DepartmentBudget
+        # If the approver has no department, we can't deduct from a department budget.
+        # Maybe we deduct from a global tenant budget?
+        # For milestones, let's assume they don't consume department budget if from system.
+        if approver.role == UserRole.PLATFORM_OWNER:
+             # Use a generic 'System' department or bypass
+             department = "System"
+        else:
+             raise ValueError("Approver has no department")
+    else:
+        department = approver.department
 
     # Check budget
+    # If department is 'System', we might skip this or use a special budget.
     budget_stmt = select(DepartmentBudget).where(
         DepartmentBudget.tenant_id == tenant_id,
         DepartmentBudget.department_id == department
@@ -121,34 +142,29 @@ async def approve_recognition(db: AsyncSession, tenant_id: str, recognition_id: 
     budget_res = await db.execute(budget_stmt)
     budget = budget_res.scalar_one_or_none()
     if not budget:
-        raise ValueError("No budget allocated for department")
+        if department == "System":
+             # Auto-create or bypass for System
+             pass
+        else:
+             raise ValueError("No budget allocated for department")
 
-    if budget.used_amount + rec.points > budget.allocated_amount:
+    if budget and budget.used_amount + rec.points > budget.allocated_amount:
         raise ValueError("Insufficient budget")
 
     rec.status = RecognitionStatus.APPROVED
 
-    # Update budget
-    budget.used_amount += rec.points
-
-    ledger = PointsLedger(
-        tenant_id=tenant_id,
-        user_id=rec.nominee_id,
-        delta=rec.points,
-        reason="RECOGNITION_APPROVED",
-        reference_id=rec.id,
-    )
-    db.add(ledger)
-
-    # Budget ledger
-    budget_ledger = BudgetLedger(
-        tenant_id=tenant_id,
-        department_id=department,
-        delta_amount=-rec.points,  # negative for usage
-        reason="RECOGNITION",
-        reference_id=rec.id,
-    )
-    db.add(budget_ledger)
+    # Update budget if it exists
+    if budget:
+        budget.used_amount += rec.points
+        # Budget ledger
+        budget_ledger = BudgetLedger(
+            tenant_id=tenant_id,
+            department_id=department,
+            delta_amount=-rec.points,  # negative for usage
+            reason="RECOGNITION",
+            reference_id=rec.id,
+        )
+        db.add(budget_ledger)
 
     await db.flush()
     return rec

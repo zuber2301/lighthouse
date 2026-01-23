@@ -65,7 +65,7 @@ async def seed_data():
             platform_admin = User(
                 email=platform_admin_email,
                 full_name="Platform Administrator",
-                role=UserRole.PLATFORM_ADMIN,
+                role=UserRole.PLATFORM_OWNER,
                 is_active=True
             )
             session.add(platform_admin)

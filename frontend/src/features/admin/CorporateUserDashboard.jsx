@@ -7,9 +7,13 @@ import { useAuth } from '../../lib/AuthContext'
 import RedemptionModal from '../rewards/RedemptionModal'
 import RecognitionFeed from '../../components/RecognitionFeed'
 import confetti from 'canvas-confetti'
+import MilestoneBanner from '../../components/MilestoneBanner'
+import CelebrationWidget from '../../components/CelebrationWidget'
+import { useMilestones } from '../../hooks/useMilestones'
 
 export default function CorporateUserDashboard() {
   const { user, refreshUser } = useAuth()
+  const { milestones } = useMilestones()
   const [pointsBalance, setPointsBalance] = useState(user?.points_balance || 0)
   const [availableRewards, setAvailableRewards] = useState([])
   const [redemptionHistory, setRedemptionHistory] = useState([])
@@ -177,6 +181,9 @@ export default function CorporateUserDashboard() {
         <div className="absolute -right-20 -top-20 w-80 h-80 bg-card border border-indigo-500/10 rounded-full blur-3xl animate-pulse"></div>
         <div className="absolute -left-10 -bottom-10 w-40 h-40 bg-indigo-400/20 rounded-full blur-2xl"></div>
       </motion.div>
+
+      <MilestoneBanner />
+
       {/* Give Recognition Section */}
       <Card className="p-6">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
@@ -311,6 +318,9 @@ export default function CorporateUserDashboard() {
                </div>
             </div>
           </Card>
+
+          {/* Today's Celebrations */}
+          <CelebrationWidget celebrations={milestones} />
 
           {/* Recent Activity */}
           <div className="space-y-4">

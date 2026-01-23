@@ -6,10 +6,13 @@ import RecognitionList from './RecognitionList'
 import { useRecognitions } from '../../hooks/useRecognitions'
 import { useAuth } from '../../lib/AuthContext'
 import { useSearchParams } from 'react-router-dom'
+import CelebrationWidget from '../../components/CelebrationWidget'
+import { useMilestones } from '../../hooks/useMilestones'
 
 export default function RecognitionPage() {
   const { user } = useAuth()
   const { items = [], isLoading, createAsync } = useRecognitions()
+  const { milestones } = useMilestones()
   const [open, setOpen] = useState(false)
   const [activeTab, setActiveTab] = useState('Individual Award')
   const [searchParams] = useSearchParams()
@@ -24,8 +27,9 @@ export default function RecognitionPage() {
   // If a tab is provided via query params (e.g. ?tab=E-Card), use it and open modal
   useEffect(() => {
     const tab = searchParams.get('tab')
-    if (tab) {
-      setActiveTab(tab)
+    const userId = searchParams.get('userId')
+    if (tab || userId) {
+      if (tab) setActiveTab(tab)
       if (isAllowedPersona) setOpen(true)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -55,10 +59,16 @@ export default function RecognitionPage() {
 
         {/* Tabs are now available in the main header; removed duplicate in-page tabs */}
 
-        <div className="mt-4">
-          <Card>
-            <RecognitionList items={filteredItems} />
-          </Card>
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-8 mt-4">
+          <div className="lg:col-span-3">
+            <Card>
+              <RecognitionList items={filteredItems} />
+            </Card>
+          </div>
+          
+          <div className="space-y-6">
+            <CelebrationWidget celebrations={milestones} />
+          </div>
         </div>
       </div>
 

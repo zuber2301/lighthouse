@@ -1,0 +1,4 @@
+email,dob,hire_date,full_name,department,job_title,tenant_id
+alex@triton.com,1992-05-15,2021-02-10,Alex Developer,Engineering,Senior Software Engineer,6e232279-d8ad-4154-bdd2-9043d6422d29
+david@triton.com,1985-11-20,2018-06-01,David Lead,Management,Engineering Manager,6e232279-d8ad-4154-bdd2-9043d6422d29
+sarah@triton.com,1990-01-23,2019-01-23,Sarah Admin,HR,HR Director,6e232279-d8ad-4154-bdd2-9043d6422d29

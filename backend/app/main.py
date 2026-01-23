@@ -4,7 +4,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from starlette.middleware.base import BaseHTTPMiddleware
 
 from app.core import tenancy
-from app.api import auth, recognition, rewards, platform_admin, tenant_admin, analytics, tenant_lead, corporate_user, badges
+from app.api import auth, recognition, rewards, platform_admin, tenant_admin, analytics, tenant_lead, corporate_user, badges, milestones
 from app.db.base import Base
 from app.db.session import engine
 from app.core.sockets import socket_app
@@ -106,6 +106,7 @@ app.include_router(tenant_admin.router)
 app.include_router(tenant_lead.router)
 app.include_router(corporate_user.router)
 app.include_router(analytics.router)
+app.include_router(milestones.router)
 
 
 @app.get("/")
