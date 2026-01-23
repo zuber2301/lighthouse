@@ -249,6 +249,13 @@ p, label, span, a, li, button, input, textarea, select {
     box-shadow: 0 8px 24px rgba(202,138,4,0.06);
     border-radius: var(--radius);
   }
+
+  /* Tab accent: less pill-shaped, soft-square tabs (used for active tab buttons) */
+  .tab-accent {
+    border-radius: 8px !important;
+    padding-left: 0.75rem !important;
+    padding-right: 0.75rem !important;
+  }
 }
 
   html, body, #root { height: 100%; }

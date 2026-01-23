@@ -189,9 +189,9 @@ export default function CorporateUserDashboard() {
               <button
                 key={tab}
                 onClick={() => setRecognitionData({...recognitionData, category: tab})}
-                className={`px-6 py-2 rounded-xl text-xs font-bold uppercase tracking-wider transition-all ${
+                className={`px-6 py-2 rounded-md text-xs font-bold uppercase tracking-wider transition-all ${
                   recognitionData.category === tab 
-                  ? 'btn-accent shadow-lg text-white' 
+                  ? 'btn-accent tab-accent shadow-lg text-white' 
                   : 'opacity-70 text-text-main hover:opacity-100'
                 }`}
               >

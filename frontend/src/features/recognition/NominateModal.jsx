@@ -347,9 +347,9 @@ export default function NominateModal({ open, onClose, onSubmit, initialCategory
                           key={c}
                           type="button"
                           onClick={() => setCategory(c)}
-                          className={`flex-1 px-4 py-2.5 rounded-xl text-sm font-normal transition-all ${
+                          className={`flex-1 px-4 py-2.5 rounded-md text-sm font-normal transition-all ${
                             category === c 
-                            ? 'btn-accent text-white shadow-lg shadow-indigo-500/20' 
+                            ? 'btn-accent tab-accent text-white shadow-lg shadow-indigo-500/20' 
                             : 'text-text-main opacity-60 hover:opacity-100 hover:bg-white/5'
                           }`}
                         >

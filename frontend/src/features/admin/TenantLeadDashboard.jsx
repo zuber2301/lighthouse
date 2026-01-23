@@ -113,9 +113,9 @@ export default function TenantLeadDashboard() {
               <button
                 key={tab}
                 onClick={() => setRecognitionData({...recognitionData, category: tab})}
-                className={`px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-wider transition-all ${
+                className={`px-4 py-2 rounded-md text-xs font-bold uppercase tracking-wider transition-all ${
                   (recognitionData.category || 'Individual Award') === tab 
-                  ? 'btn-accent shadow-sm text-white' 
+                  ? 'btn-accent tab-accent shadow-sm text-white' 
                   : 'opacity-70 text-text-main hover:text-text-main'
                 }`}
               >
