@@ -104,96 +104,98 @@ const TenantManager = ({ tenants, onRefresh, onAddTenant }) => {
           </div>
         </div>
 
-        <div className="overflow-x-auto">
+        <div className="overflow-x-auto styled-scrollbar">
           <table className="w-full text-left">
             <thead className="bg-indigo-500/5 text-text-main text-[16px] font-semibold border-b border-indigo-500/5">
               <tr>
-                <th className="px-8 py-6">Company</th>
-                <th className="px-8 py-6">Subdomain</th>
-                <th className="px-8 py-6">Plan</th>
-                <th className="px-8 py-6">Budget Allocated</th>
-                <th className="px-8 py-6">Budget Consumed</th>
-                <th className="px-8 py-6">Budget left %</th>
-                <th className="px-8 py-6">Status</th>
-                <th className="px-8 py-6">Activity</th>
-                <th className="px-8 py-6">Created</th>
-                <th className="px-8 py-6 text-right font-normal">Action</th>
+                <th className="px-8 py-6 text-center border-r border-indigo-500/10 last:border-r-0">Company</th>
+                <th className="px-8 py-6 text-center border-r border-indigo-500/10 last:border-r-0">Subdomain</th>
+                <th className="px-8 py-6 text-center border-r border-indigo-500/10 last:border-r-0">Plan</th>
+                <th className="px-8 py-6 text-center border-r border-indigo-500/10 last:border-r-0">Budget Allocated</th>
+                <th className="px-8 py-6 text-center border-r border-indigo-500/10 last:border-r-0">Budget Consumed</th>
+                <th className="px-8 py-6 text-center border-r border-indigo-500/10 last:border-r-0">Budget left %</th>
+                <th className="px-8 py-6 text-center border-r border-indigo-500/10 last:border-r-0">Status</th>
+                <th className="px-8 py-6 text-center border-r border-indigo-500/10 last:border-r-0">Activity</th>
+                <th className="px-8 py-6 text-center border-r border-indigo-500/10 last:border-r-0">Created</th>
+                <th className="px-8 py-6 text-center font-normal">Action</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-indigo-500/5">
               {filteredTenants.map((tenant) => (
                 <tr key={tenant.id} className="hover:bg-indigo-500/5 transition duration-150 group">
-                  <td className="px-8 py-6">
-                    <div className="font-normal text-[18px] text-text-main tracking-tight group-hover:text-indigo-500 transition-colors">{tenant.name}</div>
-                  </td>
-                  <td className="px-8 py-6">
-                    <span className="text-[14px] font-normal text-indigo-400/90 bg-indigo-500/10 px-3 py-1.5 rounded-xl border border-indigo-500/20 group-hover:bg-indigo-500/20 transition-all">
-                      {tenant.subdomain}.lighthouse.com
-                    </span>
-                  </td>
-                  <td className="px-8 py-6">
-                    <div className="text-[16px] font-semibold text-text-main tracking-tight italic">{tenant.plan}</div>
-                    <div className="text-[13px] opacity-40 text-text-main font-normal mt-1 uppercase tracking-tighter">USERS: {tenant.user_count ?? '—'}</div>
-                  </td>
-                  <td className="px-8 py-6">
-                    <div className="text-[15px] font-normal text-text-main">{formatMoney(tenant.budget_allocated)}</div>
-                  </td>
-                  <td className="px-8 py-6">
-                    <div className="text-[15px] font-normal text-text-main">{formatMoney(tenant.budget_consumed)}</div>
-                  </td>
-                  <td className="px-8 py-6">
-                    <div className="text-[15px] font-normal text-text-main">
-                      {(() => {
-                        const a = tenant.budget_allocated
-                        const c = tenant.budget_consumed
-                        if (a == null || typeof a !== 'number' || a === 0) return '—'
-                        const percent = Math.round(((a - (c || 0)) / a) * 100)
-                        return `${percent}%`
-                      })()}
-                    </div>
-                  </td>
-                  <td className="px-8 py-6">
-                    <div className={`inline-flex px-3.5 py-1.5 rounded-xl text-[12px] font-normal uppercase tracking-[0.1em] ${
-                      tenant.status === 'active' ? 'bg-emerald-500/10 text-emerald-500 border border-emerald-500/20' : 'bg-rose-500/10 text-rose-500 border border-rose-500/20'
-                    }`}>
-                      {tenant.status}
-                    </div>
-                  </td>
-                  <td className="px-8 py-6">
-                    <div className="opacity-60 group-hover:opacity-100 transition-opacity">
-                      {renderSparkline(tenant.activity_last_7_days)}
-                    </div>
-                  </td>
-                  <td className="px-8 py-6 opacity-80 text-text-main text-[15px] font-normal">
-                    {new Date(tenant.created_at).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' })}
-                  </td>
-                  <td className="px-8 py-6 text-right space-x-2">
-                    <button 
-                      onClick={() => handleStatusToggle(tenant.id, tenant.status)}
-                      className={`text-[12px] font-normal tracking-widest px-4 py-2 rounded-xl border transition-all active:scale-95 ${
-                        tenant.status === 'active' 
-                          ? 'text-rose-500 border-rose-500/20 hover:bg-rose-500/20' 
-                          : 'text-emerald-500 border-emerald-500/20 hover:bg-emerald-500/20'
-                      }`}
-                    >
-                      {tenant.status === 'active' ? 'SUSPEND' : 'ACTIVATE'}
-                    </button>
+                  <td className="px-8 py-6 text-center border-r border-indigo-500/10 last:border-r-0">
+                      <div className="font-normal text-[18px] text-text-main tracking-tight group-hover:text-indigo-500 transition-colors text-center">{tenant.name}</div>
+                    </td>
+                    <td className="px-8 py-6 text-center border-r border-indigo-500/10 last:border-r-0">
+                      <span className="text-[14px] font-normal text-indigo-400/90 bg-indigo-500/10 px-3 py-1.5 rounded-xl border border-indigo-500/20 group-hover:bg-indigo-500/20 transition-all inline-block">
+                        {tenant.subdomain}.lighthouse.com
+                      </span>
+                    </td>
+                    <td className="px-8 py-6 text-center border-r border-indigo-500/10 last:border-r-0">
+                      <div className="text-[16px] font-semibold text-text-main tracking-tight italic">{tenant.plan}</div>
+                      <div className="text-[13px] opacity-40 text-text-main font-normal mt-1 uppercase tracking-tighter">USERS: {tenant.user_count ?? '—'}</div>
+                    </td>
+                    <td className="px-8 py-6 text-center border-r border-indigo-500/10 last:border-r-0">
+                      <div className="text-[15px] font-normal text-text-main">{formatMoney(tenant.budget_allocated)}</div>
+                    </td>
+                    <td className="px-8 py-6 text-center border-r border-indigo-500/10 last:border-r-0">
+                      <div className="text-[15px] font-normal text-text-main">{formatMoney(tenant.budget_consumed)}</div>
+                    </td>
+                    <td className="px-8 py-6 text-center border-r border-indigo-500/10 last:border-r-0">
+                      <div className="text-[15px] font-normal text-text-main">
+                        {(() => {
+                          const a = tenant.budget_allocated
+                          const c = tenant.budget_consumed
+                          if (a == null || typeof a !== 'number' || a === 0) return '—'
+                          const percent = Math.round(((a - (c || 0)) / a) * 100)
+                          return `${percent}%`
+                        })()}
+                      </div>
+                    </td>
+                    <td className="px-8 py-6 text-center border-r border-indigo-500/10 last:border-r-0">
+                      <div className={`inline-flex px-3.5 py-1.5 rounded-xl text-[12px] font-normal uppercase tracking-[0.1em] ${
+                        tenant.status === 'active' ? 'bg-emerald-500/10 text-emerald-500 border border-emerald-500/20' : 'bg-rose-500/10 text-rose-500 border border-rose-500/20'
+                      }`}>
+                        {tenant.status}
+                      </div>
+                    </td>
+                    <td className="px-8 py-6 text-center border-r border-indigo-500/10 last:border-r-0">
+                      <div className="opacity-60 group-hover:opacity-100 transition-opacity inline-block">
+                        {renderSparkline(tenant.activity_last_7_days)}
+                      </div>
+                    </td>
+                    <td className="px-8 py-6 text-center opacity-80 text-text-main text-[15px] font-normal border-r border-indigo-500/10 last:border-r-0">
+                      {new Date(tenant.created_at).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' })}
+                    </td>
+                    <td className="px-8 py-6 text-center">
+                      <div className="flex items-center justify-center gap-2">
+                      <button 
+                        onClick={() => handleStatusToggle(tenant.id, tenant.status)}
+                        className={`text-[12px] font-normal tracking-widest px-4 py-2 rounded-xl border transition-all active:scale-95 ${
+                          tenant.status === 'active' 
+                            ? 'text-rose-500 border-rose-500/20 hover:bg-rose-500/20' 
+                            : 'text-emerald-500 border-emerald-500/20 hover:bg-emerald-500/20'
+                        }`}
+                      >
+                        {tenant.status === 'active' ? 'SUSPEND' : 'ACTIVATE'}
+                      </button>
 
-                    <button
-                      onClick={() => openLoadModal(tenant)}
-                      title="Load Master Budget"
-                      className="text-[12px] px-4 py-2 rounded-xl bg-indigo-500/10 border border-indigo-500/10 text-text-main font-normal tracking-widest hover:bg-indigo-500/20 transition-all active:scale-95"
-                    >
-                      BUDGET
-                    </button>
+                      <button
+                        onClick={() => openLoadModal(tenant)}
+                        title="Load Master Budget"
+                        className="text-[12px] px-4 py-2 rounded-xl bg-indigo-500/10 border border-indigo-500/10 text-text-main font-normal tracking-widest hover:bg-indigo-500/20 transition-all active:scale-95"
+                      >
+                        BUDGET
+                      </button>
 
-                    <button
-                      onClick={() => handleImpersonate(tenant.id)}
-                      title="Impersonate tenant"
-                      className="text-[13px] px-4 py-2 rounded-xl btn-accent font-normal tracking-widest hover:brightness-95 transition-all shadow-lg active:scale-95"
-                    >
-                      ENTER
-                    </button>
+                      <button
+                        onClick={() => handleImpersonate(tenant.id)}
+                        title="Impersonate tenant"
+                        className="text-[12px] px-4 py-2 rounded-xl btn-accent font-normal tracking-widest hover:brightness-95 transition-all shadow-lg active:scale-95"
+                      >
+                        ENTER
+                      </button>
+                    </div>
                   </td>
                 </tr>
               ))}

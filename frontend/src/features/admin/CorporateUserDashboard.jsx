@@ -211,7 +211,7 @@ export default function CorporateUserDashboard() {
               className="w-full bg-surface border border-indigo-500/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
             />
             {users.length > 0 && (
-              <div className="absolute z-50 w-full mt-2 bg-card border border-border-soft rounded-xl shadow-2xl max-h-48 overflow-y-auto p-1">
+              <div className="absolute z-50 w-full mt-2 bg-card border border-border-soft rounded-xl shadow-2xl max-h-48 overflow-y-auto styled-scrollbar p-1">
                 {users.map(u => (
                   <button
                     key={u.id}

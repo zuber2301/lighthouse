@@ -187,7 +187,7 @@ export default function TenantAdminBudget() {
               <h3 className="font-bold text-text-main">Department Lead Allocations</h3>
               <button className="text-xs bg-indigo-500/10 text-indigo-500 font-bold px-3 py-1 rounded-lg hover:bg-indigo-500/20 transition-colors">EXPORT CSV</button>
             </div>
-            <div className="overflow-x-auto">
+            <div className="overflow-x-auto styled-scrollbar">
               <table className="w-full">
                 <thead className="bg-indigo-500/5 text-[10px] uppercase tracking-widest opacity-70 text-text-main">
                   <tr>

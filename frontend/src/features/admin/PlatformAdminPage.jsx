@@ -46,7 +46,7 @@ export default function PlatformAdminPage() {
   }
 
   return (
-    <div className="space-y-8 max-w-7xl mx-auto">
+    <div className="space-y-8 max-w-7xl mx-auto styled-scrollbar">
       <div className="flex justify-between items-end">
         <PageHeader title="Super User View" subtitle="Global SaaS control plane" />
         <div className="flex gap-3 mb-8">

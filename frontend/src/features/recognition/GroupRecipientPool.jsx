@@ -83,7 +83,7 @@ export default function GroupRecipientPool({ value = [], onChange = () => {}, pl
       </div>
 
       {query.trim() && (
-        <div className="mb-3 max-h-40 overflow-y-auto custom-scrollbar">
+        <div className="mb-3 max-h-40 overflow-y-auto custom-scrollbar styled-scrollbar">
           {loading ? (
             <div className="text-sm opacity-50">Searching…</div>
           ) : results.length ? (

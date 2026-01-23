@@ -291,7 +291,7 @@ export default function NominateModal({ open, onClose, onSubmit, initialCategory
               </div>
 
               {search.trim() ? (
-                <div className="mt-3 max-h-40 overflow-y-auto space-y-1 pr-1 custom-scrollbar">
+                <div className="mt-3 max-h-40 overflow-y-auto space-y-1 pr-1 custom-scrollbar styled-scrollbar">
                   {users.map((u) => {
                     const selected = nominees.some((n) => (typeof n === 'string' ? n === u.id : n.id === u.id))
                     return (

@@ -281,3 +281,61 @@ p, label, span, a, li, button, input, textarea, select {
     width: 100%;
     height: 100%;
   }
+
+/* Elegant contemporary scrollbars for vertical & horizontal overflow
+   Applied to elements with .styled-scrollbar or Tailwind overflow utilities
+*/
+:root {
+  --scroll-thumb-rgb: 99,102,241; /* indigo-ish */
+  --scroll-thumb: rgba(var(--scroll-thumb-rgb), 0.9);
+  --scroll-track: rgba(15,23,42, 0.02);
+}
+
+.styled-scrollbar,
+.overflow-y-auto,
+.overflow-x-auto,
+.overflow-auto {
+  scrollbar-width: thin; /* Firefox */
+  scrollbar-color: var(--scroll-thumb) transparent;
+}
+
+/* WebKit-based browsers */
+.styled-scrollbar::-webkit-scrollbar,
+.overflow-y-auto::-webkit-scrollbar,
+.overflow-x-auto::-webkit-scrollbar,
+.overflow-auto::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+.styled-scrollbar::-webkit-scrollbar-track,
+.overflow-y-auto::-webkit-scrollbar-track,
+.overflow-x-auto::-webkit-scrollbar-track,
+.overflow-auto::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.styled-scrollbar::-webkit-scrollbar-thumb,
+.overflow-y-auto::-webkit-scrollbar-thumb,
+.overflow-x-auto::-webkit-scrollbar-thumb,
+.overflow-auto::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, rgba(var(--scroll-thumb-rgb),0.95), rgba(var(--scroll-thumb-rgb),0.6));
+  border-radius: 9999px;
+  border: 2px solid rgba(255,255,255,0.04);
+  min-height: 28px;
+}
+
+.styled-scrollbar::-webkit-scrollbar-thumb:hover,
+.overflow-y-auto::-webkit-scrollbar-thumb:hover,
+.overflow-x-auto::-webkit-scrollbar-thumb:hover,
+.overflow-auto::-webkit-scrollbar-thumb:hover {
+  transform: scale(1.02);
+  background: linear-gradient(180deg, rgba(var(--scroll-thumb-rgb),1), rgba(var(--scroll-thumb-rgb),0.7));
+}
+
+.styled-scrollbar::-webkit-scrollbar-corner,
+.overflow-y-auto::-webkit-scrollbar-corner,
+.overflow-x-auto::-webkit-scrollbar-corner,
+.overflow-auto::-webkit-scrollbar-corner {
+  background: transparent;
+}

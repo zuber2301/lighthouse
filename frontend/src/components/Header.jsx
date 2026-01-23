@@ -138,21 +138,21 @@ export default function Header() {
               onClick={() => navigate(`/recognition?tab=${encodeURIComponent('Individual award')}&_=${Date.now()}`)}
               className="px-6 py-2 rounded-full btn-recognition text-[16px] font-bold transition-all shadow-lg active:scale-95"
             >
-              Give Individual award
+              Individual award
             </button>
 
             <button
               onClick={() => navigate(`/recognition?tab=${encodeURIComponent('E-Card')}&_=${Date.now()}`)}
               className="px-6 py-2 rounded-full btn-recognition text-[16px] font-bold transition-all shadow-lg active:scale-95"
             >
-              Give E-Card
+              E-Card
             </button>
 
             <button
               onClick={() => setIsGroupModalOpen(true)}
               className="px-6 py-2 rounded-full btn-recognition text-[16px] font-bold transition-all shadow-lg active:scale-95"
             >
-              Give Group award
+              Group award
             </button>
           </div>
         )}
