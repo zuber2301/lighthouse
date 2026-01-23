@@ -308,14 +308,7 @@ export default function NominateModal({ open, onClose, onSubmit, initialCategory
             )}
 
             <div className="grid grid-cols-1 gap-6">
-              {openedAsECard ? (
-                <section>
-                  <div className="text-[15px] font-normal tracking-tight text-white mb-3">Recognition Type</div>
-                  <select value={category} onChange={(e) => setCategory(e.target.value)} className="w-full bg-surface border border-indigo-500/20 rounded-xl p-3 text-sm">
-                    <option value="E-Card">E-Card</option>
-                  </select>
-                </section>
-              ) : (
+              {!openedAsECard && (
                 <>
                   <section>
                     <div className="text-[15px] font-normal tracking-tight text-white mb-3">Recognition Type</div>
