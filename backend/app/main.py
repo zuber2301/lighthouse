@@ -7,10 +7,12 @@ from app.core import tenancy
 from app.api import auth, recognition, rewards, platform_admin, tenant_admin, analytics, tenant_lead, corporate_user, badges
 from app.db.base import Base
 from app.db.session import engine
+from app.core.sockets import socket_app
 import asyncio
 
 
 app = FastAPI(title="lighthouse-backend")
+app.mount("/ws", socket_app)
 
 # Add CORS middleware
 app.add_middleware(

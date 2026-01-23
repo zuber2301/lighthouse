@@ -18,6 +18,7 @@ from app.models.transactions import Transaction, TransactionType
 from app.models.recognition import Recognition
 from app.models.budget_load_logs import BudgetLoadLog
 from app.models.budgets import TenantBudget
+from app.core.sockets import emit_platform_event
 from typing import Optional, List
 import datetime
 import uuid
@@ -239,6 +240,13 @@ async def onboard_tenant(request: OnboardTenantRequest, db: AsyncSession = Depen
     )
     db.add(email_audit)
     await db.commit()
+
+    # Broadcast event
+    await emit_platform_event('tenant_created', {
+        "id": str(tenant.id),
+        "name": tenant.name,
+        "subdomain": tenant.subdomain
+    })
     
     return {
         "id": str(tenant.id),
@@ -563,6 +571,15 @@ async def update_feature_flags(tenant_id: str, payload: dict, db: AsyncSession =
     return {"tenant": tenant_id, "feature_flags": t.feature_flags}
 
 
+@router.get("/tenants/{tenant_id}/feature_flags")
+async def get_feature_flags(tenant_id: str, db: AsyncSession = Depends(get_db), user: CurrentUser = Depends(require_role("PLATFORM_OWNER", "SUPER_ADMIN", "TENANT_ADMIN"))):
+    q = await db.execute(select(Tenant).where(Tenant.id == tenant_id))
+    t = q.scalar_one_or_none()
+    if not t:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Tenant not found")
+    return {"tenant": tenant_id, "feature_flags": t.feature_flags or {}}
+
+
 @router.get("/platform/policies")
 async def get_policies(db: AsyncSession = Depends(get_db), user: CurrentUser = Depends(require_role("PLATFORM_OWNER", "SUPER_ADMIN"))):
     q = await db.execute(select(PlatformSettings).where(PlatformSettings.id == 'global'))
@@ -641,6 +658,14 @@ async def load_master_budget(request: LoadBudgetRequest, db: AsyncSession = Depe
     db.add(log)
     await db.commit()
     await db.refresh(t)
+
+    # Broadcast platform event
+    await emit_platform_event('budget_loaded', {
+        "tenant_id": str(t.id),
+        "tenant_name": t.name,
+        "amount": float(amt),
+        "new_balance": float((Decimal(int(t.master_budget_balance)) / Decimal(100)).quantize(Decimal('0.01')))
+    })
 
     # return updated balances (both paise and currency)
     return {

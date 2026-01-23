@@ -1,9 +1,10 @@
 import React from 'react'
-import Card from './Card'
-import api from '../api/axiosClient'
-import LoadBudgetModal from './LoadBudgetModal'
 import { useNavigate } from 'react-router-dom'
+import api from '../api/axiosClient'
 import { useTenant } from '../lib/TenantContext'
+import OnboardTenantDrawer from './OnboardTenantDrawer'
+import LoadBudgetModal from './LoadBudgetModal'
+import confetti from 'canvas-confetti'
 
 const TenantManager = ({ tenants, onRefresh, onAddTenant }) => {
   const navigate = useNavigate()
@@ -11,6 +12,7 @@ const TenantManager = ({ tenants, onRefresh, onAddTenant }) => {
   const [modalOpen, setModalOpen] = React.useState(false)
   const [activeTenant, setActiveTenant] = React.useState(null)
   const [searchTerm, setSearchTerm] = React.useState('')
+  const [isDrawerOpen, setIsDrawerOpen] = React.useState(false)
 
   const filteredTenants = React.useMemo(() => {
     if (!searchTerm) return tenants
@@ -51,8 +53,13 @@ const TenantManager = ({ tenants, onRefresh, onAddTenant }) => {
   }
 
   const handleLoaded = (data) => {
-    // refresh tenant list after successful load
     onRefresh && onRefresh()
+    confetti({
+      particleCount: 150,
+      spread: 70,
+      origin: { y: 0.6 },
+      colors: ['#6366f1', '#a855f7', '#ec4899']
+    })
   }
 
   const renderSparkline = (data = []) => {
@@ -86,7 +93,7 @@ const TenantManager = ({ tenants, onRefresh, onAddTenant }) => {
             <div className="relative flex-1 md:w-80">
               <input
                 type="text"
-                placeholder="Search by company, subdomain or email..."
+                placeholder="Search by company..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="w-full bg-indigo-500/10 border border-indigo-500/20 rounded-2xl px-5 py-3 text-[15px] focus:outline-none focus:ring-2 focus:ring-indigo-500/30 focus:bg-indigo-500/20 transition-all pl-12 text-text-main placeholder:text-text-main/50 font-normal"
@@ -96,7 +103,7 @@ const TenantManager = ({ tenants, onRefresh, onAddTenant }) => {
               </svg>
             </div>
             <button 
-              onClick={onAddTenant}
+              onClick={() => setIsDrawerOpen(true)}
               className="btn-accent px-8 py-3 rounded-2xl text-[14px] font-black uppercase tracking-wider shadow-xl hover:scale-[1.02] transition-all whitespace-nowrap active:scale-95"
             >
               + Create Tenant
@@ -204,6 +211,7 @@ const TenantManager = ({ tenants, onRefresh, onAddTenant }) => {
         </div>
       </div>
       <LoadBudgetModal open={modalOpen} onClose={() => setModalOpen(false)} tenant={activeTenant} onLoaded={handleLoaded} />
+      <OnboardTenantDrawer isOpen={isDrawerOpen} onClose={() => setIsDrawerOpen(false)} onRefresh={onRefresh} />
     </>
   )
 }

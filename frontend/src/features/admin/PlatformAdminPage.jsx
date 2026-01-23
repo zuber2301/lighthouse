@@ -3,12 +3,14 @@ import { useNavigate } from 'react-router-dom'
 import Card from '../../components/Card'
 import PageHeader from '../../components/PageHeader'
 import TenantManager from '../../components/TenantManager'
-import api from '../../lib/api'
+import usePlatformPulse from '../../hooks/usePlatformPulse'
+import api from '../../api/axiosClient'
 
 export default function PlatformAdminPage() {
   const navigate = useNavigate()
   const [tenants, setTenants] = useState([])
   const [stats, setStats] = useState({})
+  const { events } = usePlatformPulse()
 
   const formatUptime = (secs) => {
     if (!secs) return '—'
@@ -42,7 +44,7 @@ export default function PlatformAdminPage() {
   }
 
   const handleAddTenant = () => {
-    navigate('/platform-admin/create-tenant')
+    // handled by drawer inside TenantManager now, but keeping for compatibility
   }
 
   return (
@@ -95,12 +97,56 @@ export default function PlatformAdminPage() {
         </Card>
       </div>
 
-      {/* Tenant Management */}
-      <TenantManager 
-        tenants={tenants} 
-        onRefresh={fetchTenants}
-        onAddTenant={handleAddTenant}
-      />
+      <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+        <div className="lg:col-span-3">
+          <TenantManager 
+            tenants={tenants} 
+            onRefresh={fetchTenants}
+            onAddTenant={handleAddTenant}
+          />
+        </div>
+        
+        <div className="lg:col-span-1">
+          <Card className="h-full border border-indigo-500/10 bg-card/60 backdrop-blur-md">
+            <div className="flex items-center justify-between mb-6">
+              <h3 className="text-[12px] font-normal opacity-60 text-text-main uppercase tracking-widest">Platform Pulse</h3>
+              <div className="text-[10px] font-bold text-emerald-500 flex items-center gap-2">
+                <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></div>
+                LIVE
+              </div>
+            </div>
+            
+            <div className="space-y-6 max-h-[600px] overflow-y-auto pr-2 custom-scrollbar styled-scrollbar">
+              {events.length === 0 ? (
+                <div className="py-12 text-center">
+                  <p className="text-[13px] text-text-main opacity-40 italic">Waiting for signals...</p>
+                </div>
+              ) : (
+                events.map((event, i) => (
+                  <div key={i} className="flex gap-4 group">
+                    <div className="relative">
+                      <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs z-10 relative ${
+                        event.type === 'provision' ? 'bg-indigo-500/20 text-indigo-400' : 'bg-emerald-500/20 text-emerald-400'
+                      }`}>
+                        {event.type === 'provision' ? '🚀' : '💰'}
+                      </div>
+                    </div>
+                    <div>
+                      <p className="text-[13px] text-text-main font-bold truncate max-w-[120px]">{event.name || event.tenant_name}</p>
+                      <p className="text-[11px] text-text-main opacity-60">
+                        {event.type === 'provision' ? 'Provisioned' : `Loaded ₹${event.amount}`}
+                      </p>
+                      <p className="text-[9px] text-text-main opacity-30 uppercase mt-1">
+                        {new Date(event.timestamp).toLocaleTimeString()}
+                      </p>
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
+          </Card>
+        </div>
+      </div>
     </div>
   )
 }

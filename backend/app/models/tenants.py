@@ -21,3 +21,5 @@ class Tenant(Base, TimestampMixin):
     industry = Column(String(100), nullable=True)
     credit_limit = Column(BigInteger, nullable=True, default=0)
     last_billing_date = Column(Date, nullable=True)
+    # Feature flags / settings stored per-tenant (JSON)
+    feature_flags = Column(JSON, nullable=True)
