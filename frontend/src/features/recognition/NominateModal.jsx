@@ -361,7 +361,9 @@ export default function NominateModal({ open, onClose, onSubmit, initialCategory
               {coachTips && (
                 <div className="mt-3 p-3 bg-surface border border-border-soft rounded-lg text-sm">
                   <div className="font-semibold text-white mb-1">Recognition Coach</div>
-                  {coachTips.tips && coachTips.tips.map((t, i) => <div key={i} className="text-text-main/80 text-sm">• {t}</div>)}
+                  <div className="text-text-main/80 text-sm">Example: Give one specific action the person took.</div>
+                  <div className="text-text-main/80 text-sm">Impact: State the outcome and who benefited.</div>
+                  <div className="text-text-main/80 text-sm">Timing: Note when or which project it occurred.</div>
                 </div>
               )}
             </section>
