@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react'
 import Modal from '../../components/Modal'
 import api from '../../api/axiosClient'
-const CATEGORIES = ['Core Values', 'Small Wins', 'Innovation', 'Customer Impact']
+const CATEGORIES = ['Individual award', 'Group award', 'E-Card']
 
-export default function NominateModal({ open, onClose, onSubmit }) {
+export default function NominateModal({ open, onClose, onSubmit, initialCategory }) {
   // Recipient
   const [search, setSearch] = useState('')
   const [nominee, setNominee] = useState(null)
@@ -11,8 +11,15 @@ export default function NominateModal({ open, onClose, onSubmit }) {
   const searchTimer = useRef()
 
   // Category
-  const [category, setCategory] = useState(CATEGORIES[0])
+  const [category, setCategory] = useState(initialCategory || CATEGORIES[0])
   const [points, setPoints] = useState(50)
+
+  // Sync category if initialCategory changes
+  useEffect(() => {
+    if (initialCategory) {
+      setCategory(initialCategory)
+    }
+  }, [initialCategory])
 
   // Message + attachments
   const [message, setMessage] = useState('')
@@ -155,20 +162,24 @@ export default function NominateModal({ open, onClose, onSubmit }) {
               ) : null}
             </section>
 
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 gap-6">
               <section>
-                <div className="text-[15px] font-normal tracking-tight text-white mb-3">Area of Focus</div>
-                <div className="relative">
-                  <select 
-                    value={category} 
-                    onChange={(e) => setCategory(e.target.value)} 
-                    className="w-full bg-surface border border-indigo-500/20 rounded-xl p-3 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/30 appearance-none cursor-pointer font-normal"
-                  >
-                    {CATEGORIES.map((c) => (
-                      <option key={c} value={c} className="bg-card text-text-main font-normal">{c}</option>
-                    ))}
-                  </select>
-                  <svg className="w-3 h-3 absolute right-3 top-4 opacity-40 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M19 9l-7 7-7-7" strokeWidth={3} strokeLinecap="round" strokeLinejoin="round"/></svg>
+                <div className="text-[15px] font-normal tracking-tight text-white mb-3">Recognition Type</div>
+                <div className="flex bg-surface border border-indigo-500/10 p-1.5 rounded-2xl shadow-sm border border-border-soft">
+                  {CATEGORIES.map((c) => (
+                    <button
+                      key={c}
+                      type="button"
+                      onClick={() => setCategory(c)}
+                      className={`flex-1 px-4 py-2.5 rounded-xl text-sm font-normal transition-all ${
+                        category === c 
+                        ? 'btn-accent text-white shadow-lg shadow-indigo-500/20' 
+                        : 'text-text-main opacity-60 hover:opacity-100 hover:bg-white/5'
+                      }`}
+                    >
+                      {c}
+                    </button>
+                  ))}
                 </div>
               </section>
 

@@ -1,20 +1,32 @@
-import React, { useState, useEffect } from 'react'
-import { motion } from 'framer-motion'
+import React, { useState, useEffect, useRef } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
 import Card from '../../components/Card'
 import PageHeader from '../../components/PageHeader'
 import api from '../../lib/api'
 import { useAuth } from '../../lib/AuthContext'
 import RedemptionModal from '../rewards/RedemptionModal'
 import RecognitionFeed from '../../components/RecognitionFeed'
+import confetti from 'canvas-confetti'
 
 export default function CorporateUserDashboard() {
-  const { user } = useAuth()
+  const { user, refreshUser } = useAuth()
   const [pointsBalance, setPointsBalance] = useState(user?.points_balance || 0)
   const [availableRewards, setAvailableRewards] = useState([])
   const [redemptionHistory, setRedemptionHistory] = useState([])
   const [loading, setLoading] = useState(true)
   const [selectedReward, setSelectedReward] = useState(null)
   const [isModalOpen, setIsModalOpen] = useState(false)
+
+  // Recognition form state
+  const [recognitionData, setRecognitionData] = useState({
+    userId: '',
+    search: '',
+    amount: 50,
+    note: '',
+    category: 'Individual award'
+  })
+  const [users, setUsers] = useState([])
+  const searchTimer = useRef()
 
   useEffect(() => {
     fetchPointsData()
@@ -27,6 +39,57 @@ export default function CorporateUserDashboard() {
       setPointsBalance(user.points_balance)
     }
   }, [user])
+
+  // Handle user search for recognition
+  useEffect(() => {
+    if (!recognitionData.search.trim()) {
+      setUsers([])
+      return
+    }
+    if (searchTimer.current) clearTimeout(searchTimer.current)
+    searchTimer.current = setTimeout(() => {
+      api
+        .get('/user/search', { params: { q: recognitionData.search } })
+        .then((res) => setUsers(res.data || []))
+        .catch(() => setUsers([]))
+    }, 300)
+    return () => clearTimeout(searchTimer.current)
+  }, [recognitionData.search])
+
+  const handleRecognize = async () => {
+    if (!recognitionData.userId || !recognitionData.amount) return
+    
+    try {
+      // Use the generic recognition endpoint
+      await api.post('/recognition', {
+        nominee_id: recognitionData.userId,
+        points: Number(recognitionData.amount),
+        message: recognitionData.note,
+        value_tag: recognitionData.category,
+        is_public: true
+      })
+
+      confetti({
+        particleCount: 150,
+        spread: 70,
+        origin: { y: 0.6 },
+        colors: ['#6366F1', '#00ffcc', '#ff6b6b']
+      })
+
+      setRecognitionData({
+        userId: '',
+        search: '',
+        amount: 50,
+        note: '',
+        category: 'Individual award'
+      })
+      
+      refreshUser() // Update points after giving
+    } catch (e) {
+      console.error(e)
+      alert(e.response?.data?.detail || 'Failed to give recognition')
+    }
+  }
 
   const fetchPointsData = async () => {
     try {
@@ -114,7 +177,91 @@ export default function CorporateUserDashboard() {
         <div className="absolute -right-20 -top-20 w-80 h-80 bg-card border border-indigo-500/10 rounded-full blur-3xl animate-pulse"></div>
         <div className="absolute -left-10 -bottom-10 w-40 h-40 bg-indigo-400/20 rounded-full blur-2xl"></div>
       </motion.div>
+      {/* Give Recognition Section */}
+      <Card className="p-6">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
+          <div>
+            <h2 className="text-xl font-bold tracking-tight">Give Recognition</h2>
+            <p className="text-sm opacity-60">Celebrate your teammates' achievements</p>
+          </div>
+          <div className="flex bg-surface border border-indigo-500/10 p-1 rounded-2xl shadow-sm border border-border-soft">
+            {['Individual award', 'Group award', 'E-Card'].map(tab => (
+              <button
+                key={tab}
+                onClick={() => setRecognitionData({...recognitionData, category: tab})}
+                className={`px-6 py-2 rounded-xl text-xs font-bold uppercase tracking-wider transition-all ${
+                  recognitionData.category === tab 
+                  ? 'btn-accent shadow-lg text-white' 
+                  : 'opacity-70 text-text-main hover:opacity-100'
+                }`}
+              >
+                {tab}
+              </button>
+            ))}
+          </div>
+        </div>
 
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="relative">
+            <label className="block text-[11px] font-bold uppercase tracking-widest opacity-40 mb-2">Recipient</label>
+            <input 
+              value={recognitionData.search}
+              onChange={(e) => setRecognitionData({...recognitionData, search: e.target.value})}
+              placeholder="Search by name..." 
+              className="w-full bg-surface border border-indigo-500/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
+            />
+            {users.length > 0 && (
+              <div className="absolute z-50 w-full mt-2 bg-card border border-border-soft rounded-xl shadow-2xl max-h-48 overflow-y-auto p-1">
+                {users.map(u => (
+                  <button
+                    key={u.id}
+                    onClick={() => {
+                      setRecognitionData({...recognitionData, userId: u.id, search: u.name});
+                      setUsers([]);
+                    }}
+                    className="w-full text-left px-4 py-2 hover:bg-indigo-500/10 rounded-lg text-sm transition-colors flex items-center gap-2"
+                  >
+                    <div className="w-6 h-6 rounded-full bg-indigo-500/20 text-indigo-500 flex items-center justify-center text-[10px] font-bold">
+                      {u.name.charAt(0)}
+                    </div>
+                    {u.name}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+
+          <div>
+            <label className="block text-[11px] font-bold uppercase tracking-widest opacity-40 mb-2">Points</label>
+            <input 
+              type="number"
+              value={recognitionData.amount}
+              onChange={(e) => setRecognitionData({...recognitionData, amount: e.target.value})}
+              className="w-full bg-surface border border-indigo-500/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20 text-indigo-500 font-bold"
+            />
+          </div>
+
+          <div>
+            <label className="block text-[11px] font-bold uppercase tracking-widest opacity-40 mb-2">Message</label>
+            <input 
+              value={recognitionData.note}
+              onChange={(e) => setRecognitionData({...recognitionData, note: e.target.value})}
+              placeholder="Why this award?"
+              className="w-full bg-surface border border-indigo-500/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
+            />
+          </div>
+        </div>
+
+        <div className="mt-8 flex justify-end">
+          <button
+            onClick={handleRecognize}
+            disabled={!recognitionData.userId || !recognitionData.amount}
+            className="px-8 py-3 rounded-xl btn-accent font-bold text-sm shadow-xl shadow-indigo-500/20 transition-all active:scale-95 disabled:opacity-30"
+          >
+            Send Recognition
+          </button>
+        </div>
+      </Card>
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Social Wall / Recognition Feed */}
         <div className="lg:col-span-2 space-y-6">

@@ -13,7 +13,8 @@ export default function TenantLeadDashboard() {
   const [recognitionData, setRecognitionData] = useState({
     userId: '',
     amount: '',
-    note: ''
+    note: '',
+    category: 'Individual award'
   })
 
   useEffect(() => {
@@ -58,7 +59,8 @@ export default function TenantLeadDashboard() {
       const response = await api.post('/lead/recognize', {
         user_id: recognitionData.userId,
         amount: parseInt(recognitionData.amount),
-        note: recognitionData.note
+        note: recognitionData.note,
+        category: recognitionData.category
       })
 
       if (response.status === 200 || response.status === 201) {
@@ -104,7 +106,24 @@ export default function TenantLeadDashboard() {
 
       {/* Recognition Form */}
       <Card className="mb-6">
-        <h3 className="font-normal text-lg mb-4">Give Recognition</h3>
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
+          <h3 className="font-normal text-lg">Give Recognition</h3>
+          <div className="flex bg-surface border border-indigo-500/10 p-1 rounded-xl shadow-sm border border-border-soft">
+            {['Individual award', 'Group award', 'E-Card'].map(tab => (
+              <button
+                key={tab}
+                onClick={() => setRecognitionData({...recognitionData, category: tab})}
+                className={`px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-wider transition-all ${
+                  (recognitionData.category || 'Individual award') === tab 
+                  ? 'btn-accent shadow-sm text-white' 
+                  : 'opacity-70 text-text-main hover:text-text-main'
+                }`}
+              >
+                {tab}
+              </button>
+            ))}
+          </div>
+        </div>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div>
             <label className="block text-sm font-normal text-text-main opacity-80 mb-2">Team Member</label>

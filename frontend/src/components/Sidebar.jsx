@@ -10,6 +10,7 @@ const NAV_ITEMS = {
     { label: 'Tenant Manager', href: '/platform-admin/tenants', icon: '🏢' },
     { label: 'Subscriptions', href: '/platform-admin/subscriptions', icon: '💳' },
     { label: 'Global Catalog', href: '/platform-admin/global-catalog', icon: '🌍' },
+    { label: 'Recognition', href: '/recognition', icon: '🤝' },
     { label: 'System Logs', href: '/platform-admin/logs', icon: '📜' },
   ],
   TENANT_ADMIN: [
@@ -28,7 +29,7 @@ const NAV_ITEMS = {
   ],
   CORPORATE_USER: [
     { label: 'Home', href: '/dashboard', icon: '🏠' },
-    { label: 'Wall of Fame', href: '/feed', icon: '🤝' },
+    { label: 'Recognition', href: '/recognition', icon: '🤝' },
     { label: 'Rewards Store', href: '/rewards', icon: '🎁' },
     { label: 'My Activity', href: '/activity', icon: '📜' },
     { label: 'Leaderboard', href: '/leaderboard', icon: '🏆' },

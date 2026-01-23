@@ -24,6 +24,7 @@ export default function Header() {
   const userRole = user?.role || 'CORPORATE_USER'
   const isCorporate = userRole === 'CORPORATE_USER'
   const isAdmin = userRole === 'PLATFORM_OWNER' || userRole === 'TENANT_ADMIN'
+  const showGiveButtons = ['PLATFORM_OWNER', 'TENANT_ADMIN', 'TENANT_LEAD', 'CORPORATE_USER'].includes(userRole)
   const displayName = user?.full_name || user?.email || 'User'
   const firstLetter = displayName.charAt(0).toUpperCase()
   const { selectedTenant } = useTenant()
@@ -126,14 +127,30 @@ export default function Header() {
           </div>
         )}
 
-        {/* Quick Action Button - Scoped or Corporate */}
-        {(userRole !== 'PLATFORM_OWNER' || selectedTenant) && (
-          <button 
-            onClick={() => navigate('/recognition')} 
-            className="hidden sm:flex px-5 py-2 rounded-full text-[14px] font-normal btn-recognition hover:brightness-95 transition-all shadow-lg active:scale-95"
-          >
-            Give Recognition
-          </button>
+        {/* Quick Action Buttons - give specific award types; visible to admins, leads and users */}
+        {showGiveButtons && (
+          <div className="hidden sm:flex items-center gap-2">
+            <button
+              onClick={() => navigate(`/recognition?tab=${encodeURIComponent('Individual award')}`)}
+              className="px-6 py-2 rounded-full btn-recognition text-sm font-bold transition-all shadow-lg active:scale-95"
+            >
+              Give Individual award
+            </button>
+
+            <button
+              onClick={() => navigate(`/recognition?tab=${encodeURIComponent('E-Card')}`)}
+              className="px-6 py-2 rounded-full btn-recognition text-sm font-bold transition-all shadow-lg active:scale-95"
+            >
+              Give E-Card
+            </button>
+
+            <button
+              onClick={() => navigate(`/recognition?tab=${encodeURIComponent('Group award')}`)}
+              className="px-6 py-2 rounded-full btn-recognition text-sm font-bold transition-all shadow-lg active:scale-95"
+            >
+              Give Group award
+            </button>
+          </div>
         )}
 
         <div className={`h-6 w-[1px] mx-1 ${separatorClass}`} />

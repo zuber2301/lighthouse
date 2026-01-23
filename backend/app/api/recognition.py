@@ -81,6 +81,7 @@ async def list_recognitions(
                 "points": r.points,
                 "status": r.status.value if isinstance(r.status, RecognitionStatus) else str(r.status),
                 "badge_id": getattr(r, "badge_id", None),
+                "value_tag": getattr(r, "value_tag", None),
                 "message": r.message,
                 "is_public": getattr(r, "is_public", True),
                 "created_at": r.created_at.isoformat() if getattr(r, "created_at", None) else None,

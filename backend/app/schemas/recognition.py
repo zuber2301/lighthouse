@@ -18,6 +18,7 @@ class RecognitionOut(BaseModel):
     points: int
     status: str
     badge_id: Optional[UUID] = None
+    value_tag: Optional[str] = None
     message: Optional[str] = None
     is_public: Optional[bool] = True
     created_at: Optional[str] = None
