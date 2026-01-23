@@ -4,6 +4,8 @@ import { useAuth } from '../lib/AuthContext'
 import { useTenant } from '../lib/TenantContext'
 import { useAppTheme } from '../lib/ThemeContext'
 import TenantSelector from './TenantSelector'
+import GroupAwardModal from '../features/recognition/GroupAwardModal'
+import { createRecognition } from '../api/recognitions'
 
 export default function Header() {
   const location = useLocation()
@@ -15,6 +17,7 @@ export default function Header() {
 
   const [isThemeDropdownOpen, setIsThemeDropdownOpen] = useState(false)
   const themeDropdownRef = useRef(null)
+  const [isGroupModalOpen, setIsGroupModalOpen] = useState(false)
 
   const handleLogout = () => {
     logout()
@@ -55,11 +58,11 @@ export default function Header() {
   return (
     <header className={`flex items-center justify-between px-6 py-4 sticky top-0 z-40 ${headerClass} transition-colors duration-300`}>
       <div className="flex items-center gap-8">
-        <Link to="/" className="text-2xl font-normal tracking-tighter hover:opacity-80 transition-opacity text-white flex items-center gap-2">
-          <div className="w-8 h-8 rounded-lg bg-tm-gradient flex items-center justify-center shadow-tm-neon active:scale-95 transition-transform">
-            <span className="text-white text-[10px] font-black italic">LH</span>
+        <Link to="/" className="flex items-center gap-3 hover:opacity-80 transition-opacity group">
+          <div className="w-9 h-9 rounded-lg bg-accent flex items-center justify-center shadow-accent-neon active:scale-95 transition-transform">
+            <span className="text-white text-[16px]">LH</span>
           </div>
-          <span className="text-white">Portal<span className="text-white opacity-40 group-hover:opacity-100 transition-opacity">/</span>Admin</span>
+          <div className="text-2xl font-normal tracking-tight text-white">LightHouse</div>
         </Link>
         
         {!isCorporate && (
@@ -109,7 +112,7 @@ export default function Header() {
                 onClick={() => { setTheme('graph'); setIsThemeDropdownOpen(false); }} 
                 className={`w-full text-left px-4 py-2.5 text-[11px] font-black uppercase tracking-widest hover:bg-indigo-500/5 flex items-center gap-3 transition-colors ${theme === 'graph' ? 'text-indigo-500 bg-indigo-500/5' : 'text-text-main opacity-60'}`}
               >
-                <span className="w-2.5 h-2.5 rounded-full bg-[#0a0e27] border border-[#00ffcc] shadow-[0_0_5px_rgba(0,255,204,0.5)]" />
+                <span className="w-2.5 h-2.5 rounded-full bg-[#0a0e27] border border-[#6366F1] shadow-[0_0_5px_rgba(99,102,241,0.5)]" />
                 Graph Mode
               </button>
             </div>
@@ -145,7 +148,7 @@ export default function Header() {
             </button>
 
             <button
-              onClick={() => navigate(`/recognition?tab=${encodeURIComponent('Group award')}&_=${Date.now()}`)}
+              onClick={() => setIsGroupModalOpen(true)}
               className="px-6 py-2 rounded-full btn-recognition text-sm font-bold transition-all shadow-lg active:scale-95"
             >
               Give Group award
@@ -193,6 +196,22 @@ export default function Header() {
           )}
         </div>
       </div>
+      {isGroupModalOpen && (
+        <GroupAwardModal
+          open={isGroupModalOpen}
+          onClose={() => setIsGroupModalOpen(false)}
+          onSubmit={async (payload) => {
+            try {
+              await createRecognition(payload)
+              setIsGroupModalOpen(false)
+              navigate('/recognition')
+            } catch (err) {
+              console.error('Failed to send group award:', err)
+              alert(err?.message || 'Failed to send group award')
+            }
+          }}
+        />
+      )}
     </header>
   )
 }

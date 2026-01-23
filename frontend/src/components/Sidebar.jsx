@@ -1,38 +1,52 @@
 import React from 'react'
-import { NavLink } from 'react-router-dom'
+import { Link, NavLink } from 'react-router-dom'
 import { navLinkClass } from '../utils/navLinkClass'
 import { useAuth } from '../lib/AuthContext'
 import { useTenant } from '../lib/TenantContext'
+import { 
+  HomeIcon, 
+  RecognitionIcon, 
+  RewardsIcon, 
+  ActivityIcon, 
+  LeaderboardIcon, 
+  DashboardIcon, 
+  TenantIcon, 
+  SubscriptionIcon, 
+  GlobalIcon, 
+  LogsIcon, 
+  BudgetIcon, 
+  SettingsIcon 
+} from './Icons'
 
 const NAV_ITEMS = {
   PLATFORM_OWNER: [
-    { label: 'Dashboard', href: '/platform-admin', icon: '📊' },
-    { label: 'Tenant Manager', href: '/platform-admin/tenants', icon: '🏢' },
-    { label: 'Subscriptions', href: '/platform-admin/subscriptions', icon: '💳' },
-    { label: 'Global Catalog', href: '/platform-admin/global-catalog', icon: '🌍' },
-    { label: 'Recognition', href: '/recognition', icon: '🤝' },
-    { label: 'System Logs', href: '/platform-admin/logs', icon: '📜' },
+    { label: 'Dashboard', href: '/platform-admin', icon: DashboardIcon },
+    { label: 'Tenant Manager', href: '/platform-admin/tenants', icon: TenantIcon },
+    { label: 'Subscriptions', href: '/platform-admin/subscriptions', icon: SubscriptionIcon },
+    { label: 'Global Catalog', href: '/platform-admin/global-catalog', icon: GlobalIcon },
+    { label: 'Recognition', href: '/recognition', icon: RecognitionIcon },
+    { label: 'System Logs', href: '/platform-admin/logs', icon: LogsIcon },
   ],
   TENANT_ADMIN: [
-    { label: 'Dashboard', href: '/dashboard', icon: '🏠' },
-    { label: 'Manage Budget', href: '/tenant-admin', icon: '💰' },
-    { label: 'Recognition Wall', href: '/recognition', icon: '🤝' },
-    { label: 'Rewards Store', href: '/rewards', icon: '🎁' },
-    { label: 'Analytics', href: '/analytics', icon: '📊' },
-    { label: 'Settings', href: '/admin', icon: '⚙️' },
+    { label: 'Dashboard', href: '/dashboard', icon: HomeIcon },
+    { label: 'Manage Budget', href: '/tenant-admin', icon: BudgetIcon },
+    { label: 'Recognition Wall', href: '/recognition', icon: RecognitionIcon },
+    { label: 'Rewards Store', href: '/rewards', icon: RewardsIcon },
+    { label: 'Analytics', href: '/analytics', icon: DashboardIcon },
+    { label: 'Settings', href: '/admin', icon: SettingsIcon },
   ],
   TENANT_LEAD: [
-    { label: 'Dashboard', href: '/dashboard', icon: '🏠' },
-    { label: 'Recognition Wall', href: '/recognition', icon: '🤝' },
-    { label: 'Rewards Store', href: '/rewards', icon: '🎁' },
-    { label: 'Team Analytics', href: '/analytics', icon: '📊' },
+    { label: 'Dashboard', href: '/dashboard', icon: HomeIcon },
+    { label: 'Recognition Wall', href: '/recognition', icon: RecognitionIcon },
+    { label: 'Rewards Store', href: '/rewards', icon: RewardsIcon },
+    { label: 'Team Analytics', href: '/analytics', icon: DashboardIcon },
   ],
   CORPORATE_USER: [
-    { label: 'Home', href: '/dashboard', icon: '🏠' },
-    { label: 'Recognition', href: '/recognition', icon: '🤝' },
-    { label: 'Rewards Store', href: '/rewards', icon: '🎁' },
-    { label: 'My Activity', href: '/activity', icon: '📜' },
-    { label: 'Leaderboard', href: '/leaderboard', icon: '🏆' },
+    { label: 'Home', href: '/dashboard', icon: HomeIcon },
+    { label: 'Recognition', href: '/recognition', icon: RecognitionIcon },
+    { label: 'Rewards Store', href: '/rewards', icon: RewardsIcon },
+    { label: 'My Activity', href: '/activity', icon: ActivityIcon },
+    { label: 'Leaderboard', href: '/leaderboard', icon: LeaderboardIcon },
   ],
 }
 
@@ -52,12 +66,12 @@ export default function Sidebar() {
   return (
     <aside className={`w-64 h-screen ${sidebarClass} transition-colors duration-300`}>
       <div className="p-6">
-        <div className="flex items-center gap-3 mb-8 px-2">
-          <div className="w-8 h-8 rounded-lg bg-tm-gradient flex items-center justify-center shadow-tm-neon">
-            <span className="text-white text-xs">LH</span>
+        <Link to="/" className="flex items-center gap-3 mb-8 px-2 hover:opacity-80 transition-opacity group">
+          <div className="w-9 h-9 rounded-lg bg-accent flex items-center justify-center shadow-accent-neon active:scale-95 transition-transform">
+            <span className="text-white text-[16px]">LH</span>
           </div>
-          <div className="text-xl font-bold tracking-tight text-white">LightHouse</div>
-        </div>
+          <div className="text-2xl font-normal tracking-tight text-white">LightHouse</div>
+        </Link>
         <nav className="flex flex-col gap-2" role="navigation" aria-label="Main navigation">
           {items.map((it) => (
             <NavLink
@@ -67,8 +81,10 @@ export default function Sidebar() {
             >
               {({ isActive }) => (
                 <>
-                  <span className="text-3xl drop-shadow-sm text-white">{it.icon}</span>
-                  <span className="font-normal text-[17px] text-white">{it.label}</span>
+                  <div className={`p-1.5 rounded-lg ${isActive ? 'bg-accent/20' : 'bg-white/5'}`}>
+                    <it.icon className="w-5 h-5 text-white" />
+                  </div>
+                  <span className="font-normal text-[16px] text-white">{it.label}</span>
                 </>
               )}
             </NavLink>
@@ -77,7 +93,9 @@ export default function Sidebar() {
           {userRole === 'PLATFORM_OWNER' && selectedTenant && (
             <NavLink to={`/tenants/${selectedTenant.id}`} className={({ isActive }) => `flex items-center gap-3 p-3 rounded-xl transition-all duration-200 ${isActive ? activeLinkClass : inactiveLinkClass}`}>
               <>
-                <span className="text-3xl drop-shadow-sm text-white">🏢</span>
+                <div className="p-1.5 rounded-lg bg-white/5">
+                  <TenantIcon className="w-5 h-5 text-white" />
+                </div>
                 <span className="font-normal text-[16px] text-white">Manage {selectedTenant.name}</span>
               </>
             </NavLink>

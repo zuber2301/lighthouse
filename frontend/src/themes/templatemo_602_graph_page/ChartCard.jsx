@@ -34,15 +34,15 @@ export function BarChart({ values = [] }) {
 
 export function LineChartSVG({ pathD, gradientId = 'g1' }) {
   return (
-    <svg viewBox="0 0 500 250" className="w-full h-full drop-shadow-[0_0_10px_rgba(0,255,204,0.15)]">
+    <svg viewBox="0 0 500 250" className="w-full h-full drop-shadow-[0_0_10px_rgba(99,102,241,0.15)]">
       <defs>
         <linearGradient id={gradientId} x1="0%" y1="0%" x2="0%" y2="100%">
-          <stop offset="0%" style={{ stopColor: '#00ffcc', stopOpacity: 0.5 }} />
-          <stop offset="100%" style={{ stopColor: '#00ffcc', stopOpacity: 0 }} />
+          <stop offset="0%" style={{ stopColor: '#6366F1', stopOpacity: 0.5 }} />
+          <stop offset="100%" style={{ stopColor: '#6366F1', stopOpacity: 0 }} />
         </linearGradient>
       </defs>
       <path d={pathD} fill={`url(#${gradientId})`} opacity={0.25} className="opacity-0 animate-fade-in" style={{ animationDelay: '180ms' }} />
-      <path d={pathD} fill="none" stroke="#00ffcc" strokeWidth="2" className="animate-draw" style={{ strokeDasharray: 1000, strokeDashoffset: 1000 }} />
+      <path d={pathD} fill="none" stroke="#6366F1" strokeWidth="2" className="animate-draw" style={{ strokeDasharray: 1000, strokeDashoffset: 1000 }} />
     </svg>
   )
 }

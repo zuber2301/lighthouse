@@ -73,7 +73,7 @@ export default function CorporateUserDashboard() {
         particleCount: 150,
         spread: 70,
         origin: { y: 0.6 },
-        colors: ['#6366F1', '#00ffcc', '#ff6b6b']
+        colors: ['#6366F1', '#4f46e5', '#ff6b6b']
       })
 
       setRecognitionData({

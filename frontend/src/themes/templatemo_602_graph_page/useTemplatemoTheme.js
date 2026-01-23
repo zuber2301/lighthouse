@@ -60,9 +60,9 @@ export default function useTemplatemoTheme() {
 
     // init charts
     const initTimeout = window.setTimeout(() => {
-      drawMiniChart('miniChart1', '#00ffcc')
+      drawMiniChart('miniChart1', '#6366F1')
       drawMiniChart('miniChart2', '#ff0080')
-      drawMiniChart('miniChart3', '#00ccff')
+      drawMiniChart('miniChart3', '#4f46e5')
     }, 120)
 
     // animate stat cards into view (guarded for test env where IntersectionObserver may not exist)

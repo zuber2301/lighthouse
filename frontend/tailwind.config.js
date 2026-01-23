@@ -27,8 +27,8 @@ module.exports = {
         error: 'var(--error)',
         border: 'var(--border-color)',
         'tm-indigo': '#6366F1',
-        'tm-teal': '#00ffcc',
-        'tm-teal-2': '#00ccff',
+        'tm-teal': '#6366F1',
+        'tm-teal-2': '#4f46e5',
         'tm-pink': '#ff6b6b',
         'tm-orange': '#ff8e53',
         'tm-bg-dark': '#0a0e27'
