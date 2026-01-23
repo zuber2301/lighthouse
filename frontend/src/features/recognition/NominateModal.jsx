@@ -488,15 +488,7 @@ export default function NominateModal({ open, onClose, onSubmit, initialCategory
               )}
             </div>
 
-            <div className="flex gap-4">
-              <button 
-                type="button" 
-                onClick={onClose} 
-                className="flex-1 py-4 rounded-2xl bg-indigo-500/5 border border-indigo-500/10 text-text-main text-[13px] font-normal hover:bg-slate-500/5 transition-all active:scale-95"
-              >
-                Cancel
-              </button>
-            </div>
+            {/* bottom cancel removed per design — top Cancel remains in header */}
           </div>
         </div>
       </form>
