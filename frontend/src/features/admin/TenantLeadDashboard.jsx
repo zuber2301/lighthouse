@@ -14,7 +14,7 @@ export default function TenantLeadDashboard() {
     userId: '',
     amount: '',
     note: '',
-    category: 'Individual award'
+    category: 'Individual Award'
   })
 
   useEffect(() => {
@@ -109,12 +109,12 @@ export default function TenantLeadDashboard() {
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
           <h3 className="font-normal text-lg">Give Recognition</h3>
           <div className="flex bg-surface border border-indigo-500/10 p-1 rounded-xl shadow-sm border border-border-soft">
-            {['Individual award', 'Group award', 'E-Card'].map(tab => (
+            {['Individual Award', 'Group Award', 'E-Card'].map(tab => (
               <button
                 key={tab}
                 onClick={() => setRecognitionData({...recognitionData, category: tab})}
                 className={`px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-wider transition-all ${
-                  (recognitionData.category || 'Individual award') === tab 
+                  (recognitionData.category || 'Individual Award') === tab 
                   ? 'btn-accent shadow-sm text-white' 
                   : 'opacity-70 text-text-main hover:text-text-main'
                 }`}

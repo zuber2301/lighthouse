@@ -48,7 +48,7 @@ describe('Recognition & Award Modals', () => {
           open={true} 
           onClose={mockOnClose} 
           onSubmit={mockOnSubmit} 
-          initialCategory="Individual award" 
+          initialCategory="Individual Award" 
         />
       );
 
@@ -72,9 +72,9 @@ describe('Recognition & Award Modals', () => {
       fireEvent.click(screen.getByText('Send'));
 
       await waitFor(() => {
-        expect(mockOnSubmit).toHaveBeenCalledWith(expect.objectContaining({
+          expect(mockOnSubmit).toHaveBeenCalledWith(expect.objectContaining({
           nominee_id: 'user-1',
-          value_tag: 'Individual award',
+          value_tag: 'Individual Award',
           area_of_focus: 'Innovation'
         }));
       });

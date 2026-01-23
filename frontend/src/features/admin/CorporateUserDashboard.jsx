@@ -23,7 +23,7 @@ export default function CorporateUserDashboard() {
     search: '',
     amount: 50,
     note: '',
-    category: 'Individual award'
+    category: 'Individual Award'
   })
   const [users, setUsers] = useState([])
   const searchTimer = useRef()
@@ -81,7 +81,7 @@ export default function CorporateUserDashboard() {
         search: '',
         amount: 50,
         note: '',
-        category: 'Individual award'
+        category: 'Individual Award'
       })
       
       refreshUser() // Update points after giving
@@ -185,7 +185,7 @@ export default function CorporateUserDashboard() {
             <p className="text-sm opacity-60">Celebrate your teammates' achievements</p>
           </div>
           <div className="flex bg-surface border border-indigo-500/10 p-1 rounded-2xl shadow-sm border border-border-soft">
-            {['Individual award', 'Group award', 'E-Card'].map(tab => (
+            {['Individual Award', 'Group Award', 'E-Card'].map(tab => (
               <button
                 key={tab}
                 onClick={() => setRecognitionData({...recognitionData, category: tab})}

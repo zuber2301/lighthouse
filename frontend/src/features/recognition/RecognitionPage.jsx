@@ -11,7 +11,7 @@ export default function RecognitionPage() {
   const { user } = useAuth()
   const { items = [], isLoading, createAsync } = useRecognitions()
   const [open, setOpen] = useState(false)
-  const [activeTab, setActiveTab] = useState('Individual award')
+  const [activeTab, setActiveTab] = useState('Individual Award')
   const [searchParams] = useSearchParams()
 
   const allowedRoles = ['PLATFORM_OWNER', 'TENANT_ADMIN', 'TENANT_LEAD', 'CORPORATE_USER']

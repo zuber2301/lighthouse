@@ -135,10 +135,10 @@ export default function Header() {
         {showGiveButtons && (
           <div className="hidden sm:flex items-center gap-2">
             <button
-              onClick={() => navigate(`/recognition?tab=${encodeURIComponent('Individual award')}&_=${Date.now()}`)}
+              onClick={() => navigate(`/recognition?tab=${encodeURIComponent('Individual Award')}&_=${Date.now()}`)}
               className="px-6 py-2 rounded-full btn-recognition text-[16px] font-bold transition-all shadow-lg active:scale-95"
             >
-              Individual award
+              Individual Award
             </button>
 
             <button
@@ -152,7 +152,7 @@ export default function Header() {
               onClick={() => setIsGroupModalOpen(true)}
               className="px-6 py-2 rounded-full btn-recognition text-[16px] font-bold transition-all shadow-lg active:scale-95"
             >
-              Group award
+              Group Award
             </button>
           </div>
         )}

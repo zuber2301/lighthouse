@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react'
 import Modal from '../../components/Modal'
 import api from '../../api/axiosClient'
 // E-Card Designer removed; use simple design choices instead
-const CATEGORIES = ['Individual award', 'Group award', 'E-Card']
+const CATEGORIES = ['Individual Award', 'Group Award', 'E-Card']
 
 export default function NominateModal({ open, onClose, onSubmit, initialCategory }) {
   // Recipient (support multiple)
