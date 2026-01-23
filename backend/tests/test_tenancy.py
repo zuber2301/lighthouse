@@ -58,12 +58,12 @@ def make_session():
 def test_tenant_scoping_filters_results():
     s = make_session()
     try:
-        # create two recognitions for two tenants
-        t1 = uuid.uuid4()
-        t2 = uuid.uuid4()
+        # create two recognitions for two tenants (use string UUIDs for SQLite compatibility)
+        t1 = str(uuid.uuid4())
+        t2 = str(uuid.uuid4())
 
-        r1 = Recognition(nominator_id=uuid.uuid4(), nominee_id=uuid.uuid4(), points=10, tenant_id=t1)
-        r2 = Recognition(nominator_id=uuid.uuid4(), nominee_id=uuid.uuid4(), points=5, tenant_id=t2)
+        r1 = Recognition(nominator_id=str(uuid.uuid4()), nominee_id=str(uuid.uuid4()), points=10, tenant_id=t1)
+        r2 = Recognition(nominator_id=str(uuid.uuid4()), nominee_id=str(uuid.uuid4()), points=5, tenant_id=t2)
 
         s.add_all([r1, r2])
         s.commit()

@@ -1,9 +1,10 @@
 from fastapi import FastAPI, Request
+from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
 from starlette.middleware.base import BaseHTTPMiddleware
 
 from app.core import tenancy
-from app.api import auth, recognition, rewards, platform_admin, tenant_admin, analytics, tenant_lead, corporate_user
+from app.api import auth, recognition, rewards, platform_admin, tenant_admin, analytics, tenant_lead, corporate_user, badges
 from app.db.base import Base
 from app.db.session import engine
 import asyncio
@@ -14,7 +15,15 @@ app = FastAPI(title="lighthouse-backend")
 # Add CORS middleware
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000", "http://localhost:3001", "http://localhost:3002", "http://localhost:3003", "http://localhost:3004"],  # Frontend origins
+    allow_origins=[
+        "http://localhost:3000",
+        "http://localhost:3001",
+        "http://localhost:3002",
+        "http://localhost:3003",
+        "http://localhost:3004",
+        "http://localhost:5173",
+        "http://127.0.0.1:5173",
+    ],  # Frontend origins
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -25,12 +34,28 @@ app.add_middleware(
 async def create_tables():
     # Temporarily bypass tenant checking during table creation
     from app.core import tenancy
+    import datetime
     token = tenancy._BYPASS_TENANT.set(True)
     try:
         async with engine.begin() as conn:
             await conn.run_sync(Base.metadata.create_all)
+        # record start time for basic uptime reporting
+        app.state.start_time = datetime.datetime.utcnow()
     finally:
         tenancy._BYPASS_TENANT.reset(token)
+
+    # In development, ensure test personas exist if DEV_DEFAULT_TENANT is configured
+    try:
+        from app.core.config import settings
+        if getattr(settings, "DEV_DEFAULT_TENANT", None):
+            try:
+                from app.scripts.seed_test_personas import seed_test_personas
+                await seed_test_personas()
+            except Exception as _e:
+                # avoid crashing startup for non-fatal seed issues
+                print("seed_test_personas error:", _e)
+    except Exception:
+        pass
 
 
 class TenantMiddleware(BaseHTTPMiddleware):
@@ -63,9 +88,17 @@ class TenantMiddleware(BaseHTTPMiddleware):
 
 app.add_middleware(TenantMiddleware)
 
+# Serve uploaded files from /uploads
+try:
+    app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
+except Exception:
+    # if directory is missing or mount fails during some CI flows, ignore
+    pass
+
 app.include_router(auth.router)
 app.include_router(recognition.router)
 app.include_router(rewards.router)
+app.include_router(badges.router)
 app.include_router(platform_admin.router)
 app.include_router(tenant_admin.router)
 app.include_router(tenant_lead.router)

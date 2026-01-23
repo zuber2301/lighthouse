@@ -66,8 +66,8 @@ async def budget_utilization(
         ctx = None
 
     with ctx if ctx else dummy_context():
-        awarded_stmt = select(func.coalesce(func.sum(case([(PointsLedger.delta > 0, PointsLedger.delta)], else_=0)), 0))
-        redeemed_stmt = select(func.coalesce(func.sum(case([(PointsLedger.delta < 0, -PointsLedger.delta)], else_=0)), 0))
+        awarded_stmt = select(func.coalesce(func.sum(case((PointsLedger.delta > 0, PointsLedger.delta), else_=0)), 0))
+        redeemed_stmt = select(func.coalesce(func.sum(case((PointsLedger.delta < 0, -PointsLedger.delta), else_=0)), 0))
 
         a = await db.execute(awarded_stmt)
         r = await db.execute(redeemed_stmt)
@@ -155,9 +155,7 @@ class _DummyCtx:
 
 def dummy_context():
     return _DummyCtx()
-from fastapi import APIRouter
 
-router = APIRouter(prefix="/analytics")
 
 @router.get("/summary")
 async def summary():

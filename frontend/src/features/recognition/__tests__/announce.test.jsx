@@ -4,20 +4,19 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import RecognitionPage from '../RecognitionPage'
 import { LiveAnnouncerProvider } from '../../../components/LiveAnnouncer'
 import { ToastProvider } from '../../../components/ToastProvider'
+import api from '../../../api/axiosClient'
 
-// Mock fetch for GET and POST
-beforeEach(() => {
-  global.fetch = vi.fn((input, init) => {
-    if (typeof input === 'string' && input.endsWith('/api/recognitions')) {
-      if (init && init.method === 'POST') {
-        const body = JSON.parse(init.body)
-        return Promise.resolve({ ok: true, json: () => Promise.resolve({ id: 1, ...body, when: 'now', status: 'Approved' }) })
-      }
-      return Promise.resolve({ ok: true, json: () => Promise.resolve([]) })
-    }
-    return Promise.resolve({ ok: false })
-  })
-})
+// Mock axiosClient
+vi.mock('../../../api/axiosClient', () => ({
+  default: {
+    get: vi.fn((url) => {
+      if (url === '/user/search') return Promise.resolve({ data: [{ id: 'u1', name: 'Test User' }] })
+      return Promise.resolve({ data: [] })
+    }),
+    post: vi.fn((url, body) => Promise.resolve({ data: { id: 1, ...body, when: 'now', status: 'Approved', nominee: 'Test User' } })),
+    defaults: { baseURL: '/api' }
+  }
+}))
 
 afterEach(() => {
   vi.clearAllMocks()
@@ -40,7 +39,14 @@ test('announces and toasts when nominating', async () => {
   const nominateBtn = screen.getByRole('button', { name: /nominate/i })
   fireEvent.click(nominateBtn)
 
-  // submit the form (default nominee/points)
+  // select a nominee
+  const searchInput = screen.getByPlaceholderText(/search teammates/i)
+  fireEvent.change(searchInput, { target: { value: 'Test' } })
+  
+  const userBtn = await screen.findByText(/test user/i)
+  fireEvent.click(userBtn)
+
+  // submit the form
   const submit = await screen.findByRole('button', { name: /submit recognition/i })
   fireEvent.click(submit)
 

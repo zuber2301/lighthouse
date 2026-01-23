@@ -15,7 +15,7 @@ export default function RecentRecognitions() {
             <div className="text-sm">
               <span className="font-semibold">{s.actor}</span> recognized <span className="font-semibold">{s.nominee}</span>
             </div>
-            <div className="text-xs text-slate-400">{s.tag} • {s.when}</div>
+            <div className="text-xs opacity-70 text-text-main">{s.tag} • {s.when}</div>
           </div>
           <div className="text-right">
             <div className="text-sm font-semibold">+{s.points}</div>

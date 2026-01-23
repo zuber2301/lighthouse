@@ -1,0 +1,9 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --bg-color: #f8fafc;
+}
+
+/* diagnostic: minimal file to isolate PostCSS parsing issues */

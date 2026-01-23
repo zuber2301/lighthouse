@@ -8,8 +8,25 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        surface: '#1e293b', // slate-800
-        card: '#1f2937',    // custom card
+        surface: 'var(--bg-color)',
+        'surface-white': 'var(--bg-color)',
+        'border-soft': 'var(--border-color)',
+        'text-main': 'var(--text-main)',
+        card: 'var(--card-bg)',
+        // Dim Dark theme tokens
+        background: 'var(--bg-color)',
+        sidebar: 'var(--sidebar-bg)',
+        'card-surface': 'var(--card-bg)',
+        textPrimary: 'var(--text-main)',
+        textSecondary: 'var(--text-secondary)',
+        accent: 'var(--accent)',
+        buttonPrimary: 'var(--btn-primary)',
+        buttonHover: 'var(--btn-hover)',
+        success: 'var(--success)',
+        warning: 'var(--warning)',
+        error: 'var(--error)',
+        border: 'var(--border-color)',
+        'tm-indigo': '#6366F1',
         'tm-teal': '#00ffcc',
         'tm-teal-2': '#00ccff',
         'tm-pink': '#ff6b6b',

@@ -12,4 +12,4 @@ class PlatformAuditLog(Base):
     action = Column(String(100), nullable=False)
     target_tenant_id = Column(String(36), nullable=True)
     details = Column(JSON, nullable=True)
-    created_at = Column(DateTime(timezone=True), nullable=False, server_default='now()')
+    created_at = Column(DateTime(timezone=True), nullable=False, server_default=func.now())

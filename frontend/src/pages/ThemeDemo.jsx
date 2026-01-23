@@ -20,7 +20,7 @@ export default function ThemeDemo() {
 
       <div className="mt-4">
         <a
-          className="inline-block px-4 py-2 bg-indigo-600 text-white rounded-md"
+          className="inline-block px-4 py-2 btn-accent rounded-md"
           href="/themes/templatemo_602_graph_page/index.html"
           target="_blank"
           rel="noopener noreferrer"

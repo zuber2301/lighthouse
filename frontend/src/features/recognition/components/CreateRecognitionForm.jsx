@@ -17,7 +17,7 @@ export default function CreateRecognitionForm() {
   }
 
   return (
-    <form onSubmit={onSubmit} className="p-4 bg-white rounded shadow mb-4">
+    <form onSubmit={onSubmit} className="p-4 bg-card rounded shadow-sm mb-4">
       <div className="flex gap-3">
         <input
           placeholder="Nominee ID"
@@ -31,7 +31,7 @@ export default function CreateRecognitionForm() {
           onChange={(e) => setPoints(Number(e.target.value))}
           className="w-28 p-2 border rounded focus:outline-none focus-visible:ring-3 focus-visible:ring-primary"
         />
-        <button type="submit" className="px-4 py-2 bg-green-600 text-white rounded focus:outline-none focus-visible:ring-3 focus-visible:ring-primary">Give</button>
+        <button type="submit" className="px-4 py-2 btn-success rounded focus:outline-none focus-visible:ring-3 focus-visible:ring-primary">Give</button>
       </div>
       <div className="mt-3">
         <textarea

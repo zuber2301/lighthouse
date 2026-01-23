@@ -2,6 +2,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { fetchRecognitions, createRecognition } from '../api/recognitions'
 import { useAnnounce } from '../components/LiveAnnouncer'
 import { useToast } from '../components/ToastProvider'
+import confetti from 'canvas-confetti'
 
 export function useRecognitions() {
   const queryClient = useQueryClient()
@@ -42,6 +43,14 @@ export function useRecognitions() {
         const msg = `Recognition submitted for ${data.nominee} (${data.points ?? '–'} pts).`
         announce?.(msg)
         showToast?.('Recognition submitted', 'success')
+        
+        // Trigger celebratory confetti
+        confetti({
+          particleCount: 150,
+          spread: 70,
+          origin: { y: 0.6 },
+          colors: ['#6366F1', '#00ffcc', '#ff6b6b']
+        })
       } catch {}
     },
     onSettled: () => {

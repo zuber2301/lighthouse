@@ -73,6 +73,28 @@ async def redeem_reward(
     return {"redemption_id": str(redemption.id), "points_used": redemption.points_used}
 
 
+
+@router.post("/verify-redeem")
+async def verify_redeem(request: dict, db: AsyncSession = Depends(get_db), user: User = Depends(get_current_user)):
+    """Verify user has enough points and perform a redemption-like flow.
+
+    This is a convenience endpoint mapping to redeem service used by frontends.
+    """
+    reward_id = request.get("reward_id")
+    if not reward_id:
+        raise HTTPException(status_code=400, detail="missing reward_id")
+
+    try:
+        redemption = await redeem_service(db=db, tenant_id=str(user.tenant_id), user_id=str(user.id), reward_id=UUID(reward_id))
+        await db.commit()
+        await db.refresh(redemption)
+    except Exception as exc:
+        await db.rollback()
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+    return {"redemption_id": str(redemption.id), "points_used": redemption.points_used}
+
+
 async def _process_redemption_async(redemption_id: str, tenant_id: str):
     """Background placeholder for external provider integration.
 

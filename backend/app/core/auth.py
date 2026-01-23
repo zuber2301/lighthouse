@@ -2,6 +2,7 @@ from pydantic import BaseModel
 from fastapi import Request, HTTPException, status
 from jose import jwt, JWTError
 from app.core.config import settings
+from datetime import timedelta
 
 
 class TokenPayload(BaseModel):
@@ -35,6 +36,17 @@ def get_current_user(request: Request) -> User:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Missing Authorization header")
     token = auth.split(" ", 1)[1]
     tp = _decode_token(token)
-    if not tp.sub or not tp.tenant_id or not tp.role:
+    if not tp.sub or not tp.role:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid token payload")
-    return User(id=tp.sub, tenant_id=tp.tenant_id, role=tp.role)
+
+    print(f"DEBUG: get_current_user - sub: {tp.sub}, role: {tp.role}, tenant_id: {tp.tenant_id}")
+    # Allow missing tenant_id for legacy/dev tokens by falling back to DEV_DEFAULT_TENANT
+    tenant_id = tp.tenant_id if tp.tenant_id else settings.DEV_DEFAULT_TENANT
+    return User(id=tp.sub, tenant_id=tenant_id, role=tp.role)
+
+
+def create_access_token(data: dict) -> str:
+    """Utility to create a JWT access token for tests and dev helpers."""
+    # Allow callers to pass raw payload dict containing sub, tenant_id, role
+    payload = data.copy()
+    return jwt.encode(payload, settings.JWT_SECRET, algorithm=settings.JWT_ALGORITHM)

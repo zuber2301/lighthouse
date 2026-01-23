@@ -1,5 +1,7 @@
 import React, { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
+import api from '../lib/api'
+import { useAuth } from '../lib/AuthContext'
 
 export default function LoginPage() {
   const [formData, setFormData] = useState({
@@ -8,6 +10,7 @@ export default function LoginPage() {
   })
   const [isLoading, setIsLoading] = useState(false)
   const navigate = useNavigate()
+  const { login } = useAuth()
 
   const handleInputChange = (e) => {
     setFormData({
@@ -21,13 +24,18 @@ export default function LoginPage() {
     setIsLoading(true)
 
     try {
-      // TODO: Implement login API call
-      console.log('Login attempt:', formData)
+      const res = await api.post('/auth/login', formData)
+      const data = res.data
+      const token = data.access_token
+      const user = data.user
 
-      // For now, just navigate to dashboard
+      // Persist token under existing key so fetch wrappers work
+      localStorage.setItem('auth_token', token)
+      login(token, user)
       navigate('/dashboard')
     } catch (error) {
       console.error('Login failed:', error)
+      alert(error.message || 'Login failed')
     } finally {
       setIsLoading(false)
     }
@@ -37,17 +45,18 @@ export default function LoginPage() {
     if (provider === 'Google') {
       try {
         // Fetch the Google OAuth authorization URL from backend
-        const response = await fetch('http://localhost:18000/auth/google')
-        if (!response.ok) {
-          throw new Error('Failed to get authorization URL')
-        }
-        const data = await response.json()
-        
-        // Redirect to Google OAuth
+        const response = await api.get('/auth/google')
+        const data = response.data
         window.location.href = data.authorization_url
       } catch (error) {
         console.error('Google login failed:', error)
-        alert('Failed to initiate Google login. Please try again.')
+        if (error.message.includes('Failed to fetch') || error.message.includes('NetworkError')) {
+          alert('Unable to connect to server. Please ensure the backend is running on port 18000.')
+        } else if (error.message.includes('Google OAuth not configured')) {
+          alert('Google OAuth is not configured. Please check the backend .env file and GOOGLE_OAUTH_SETUP.md.')
+        } else {
+          alert(`Failed to initiate Google login: ${error.message}`)
+        }
       }
     } else {
       console.log(`Login with ${provider}`)
@@ -55,8 +64,24 @@ export default function LoginPage() {
     }
   }
 
+  const handleDevToken = async () => {
+    try {
+      const resp = await api.get('/auth/dev-token', { withCredentials: true })
+      const j = resp.data
+      const token = j.token
+      const user = j.user
+      if (token) {
+        localStorage.setItem('auth_token', token)
+        login(token, user)
+        navigate('/dashboard')
+      }
+    } catch (e) {
+      alert('Dev token unavailable: ' + (e.message || e))
+    }
+  }
+
   return (
-    <div className="bg-slate-800/50 backdrop-blur-sm border border-slate-700/50 rounded-2xl p-8 shadow-2xl">
+    <div className="bg-card/20 border border-indigo-500/10 backdrop-blur-sm border border-indigo-500/10 rounded-2xl p-8 shadow-2xl transition-colors duration-200">
       <div className="text-center mb-8">
         <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-tm-teal to-tm-teal-2 rounded-2xl mb-4 shadow-tm-neon">
           <svg className="w-8 h-8 text-tm-bg-dark" fill="currentColor" viewBox="0 0 20 20">
@@ -66,12 +91,12 @@ export default function LoginPage() {
         <h1 className="text-3xl font-bold bg-gradient-to-r from-white to-tm-teal bg-clip-text text-transparent">
           Welcome to Lighthouse
         </h1>
-        <p className="text-slate-400 mt-2">Sign in to your account</p>
+        <p className="text-text-main opacity-60 mt-2">Sign in to your account</p>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-6">
         <div>
-          <label htmlFor="email" className="block text-sm font-medium text-slate-300 mb-2">
+          <label htmlFor="email" className="block text-sm font-normal text-text-main opacity-70 mb-2">
             Email Address
           </label>
           <input
@@ -81,13 +106,13 @@ export default function LoginPage() {
             value={formData.email}
             onChange={handleInputChange}
             required
-            className="w-full px-4 py-3 bg-slate-800/50 border border-slate-700 rounded-xl text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-tm-teal/50 focus:border-tm-teal transition-all duration-200"
+            className="w-full px-4 py-3 bg-surface/50 border border-indigo-500/10 rounded-xl text-text-main placeholder:opacity-40 focus:outline-none focus:ring-2 focus:ring-tm-teal/50 focus:border-tm-teal transition-all duration-200"
             placeholder="Enter your email"
           />
         </div>
 
         <div>
-          <label htmlFor="password" className="block text-sm font-medium text-slate-300 mb-2">
+          <label htmlFor="password" className="block text-sm font-normal text-text-main opacity-70 mb-2">
             Password
           </label>
           <input
@@ -97,15 +122,15 @@ export default function LoginPage() {
             value={formData.password}
             onChange={handleInputChange}
             required
-            className="w-full px-4 py-3 bg-slate-800/50 border border-slate-700 rounded-xl text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-tm-teal/50 focus:border-tm-teal transition-all duration-200"
+            className="w-full px-4 py-3 bg-surface/50 border border-indigo-500/10 rounded-xl text-text-main placeholder:opacity-40 focus:outline-none focus:ring-2 focus:ring-tm-teal/50 focus:border-tm-teal transition-all duration-200"
             placeholder="Enter your password"
           />
         </div>
 
         <div className="flex items-center justify-between">
           <label className="flex items-center">
-            <input type="checkbox" className="rounded border-slate-600 text-tm-teal focus:ring-tm-teal/50" />
-            <span className="ml-2 text-sm text-slate-400">Remember me</span>
+            <input type="checkbox" className="rounded border-indigo-500/5 text-tm-teal focus:ring-tm-teal/50" />
+            <span className="ml-2 text-sm text-text-main/60">Remember me</span>
           </label>
           <Link to="/forgot-password" className="text-sm text-tm-teal hover:text-tm-teal-2 transition-colors">
             Forgot password?
@@ -119,22 +144,25 @@ export default function LoginPage() {
         >
           {isLoading ? 'Signing in...' : 'Sign In'}
         </button>
+        <div className="mt-3 text-center">
+          <button type="button" onClick={handleDevToken} className="text-xs text-text-main/60 underline">Use dev token (dev only)</button>
+        </div>
       </form>
 
       <div className="mt-8">
         <div className="relative">
           <div className="absolute inset-0 flex items-center">
-            <div className="w-full border-t border-slate-700"></div>
+            <div className="w-full border-t border-indigo-500/5"></div>
           </div>
           <div className="relative flex justify-center text-sm">
-            <span className="px-2 bg-tm-bg-dark text-slate-400">Or continue with</span>
+            <span className="px-2 bg-tm-bg-dark text-text-main/60">Or continue with</span>
           </div>
         </div>
 
         <div className="mt-6 grid grid-cols-3 gap-3">
           <button
             onClick={() => handleSocialLogin('Google')}
-            className="flex items-center justify-center px-4 py-3 bg-slate-800/50 border border-slate-700 rounded-xl hover:bg-slate-800/70 transition-colors duration-200 group"
+            className="flex items-center justify-center px-4 py-3 bg-card/20 border border-indigo-500/10 rounded-xl hover:bg-card/30 transition-colors duration-200 group"
           >
             <svg className="w-5 h-5 text-red-500 group-hover:scale-110 transition-transform" viewBox="0 0 24 24">
               <path fill="currentColor" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
@@ -146,7 +174,7 @@ export default function LoginPage() {
 
           <button
             onClick={() => handleSocialLogin('Facebook')}
-            className="flex items-center justify-center px-4 py-3 bg-slate-800/50 border border-slate-700 rounded-xl hover:bg-slate-800/70 transition-colors duration-200 group"
+            className="flex items-center justify-center px-4 py-3 bg-card/20 border border-indigo-500/10 rounded-xl hover:bg-card/30 transition-colors duration-200 group"
           >
             <svg className="w-5 h-5 text-blue-500 group-hover:scale-110 transition-transform" viewBox="0 0 24 24">
               <path fill="currentColor" d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
@@ -155,9 +183,9 @@ export default function LoginPage() {
 
           <button
             onClick={() => handleSocialLogin('SSO')}
-            className="flex items-center justify-center px-4 py-3 bg-slate-800/50 border border-slate-700 rounded-xl hover:bg-slate-800/70 transition-colors duration-200 group"
+            className="flex items-center justify-center px-4 py-3 bg-card/20 border border-indigo-500/10 rounded-xl hover:bg-card/30 transition-colors duration-200 group"
           >
-            <svg className="w-5 h-5 text-slate-300 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-5 h-5 text-text-main/60 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
             </svg>
           </button>
@@ -165,9 +193,9 @@ export default function LoginPage() {
       </div>
 
       <div className="mt-8 text-center">
-        <p className="text-slate-400">
+        <p className="text-text-main/60">
           Don't have an account?{' '}
-          <Link to="/register" className="text-tm-teal hover:text-tm-teal-2 font-medium transition-colors">
+          <Link to="/register" className="text-tm-teal hover:text-tm-teal-2 font-normal transition-colors">
             Create one now
           </Link>
         </p>

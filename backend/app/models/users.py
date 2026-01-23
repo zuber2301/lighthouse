@@ -7,7 +7,8 @@ from app.db.base import Base, TenantMixin, TimestampMixin
 
 
 class UserRole(PyEnum):
-    PLATFORM_ADMIN = "PLATFORM_ADMIN"
+    SUPER_ADMIN = "SUPER_ADMIN"
+    PLATFORM_OWNER = "PLATFORM_OWNER"
     TENANT_ADMIN = "TENANT_ADMIN"
     TENANT_LEAD = "TENANT_LEAD"
     CORPORATE_USER = "CORPORATE_USER"
@@ -22,6 +23,15 @@ class User(Base, TimestampMixin):
     hashed_password = Column(String(255), nullable=True)  # NULL for OAuth users
     full_name = Column(String(100), nullable=True)
     role = Column(SAEnum(UserRole, name="userrole"), nullable=False)
+    department = Column(String(50), nullable=True)  # Added for department-based budgeting
     points_balance = Column(Integer, nullable=False, default=0)  # For Corporate Users to redeem
     lead_budget_balance = Column(BigInteger, nullable=False, default=0)  # For Tenant Leads to distribute
     is_active = Column(Boolean, nullable=False, default=True)
+
+    def __init__(self, **kwargs):
+        # Ensure Python-level defaults are present on plain instances (tests expect this)
+        if 'points_balance' not in kwargs:
+            kwargs['points_balance'] = 0
+        if 'lead_budget_balance' not in kwargs:
+            kwargs['lead_budget_balance'] = 0
+        super().__init__(**kwargs)

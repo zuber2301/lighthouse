@@ -1,6 +1,8 @@
 from .tenants import Tenant
 from .users import User, UserRole
 from .recognition import Recognition, RecognitionStatus
+from .badges import Badge
+from .milestones import Milestone
 from .points_ledger import PointsLedger
 from .rewards import Reward
 from .redemptions import Redemption, RedemptionStatus
@@ -17,6 +19,8 @@ __all__ = [
     "UserRole",
     "Recognition",
     "RecognitionStatus",
+    "Badge",
+    "Milestone",
     "PointsLedger",
     "Reward",
     "Redemption",

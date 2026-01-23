@@ -1,21 +1,20 @@
 import React, { useState, useRef, useEffect } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { useAuth } from '../lib/AuthContext'
-
-const tabs = [
-  { name: 'Dashboard', path: '/' },
-  { name: 'Recognition', path: '/recognition' },
-  { name: 'Rewards', path: '/rewards' },
-  { name: 'Analytics', path: '/analytics' },
-  { name: 'Admin', path: '/admin', role: 'PLATFORM_ADMIN' },
-]
+import { useTenant } from '../lib/TenantContext'
+import { useAppTheme } from '../lib/ThemeContext'
+import TenantSelector from './TenantSelector'
 
 export default function Header() {
   const location = useLocation()
   const navigate = useNavigate()
   const { user, logout } = useAuth()
+  const { theme, setTheme } = useAppTheme()
   const [isDropdownOpen, setIsDropdownOpen] = useState(false)
   const dropdownRef = useRef(null)
+
+  const [isThemeDropdownOpen, setIsThemeDropdownOpen] = useState(false)
+  const themeDropdownRef = useRef(null)
 
   const handleLogout = () => {
     logout()
@@ -23,14 +22,21 @@ export default function Header() {
   }
 
   const userRole = user?.role || 'CORPORATE_USER'
+  const isCorporate = userRole === 'CORPORATE_USER'
+  const isAdmin = userRole === 'PLATFORM_OWNER' || userRole === 'TENANT_ADMIN'
+  const showGiveButtons = ['PLATFORM_OWNER', 'TENANT_ADMIN', 'TENANT_LEAD', 'CORPORATE_USER'].includes(userRole)
   const displayName = user?.full_name || user?.email || 'User'
   const firstLetter = displayName.charAt(0).toUpperCase()
+  const { selectedTenant } = useTenant()
 
-  // Close dropdown when clicking outside
+  // Close dropdowns when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
         setIsDropdownOpen(false)
+      }
+      if (themeDropdownRef.current && !themeDropdownRef.current.contains(event.target)) {
+        setIsThemeDropdownOpen(false)
       }
     }
 
@@ -39,72 +45,148 @@ export default function Header() {
   }, [])
 
   const formatRole = (role) => {
-    return role.replace('_', ' ').toLowerCase().replace(/\b\w/g, l => l.toUpperCase())
+    return role?.replace('_', ' ').toLowerCase().replace(/\b\w/g, l => l.toUpperCase())
   }
 
+  // Use theme variables for styling
+  const headerClass = "bg-header-bg/80 backdrop-blur-xl border-b border-border-soft text-text-main shadow-sm"
+  const separatorClass = "bg-border-soft"
+
   return (
-    <header className={`flex items-center justify-between px-6 py-3 border-b border-white/10 bg-[rgba(10,14,39,0.95)] backdrop-blur-md`}>
-      <div className="flex items-center gap-4">
-        <div className="text-lg font-semibold">LightHouse</div>
-        <div className="text-sm text-slate-400">Tenant: ACME Corp ▾</div>
+    <header className={`flex items-center justify-between px-6 py-4 sticky top-0 z-40 ${headerClass} transition-colors duration-300`}>
+      <div className="flex items-center gap-8">
+        <Link to="/" className="text-2xl font-normal tracking-tighter hover:opacity-80 transition-opacity text-white flex items-center gap-2">
+          <div className="w-8 h-8 rounded-lg bg-tm-gradient flex items-center justify-center shadow-tm-neon active:scale-95 transition-transform">
+            <span className="text-white text-[10px] font-black italic">LH</span>
+          </div>
+          <span className="text-white">Portal<span className="text-white opacity-40 group-hover:opacity-100 transition-opacity">/</span>Admin</span>
+        </Link>
+        
+        {!isCorporate && (
+          <div className={`h-8 w-[1px] ${separatorClass} opacity-20`} />
+        )}
+        {!isCorporate && <TenantSelector />}
       </div>
 
-      <nav className="flex items-center gap-6">
-        {tabs.filter(tab => !tab.role || tab.role === userRole).map(tab => (
-          <Link
-            key={tab.path}
-            to={tab.path}
-            className={`px-3 py-2 rounded-md text-sm font-medium ${
-              location.pathname === tab.path
-                ? 'bg-indigo-600 text-white transition-colors duration-150 focus:outline-none focus-visible:ring-2 focus-visible:ring-tm-teal'
-                : 'text-slate-300 hover:text-white hover:bg-slate-700 transition-colors duration-150 focus:outline-none focus-visible:ring-2 focus-visible:ring-tm-teal'
-            }`}
-          >
-            {tab.name}
-          </Link>
-        ))}
-      </nav>
-
       <div className="flex items-center gap-4">
-        <button className="px-3 py-1 rounded-md text-sm bg-indigo-600 hover:bg-indigo-500 transition-colors duration-150 focus:outline-none focus-visible:ring-3 focus-visible:ring-tm-teal">New Recognition</button>
-        
+        {/* Theme Dropdown */}
+        <div className="relative" ref={themeDropdownRef}>
+          <button
+            onClick={() => setIsThemeDropdownOpen(!isThemeDropdownOpen)}
+            className="flex items-center gap-2 px-4 py-2 bg-indigo-500/5 hover:bg-indigo-500/10 border border-indigo-500/20 rounded-full transition-all text-[15px] font-bold text-text-main"
+          >
+            <span className="opacity-70">🎨</span>
+            <span>Theme</span>
+            <svg className={`w-2 h-2 ml-1 transition-transform ${isThemeDropdownOpen ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={4} d="M19 9l-7 7-7-7" />
+            </svg>
+          </button>
+
+          {isThemeDropdownOpen && (
+            <div className="absolute left-0 mt-3 w-44 bg-card border border-border-soft rounded-2xl shadow-2xl z-50 overflow-hidden py-2 animate-in fade-in slide-in-from-top-2 duration-200">
+              <button 
+                onClick={() => { setTheme('light'); setIsThemeDropdownOpen(false); }} 
+                className={`w-full text-left px-4 py-2.5 text-[11px] font-black uppercase tracking-widest hover:bg-indigo-500/5 flex items-center gap-3 transition-colors ${theme === 'light' ? 'text-indigo-500 bg-indigo-500/5' : 'text-text-main opacity-60'}`}
+              >
+                <span className="w-2.5 h-2.5 rounded-full bg-white border border-gray-200 shadow-sm" />
+                Light Mode
+              </button>
+              <button 
+                onClick={() => { setTheme('dim'); setIsThemeDropdownOpen(false); }} 
+                className={`w-full text-left px-4 py-2.5 text-[11px] font-black uppercase tracking-widest hover:bg-indigo-500/5 flex items-center gap-3 transition-colors ${theme === 'dim' ? 'text-indigo-500 bg-indigo-500/5' : 'text-text-main opacity-60'}`}
+              >
+                <span className="w-2.5 h-2.5 rounded-full bg-[#1E1E2F] border border-indigo-400/30 shadow-sm" />
+                Dim Mode
+              </button>
+              <button 
+                onClick={() => { setTheme('dark'); setIsThemeDropdownOpen(false); }} 
+                className={`w-full text-left px-4 py-2.5 text-[11px] font-black uppercase tracking-widest hover:bg-indigo-500/5 flex items-center gap-3 transition-colors ${theme === 'dark' ? 'text-indigo-500 bg-indigo-500/5' : 'text-text-main opacity-60'}`}
+              >
+                <span className="w-2.5 h-2.5 rounded-full bg-black border border-indigo-900 shadow-sm" />
+                Dark Mode
+              </button>
+              <button 
+                onClick={() => { setTheme('graph'); setIsThemeDropdownOpen(false); }} 
+                className={`w-full text-left px-4 py-2.5 text-[11px] font-black uppercase tracking-widest hover:bg-indigo-500/5 flex items-center gap-3 transition-colors ${theme === 'graph' ? 'text-indigo-500 bg-indigo-500/5' : 'text-text-main opacity-60'}`}
+              >
+                <span className="w-2.5 h-2.5 rounded-full bg-[#0a0e27] border border-[#00ffcc] shadow-[0_0_5px_rgba(0,255,204,0.5)]" />
+                Graph Mode
+              </button>
+            </div>
+          )}
+        </div>
+
+        <div className={`h-6 w-[1px] ${separatorClass}`} />
+
+        {/* PROMINENT POINTS BALANCE FOR CORPORATE USERS */}
+        {isCorporate && (
+          <div className="hidden sm:flex items-center gap-2 px-4 py-2 bg-indigo-500/10 border border-indigo-500/20 rounded-full">
+            <span className="text-sm">💰</span>
+            <span className="font-bold text-indigo-500 text-[15px]">{user?.points_balance?.toLocaleString() || 0}</span>
+            <span className="text-[10px] uppercase tracking-wider text-indigo-500/60 font-black">Pts</span>
+          </div>
+        )}
+
+        {/* Quick Action Buttons - give specific award types; visible to admins, leads and users */}
+        {showGiveButtons && (
+          <div className="hidden sm:flex items-center gap-2">
+            <button
+              onClick={() => navigate(`/recognition?tab=${encodeURIComponent('Individual award')}&_=${Date.now()}`)}
+              className="px-6 py-2 rounded-full btn-recognition text-sm font-bold transition-all shadow-lg active:scale-95"
+            >
+              Give Individual award
+            </button>
+
+            <button
+              onClick={() => navigate(`/recognition?tab=${encodeURIComponent('E-Card')}&_=${Date.now()}`)}
+              className="px-6 py-2 rounded-full btn-recognition text-sm font-bold transition-all shadow-lg active:scale-95"
+            >
+              Give E-Card
+            </button>
+
+            <button
+              onClick={() => navigate(`/recognition?tab=${encodeURIComponent('Group award')}&_=${Date.now()}`)}
+              className="px-6 py-2 rounded-full btn-recognition text-sm font-bold transition-all shadow-lg active:scale-95"
+            >
+              Give Group award
+            </button>
+          </div>
+        )}
+
+        <div className={`h-6 w-[1px] mx-1 ${separatorClass}`} />
+
         {/* User Avatar and Dropdown */}
         <div className="relative" ref={dropdownRef}>
           <button
             onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-            className="flex items-center gap-3 px-3 py-2 rounded-md hover:bg-slate-700 transition-colors duration-150 focus:outline-none focus-visible:ring-2 focus-visible:ring-slate-500"
+            className="flex items-center gap-2.5 p-1 rounded-full transition-colors focus:outline-none hover:bg-surface active:scale-95"
           >
-            {/* User Avatar */}
-            <div className="w-8 h-8 rounded-full bg-indigo-600 flex items-center justify-center text-white font-semibold text-sm">
+            <div className="w-9 h-9 rounded-full bg-indigo-600 flex items-center justify-center text-accent-contrast font-black text-sm ring-2 ring-indigo-500/30 shadow-md">
               {firstLetter}
             </div>
-            <div className="text-left">
-              <div className="text-sm font-medium text-slate-200">{displayName}</div>
-              <div className="text-xs text-slate-400">{formatRole(userRole)}</div>
+            <div className="hidden md:block text-left mr-1">
+              <div className="text-[14px] font-bold text-text-main leading-none">{displayName}</div>
+              <div className="text-[10px] uppercase tracking-widest text-text-main/50 font-black mt-0.5">{formatRole(userRole)}</div>
             </div>
-            <svg
-              className={`w-4 h-4 text-slate-400 transition-transform duration-150 ${isDropdownOpen ? 'rotate-180' : ''}`}
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-            </svg>
           </button>
 
           {/* Dropdown Menu */}
           {isDropdownOpen && (
-            <div className="absolute right-0 mt-2 w-48 bg-slate-800 border border-slate-700 rounded-md shadow-lg z-50">
-              <div className="py-1">
-                <div className="px-4 py-2 text-sm text-slate-300 border-b border-slate-700">
-                  <div className="font-medium">{displayName}</div>
-                  <div className="text-slate-400">Role: {formatRole(userRole)}</div>
+            <div className="absolute right-0 mt-3 w-60 border bg-card border-border-soft rounded-2xl shadow-2xl z-50 overflow-hidden py-1 animate-in fade-in slide-in-from-top-2 duration-200">
+              <div className="p-4 border-b border-border-soft bg-indigo-500/5">
+                <div className="text-[15px] font-black text-text-main">{displayName}</div>
+                <div className="text-xs text-text-main/50 font-normal truncate">{user?.email}</div>
+                <div className="mt-2 inline-block px-2.5 py-1 rounded-lg bg-indigo-500/20 text-indigo-500 text-[9px] font-black uppercase tracking-widest">
+                  {formatRole(userRole)}
                 </div>
+              </div>
+              <div className="p-2">
                 <button
                   onClick={handleLogout}
-                  className="w-full text-left px-4 py-2 text-sm text-slate-300 hover:bg-slate-700 hover:text-white transition-colors duration-150 focus:outline-none focus:bg-slate-700"
+                  className="w-full text-left px-4 py-2.5 rounded-xl text-xs font-black uppercase tracking-widest text-rose-500 hover:bg-rose-500/10 transition-colors flex items-center justify-between group"
                 >
                   Logout
+                  <span className="opacity-0 group-hover:opacity-100 transition-opacity">👋</span>
                 </button>
               </div>
             </div>

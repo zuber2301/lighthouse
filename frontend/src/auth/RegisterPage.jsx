@@ -42,7 +42,7 @@ export default function RegisterPage() {
   }
 
   return (
-    <div className="bg-slate-800/50 backdrop-blur-sm border border-slate-700/50 rounded-2xl p-8 shadow-2xl">
+    <div className="bg-card/20 border border-indigo-500/10 backdrop-blur-sm border border-indigo-500/10 rounded-2xl p-8 shadow-2xl transition-colors duration-200">
       <div className="text-center mb-8">
         <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-tm-teal to-tm-teal-2 rounded-2xl mb-4 shadow-tm-neon">
           <svg className="w-8 h-8 text-tm-bg-dark" fill="currentColor" viewBox="0 0 20 20">
@@ -52,12 +52,12 @@ export default function RegisterPage() {
         <h1 className="text-3xl font-bold bg-gradient-to-r from-white to-tm-teal bg-clip-text text-transparent">
           Join Lighthouse
         </h1>
-        <p className="text-slate-400 mt-2">Create your account</p>
+        <p className="text-text-main opacity-60 mt-2">Create your account</p>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-6">
         <div>
-          <label htmlFor="fullName" className="block text-sm font-medium text-slate-300 mb-2">
+          <label htmlFor="fullName" className="block text-sm font-normal text-text-main opacity-70 mb-2">
             Full Name
           </label>
           <input
@@ -67,13 +67,13 @@ export default function RegisterPage() {
             value={formData.fullName}
             onChange={handleInputChange}
             required
-            className="w-full px-4 py-3 bg-slate-800/50 border border-slate-700 rounded-xl text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-tm-teal/50 focus:border-tm-teal transition-all duration-200"
+            className="w-full px-4 py-3 bg-surface/50 border border-indigo-500/10 rounded-xl text-text-main placeholder:opacity-40 focus:outline-none focus:ring-2 focus:ring-tm-teal/50 focus:border-tm-teal transition-all duration-200"
             placeholder="Enter your full name"
           />
         </div>
 
         <div>
-          <label htmlFor="email" className="block text-sm font-medium text-slate-300 mb-2">
+          <label htmlFor="email" className="block text-sm font-normal text-text-main/60 mb-2">
             Email Address
           </label>
           <input
@@ -83,13 +83,13 @@ export default function RegisterPage() {
             value={formData.email}
             onChange={handleInputChange}
             required
-            className="w-full px-4 py-3 bg-slate-800/50 border border-slate-700 rounded-xl text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-tm-teal/50 focus:border-tm-teal transition-all duration-200"
+            className="w-full px-4 py-3 bg-card/20 border border-indigo-500/10 rounded-xl text-text-main placeholder:text-text-main/60 focus:outline-none focus:ring-2 focus:ring-tm-teal/50 focus:border-tm-teal transition-all duration-200"
             placeholder="Enter your email"
           />
         </div>
 
         <div>
-          <label htmlFor="password" className="block text-sm font-medium text-slate-300 mb-2">
+          <label htmlFor="password" className="block text-sm font-normal text-text-main/60 mb-2">
             Password
           </label>
           <input
@@ -99,13 +99,13 @@ export default function RegisterPage() {
             value={formData.password}
             onChange={handleInputChange}
             required
-            className="w-full px-4 py-3 bg-slate-800/50 border border-slate-700 rounded-xl text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-tm-teal/50 focus:border-tm-teal transition-all duration-200"
+            className="w-full px-4 py-3 bg-card/20 border border-indigo-500/10 rounded-xl text-text-main placeholder:text-text-main/60 focus:outline-none focus:ring-2 focus:ring-tm-teal/50 focus:border-tm-teal transition-all duration-200"
             placeholder="Create a password"
           />
         </div>
 
         <div>
-          <label htmlFor="confirmPassword" className="block text-sm font-medium text-slate-300 mb-2">
+          <label htmlFor="confirmPassword" className="block text-sm font-normal text-text-main/60 mb-2">
             Confirm Password
           </label>
           <input
@@ -115,7 +115,7 @@ export default function RegisterPage() {
             value={formData.confirmPassword}
             onChange={handleInputChange}
             required
-            className="w-full px-4 py-3 bg-slate-800/50 border border-slate-700 rounded-xl text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-tm-teal/50 focus:border-tm-teal transition-all duration-200"
+            className="w-full px-4 py-3 bg-card/20 border border-indigo-500/10 rounded-xl text-text-main placeholder:text-text-main/60 focus:outline-none focus:ring-2 focus:ring-tm-teal/50 focus:border-tm-teal transition-all duration-200"
             placeholder="Confirm your password"
           />
         </div>
@@ -125,9 +125,9 @@ export default function RegisterPage() {
             type="checkbox"
             id="terms"
             required
-            className="rounded border-slate-600 text-tm-teal focus:ring-tm-teal/50"
+            className="rounded border-indigo-500/5 text-tm-teal focus:ring-tm-teal/50"
           />
-          <label htmlFor="terms" className="ml-2 text-sm text-slate-400">
+          <label htmlFor="terms" className="ml-2 text-sm text-text-main/60">
             I agree to the{' '}
             <Link to="/terms" className="text-tm-teal hover:text-tm-teal-2 transition-colors">
               Terms of Service
@@ -149,9 +149,9 @@ export default function RegisterPage() {
       </form>
 
       <div className="mt-8 text-center">
-        <p className="text-slate-400">
+        <p className="text-text-main/60">
           Already have an account?{' '}
-          <Link to="/auth/login" className="text-tm-teal hover:text-tm-teal-2 font-medium transition-colors">
+          <Link to="/auth/login" className="text-tm-teal hover:text-tm-teal-2 font-normal transition-colors">
             Sign in here
           </Link>
         </p>

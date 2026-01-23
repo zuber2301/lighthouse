@@ -17,6 +17,7 @@ if context.config.config_file_name is not None:
 # from myapp import mymodel
 # target_metadata = mymodel.Base.metadata
 from app.db.base import Base
+from app.core.config import settings
 target_metadata = Base.metadata
 
 # other values from the config, defined by the needs of env.py,
@@ -24,6 +25,14 @@ target_metadata = Base.metadata
 # my_important_option = config.get_main_option("my_important_option")
 # ... etc.
 
+def get_url():
+    url = settings.DATABASE_URL
+    # If settings use async drivers, convert to their sync equivalents for Alembic
+    if url.startswith("postgresql+asyncpg"):
+        url = url.replace("postgresql+asyncpg", "postgresql")
+    if url.startswith("sqlite+aiosqlite"):
+        url = url.replace("sqlite+aiosqlite", "sqlite")
+    return url
 
 def run_migrations_offline() -> None:
     """Run migrations in 'offline' mode.
@@ -37,7 +46,7 @@ def run_migrations_offline() -> None:
     script output.
 
     """
-    url = context.config.get_main_option("sqlalchemy.url")
+    url = get_url()
     context.configure(
         url=url,
         target_metadata=target_metadata,
@@ -56,8 +65,12 @@ def run_migrations_online():
     and associate a connection with the context.
 
     """
+    configuration = context.config.get_section(context.config.config_ini_section)
+    if configuration is None:
+        configuration = {}
+    configuration["sqlalchemy.url"] = get_url()
     connectable = engine_from_config(
-        context.config.get_section(context.config.config_ini_section, {}),
+        configuration,
         prefix="sqlalchemy.",
         poolclass=pool.NullPool,
     )

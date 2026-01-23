@@ -1,6 +1,7 @@
 import React from 'react'
 import { Routes, Route, Navigate } from 'react-router-dom'
 import { AuthProvider } from './lib/AuthContext'
+import { ThemeProvider } from './lib/ThemeContext'
 import ProtectedRoute from './components/ProtectedRoute'
 import AppLayout from './layouts/AppLayout'
 import AuthLayout from './layouts/AuthLayout'
@@ -13,17 +14,28 @@ import RewardsPage from './features/rewards/RewardsPage'
 import AnalyticsPage from './features/analytics/AnalyticsPage'
 import AdminPage from './features/admin/AdminPage'
 import PlatformAdminPage from './features/admin/PlatformAdminPage'
+import PlatformCatalog from './features/admin/PlatformCatalog'
+import PlatformLogs from './features/admin/PlatformLogs'
+import CreateTenantForm from './features/admin/CreateTenantForm'
 import TenantAdminBudget from './features/admin/TenantAdminBudget'
 import TenantLeadDashboard from './features/admin/TenantLeadDashboard'
 import CorporateUserDashboard from './features/admin/CorporateUserDashboard'
+import TenantManagerPage from './features/admin/TenantManagerPage'
+import SubscriptionEngine from './features/admin/SubscriptionEngine'
+import TenantDashboard from './features/tenant/TenantDashboard'
+import TenantsPage from './features/tenant/TenantsPage'
+import ActivityPage from './features/activity/ActivityPage'
+import LeaderboardPage from './features/leaderboard/LeaderboardPage'
 import ThemeDemo from './pages/ThemeDemo'
+import RecognitionFeedDemo from './pages/RecognitionFeedDemo'
 
 export default function App() {
   return (
     <AuthProvider>
-      <Routes>
-        {/* Auth routes */}
-        <Route path="/auth" element={<AuthLayout />}>
+      <ThemeProvider>
+        <Routes>
+          {/* Auth routes */}
+          <Route path="/auth" element={<AuthLayout />}>
           <Route path="login" element={<LoginPage />} />
           <Route path="register" element={<RegisterPage />} />
           <Route path="callback" element={<OAuthCallback />} />
@@ -41,16 +53,63 @@ export default function App() {
           <Route path="rewards" element={<RewardsPage />} />
           <Route path="analytics" element={<AnalyticsPage />} />
           <Route path="admin" element={<AdminPage />} />
-          <Route path="platform-admin" element={<PlatformAdminPage />} />
-          <Route path="tenant-admin" element={<TenantAdminBudget />} />
-          <Route path="tenant-lead" element={<TenantLeadDashboard />} />
-          <Route path="corporate-user" element={<CorporateUserDashboard />} />
+          <Route path="platform-admin" element={
+            <ProtectedRoute allowedRoles={[ 'PLATFORM_OWNER' ]}>
+              <PlatformAdminPage />
+            </ProtectedRoute>
+          } />
+          <Route path="platform-admin/tenants" element={
+            <ProtectedRoute allowedRoles={[ 'PLATFORM_OWNER' ]}>
+              <TenantManagerPage />
+            </ProtectedRoute>
+          } />
+          <Route path="platform-admin/subscriptions" element={
+            <ProtectedRoute allowedRoles={[ 'PLATFORM_OWNER' ]}>
+              <SubscriptionEngine />
+            </ProtectedRoute>
+          } />
+          <Route path="platform-admin/create-tenant" element={
+            <ProtectedRoute allowedRoles={[ 'PLATFORM_OWNER' ]}>
+              <CreateTenantForm />
+            </ProtectedRoute>
+          } />
+          <Route path="platform-admin/global-catalog" element={
+            <ProtectedRoute allowedRoles={[ 'PLATFORM_OWNER' ]}>
+              <PlatformCatalog />
+            </ProtectedRoute>
+          } />
+          <Route path="platform-admin/logs" element={
+            <ProtectedRoute allowedRoles={[ 'PLATFORM_OWNER' ]}>
+              <PlatformLogs />
+            </ProtectedRoute>
+          } />
+          <Route path="tenant-admin" element={
+            <ProtectedRoute allowedRoles={[ 'TENANT_ADMIN' ]}>
+              <TenantAdminBudget />
+            </ProtectedRoute>
+          } />
+          <Route path="tenant-lead" element={
+            <ProtectedRoute allowedRoles={[ 'TENANT_LEAD' ]}>
+              <TenantLeadDashboard />
+            </ProtectedRoute>
+          } />
+          <Route path="tenant-dashboard" element={<TenantDashboard />} />
+          <Route path="tenants" element={<TenantsPage />} />
+          <Route path="corporate-user" element={
+            <ProtectedRoute allowedRoles={[ 'CORPORATE_USER' ]}>
+              <CorporateUserDashboard />
+            </ProtectedRoute>
+          } />
+          <Route path="feed" element={<RecognitionFeedDemo />} />
+          <Route path="activity" element={<ActivityPage />} />
+          <Route path="leaderboard" element={<LeaderboardPage />} />
           <Route path="theme-demo" element={<ThemeDemo />} />
         </Route>
 
         {/* Redirect unknown routes to login */}
         <Route path="*" element={<Navigate to="/auth/login" replace />} />
       </Routes>
+      </ThemeProvider>
     </AuthProvider>
   )
 }

@@ -4,24 +4,32 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "vite --port 3004",
+    "dev": "vite --port 5173",
     "build": "vite build",
     "preview": "vite preview",
     "test": "vitest",
-    "test:watch": "vitest --watch"
+    "test:watch": "vitest --watch",
+    "test:coverage": "vitest --coverage",
+    "test:ui": "vitest --ui"
   },
   "dependencies": {
     "@tanstack/react-query": "^5.0.0",
     "@tanstack/react-query-devtools": "^5.0.0",
     "axios": "^1.4.0",
+    "canvas-confetti": "^1.6.0",
+    "framer-motion": "^12.27.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-router-dom": "^6.28.0"
+    ,
+    "html2canvas": "^1.4.1"
   },
   "devDependencies": {
     "@testing-library/jest-dom": "^6.0.0",
     "@testing-library/react": "^14.0.0",
     "@vitejs/plugin-react": "^5.0.0",
+    "@vitest/coverage-v8": "^0.34.0",
+    "@vitest/ui": "^0.34.0",
     "autoprefixer": "^10.4.0",
     "jsdom": "^22.1.0",
     "postcss": "^8.4.0",

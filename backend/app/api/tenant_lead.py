@@ -16,6 +16,7 @@ class RecognizeUserRequest(BaseModel):
     user_id: str
     amount: int  # Points to give
     note: Optional[str] = None
+    category: Optional[str] = "Individual award"
 
 
 class RedeemPointsRequest(BaseModel):
@@ -58,7 +59,7 @@ async def recognize_user(request: RecognizeUserRequest, db: AsyncSession = Depen
         receiver_id=request.user_id,
         amount=amount_paise,
         type=TransactionType.RECOGNITION,
-        note=request.note or f"Recognition: {request.amount} points"
+        note=request.note or f"{request.category or 'Recognition'}: {request.amount} points"
     )
     db.add(transaction)
     await db.commit()

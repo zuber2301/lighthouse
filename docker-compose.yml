@@ -22,6 +22,7 @@ services:
       DATABASE_URL: postgresql+asyncpg://lighthouse:lighthouse@postgres:5432/lighthouse
       REDIS_URL: redis://redis:6379/0
       JWT_SECRET: changeme
+      FRONTEND_URL: http://localhost:5173
       # Development fallback tenant: used when no tenant header/JWT is provided
       DEV_DEFAULT_TENANT: "00000000-0000-0000-0000-000000000000"
     ports:
@@ -38,7 +39,18 @@ services:
       - '5173:5173'
     volumes:
       - ./frontend:/app
-    command: sh -c "npm install && npm run dev -- --host 0.0.0.0 --port 5173"
+    environment:
+      - BACKEND_URL=http://backend:8000
+    command:
+      - sh
+      - -c
+      - |
+        npm install && \
+        # fetch a dev token from the backend and write to .env before starting Vite (dev-only)
+        node -e "const http=require('http'),fs=require('fs');try{http.get('http://backend:8000/auth/dev-token?role=PLATFORM_OWNER&tenant_id=00000000-0000-0000-0000-000000000000',res=>{let d='';res.on('data',c=>d+=c);res.on('end',()=>{try{fs.writeFileSync('/tmp/dev_token.json',d)}catch(e){}})}).on('error',()=>{});}catch(e){}" && \
+        TOKEN=$(node -e "try{const j=require('/tmp/dev_token.json');console.log(j && j.token || '')}catch(e){console.log('')}") && \
+        if [ -n "$TOKEN" ]; then echo "VITE_DEV_TOKEN=$TOKEN" > .env; fi && \
+        npm run dev -- --host 0.0.0.0 --port 5173
 
 volumes:
   postgres-data:
