@@ -54,11 +54,11 @@ export default function Header() {
   return (
     <header className={`flex items-center justify-between px-6 py-4 sticky top-0 z-40 ${headerClass} transition-colors duration-300`}>
       <div className="flex items-center gap-8">
-        <Link to="/" className="text-2xl font-normal tracking-tighter hover:opacity-80 transition-opacity text-tm-gradient flex items-center gap-2">
+        <Link to="/" className="text-2xl font-normal tracking-tighter hover:opacity-80 transition-opacity text-white flex items-center gap-2">
           <div className="w-8 h-8 rounded-lg bg-tm-gradient flex items-center justify-center shadow-tm-neon active:scale-95 transition-transform">
-            <span className="text-tm-bg-dark text-[10px] font-black italic">LH</span>
+            <span className="text-white text-[10px] font-black italic">LH</span>
           </div>
-          <span>Portal<span className="text-text-main opacity-20 group-hover:opacity-100 transition-opacity">/</span>Admin</span>
+          <span className="text-white">Portal<span className="text-white opacity-40 group-hover:opacity-100 transition-opacity">/</span>Admin</span>
         </Link>
         
         {!isCorporate && (
