@@ -7,6 +7,8 @@ from app.models.budgets import DepartmentBudget, BudgetLedger
 from uuid import UUID
 from app.models.recognition import RecognitionStatus
 from sqlalchemy import select, func
+import os
+from uuid import uuid4
 
 
 async def create_recognition(db: AsyncSession, tenant_id: str, nominator_id: str, payload) -> Recognition:
@@ -30,6 +32,49 @@ async def create_recognition(db: AsyncSession, tenant_id: str, nominator_id: str
         points_awarded=payload.points,
         status=RecognitionStatus.PENDING,
     )
+
+    # If an ecard_html payload is provided, persist it as an HTML file under uploads and
+    # set rec.ecard_url to the resulting path so it is served permanently.
+    try:
+        ecard_html = getattr(payload, 'ecard_html', None)
+        ecard_url = getattr(payload, 'ecard_url', None)
+        media_url = getattr(payload, 'media_url', None)
+        area_of_focus = getattr(payload, 'area_of_focus', None)
+        if ecard_html:
+            # Sanitize incoming HTML to reduce XSS risk before saving
+            try:
+                import bleach
+                allowed_tags = [
+                    'a', 'b', 'i', 'u', 'em', 'strong', 'div', 'span', 'img', 'p', 'br'
+                ]
+                allowed_attrs = {
+                    '*': ['style'],
+                    'a': ['href', 'target', 'rel'],
+                    'img': ['src', 'alt', 'style']
+                }
+                safe_html = bleach.clean(ecard_html, tags=allowed_tags, attributes=allowed_attrs, strip=True)
+            except Exception:
+                # If bleach not available or fails, fall back to original
+                safe_html = ecard_html
+
+            upload_dir = os.path.join(os.getcwd(), 'uploads')
+            os.makedirs(upload_dir, exist_ok=True)
+            fname = f"ecard-{uuid4().hex}.html"
+            path = os.path.join(upload_dir, fname)
+            with open(path, 'w', encoding='utf-8') as fh:
+                fh.write(safe_html)
+            rec.ecard_url = f"/uploads/{fname}"
+        elif ecard_url:
+            # If an upload URL (image/pdf) was provided by client, store it directly
+            rec.ecard_url = str(ecard_url)
+        # store media_url and area_of_focus if provided
+        if media_url:
+            rec.media_url = str(media_url)
+        if area_of_focus:
+            rec.area_of_focus = str(area_of_focus)
+    except Exception:
+        # Fail-safe: do not block recognition creation if ecard persistence or sanitization fails
+        pass
 
     # validate badge if provided
     if getattr(payload, "badge_id", None):

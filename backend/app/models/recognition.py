@@ -25,6 +25,9 @@ class Recognition(Base, TenantMixin, TimestampMixin):
     points_awarded = Column(Integer, nullable=False, default=0)
     is_public = Column(Boolean, nullable=False, server_default='true')
     status = Column(SAEnum(RecognitionStatus, name="recognitionstatus"), nullable=False, default=RecognitionStatus.PENDING)
+    ecard_url = Column(String(255), nullable=True)
+    area_of_focus = Column(String(100), nullable=True)
+    media_url = Column(String(255), nullable=True)
 
     nominator = relationship("User", foreign_keys=[nominator_id])
     nominee = relationship("User", foreign_keys=[nominee_id])

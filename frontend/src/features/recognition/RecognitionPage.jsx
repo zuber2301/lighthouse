@@ -9,7 +9,7 @@ import { useSearchParams } from 'react-router-dom'
 
 export default function RecognitionPage() {
   const { user } = useAuth()
-  const { items = [], isLoading, create } = useRecognitions()
+  const { items = [], isLoading, createAsync } = useRecognitions()
   const [open, setOpen] = useState(false)
   const [activeTab, setActiveTab] = useState('Individual award')
   const [searchParams] = useSearchParams()
@@ -32,7 +32,7 @@ export default function RecognitionPage() {
   }, [searchParams])
 
   function handleSubmit(payload) {
-    create(payload)
+    return createAsync(payload)
   }
 
   return (

@@ -131,21 +131,21 @@ export default function Header() {
         {showGiveButtons && (
           <div className="hidden sm:flex items-center gap-2">
             <button
-              onClick={() => navigate(`/recognition?tab=${encodeURIComponent('Individual award')}`)}
+              onClick={() => navigate(`/recognition?tab=${encodeURIComponent('Individual award')}&_=${Date.now()}`)}
               className="px-6 py-2 rounded-full btn-recognition text-sm font-bold transition-all shadow-lg active:scale-95"
             >
               Give Individual award
             </button>
 
             <button
-              onClick={() => navigate(`/recognition?tab=${encodeURIComponent('E-Card')}`)}
+              onClick={() => navigate(`/recognition?tab=${encodeURIComponent('E-Card')}&_=${Date.now()}`)}
               className="px-6 py-2 rounded-full btn-recognition text-sm font-bold transition-all shadow-lg active:scale-95"
             >
               Give E-Card
             </button>
 
             <button
-              onClick={() => navigate(`/recognition?tab=${encodeURIComponent('Group award')}`)}
+              onClick={() => navigate(`/recognition?tab=${encodeURIComponent('Group award')}&_=${Date.now()}`)}
               className="px-6 py-2 rounded-full btn-recognition text-sm font-bold transition-all shadow-lg active:scale-95"
             >
               Give Group award

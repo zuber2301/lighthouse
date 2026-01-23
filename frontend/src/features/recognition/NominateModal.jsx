@@ -1,12 +1,13 @@
 import React, { useState, useEffect, useRef } from 'react'
 import Modal from '../../components/Modal'
 import api from '../../api/axiosClient'
+// E-Card Designer removed; use simple design choices instead
 const CATEGORIES = ['Individual award', 'Group award', 'E-Card']
 
 export default function NominateModal({ open, onClose, onSubmit, initialCategory }) {
-  // Recipient
+  // Recipient (support multiple)
   const [search, setSearch] = useState('')
-  const [nominee, setNominee] = useState(null)
+  const [nominees, setNominees] = useState([])
   const [users, setUsers] = useState([])
   const searchTimer = useRef()
 
@@ -24,6 +25,62 @@ export default function NominateModal({ open, onClose, onSubmit, initialCategory
   // Message + attachments
   const [message, setMessage] = useState('')
   const [attachments, setAttachments] = useState([])
+  const [ecardHtml, setEcardHtml] = useState('')
+  const [ecardUrl, setEcardUrl] = useState('')
+
+  // Area of focus (align recognition to company goals)
+  const [areaOfFocus, setAreaOfFocus] = useState('')
+
+  // Recognition coach suggestions
+  const [coachTips, setCoachTips] = useState(null)
+  const [coachLoading, setCoachLoading] = useState(false)
+
+  const openedAsECard = initialCategory === 'E-Card'
+
+  // multi-step flow: 1=Recipients, 2=Design, 3=Review & Send
+  const [step, setStep] = useState(1)
+  const [validationError, setValidationError] = useState('')
+
+  // E-Card design selection (Classic, Modern, Fun)
+  const [design, setDesign] = useState('Classic')
+
+  // Build simple e-card HTML string based on selection + fields
+  function buildEcardHtml() {
+    const img = attachments.find((a) => (a.type || '').startsWith('image/'))
+    const imgSrc = img?.url || img?.preview || ''
+    const bg = design === 'Classic' ? '#ffffff' : design === 'Modern' ? '#0b1220' : '#fffbf0'
+    const text = design === 'Classic' ? '#0f172a' : design === 'Modern' ? '#e6eef8' : '#2b2b2b'
+    const title = message ? 'Congrats!' : 'Congrats!'
+
+    return `
+      <div style="background:${bg};color:${text};padding:24px;border-radius:12px;font-family:Inter,system-ui,Arial;width:100%;box-sizing:border-box;">
+        <div style="font-size:20px;font-weight:700;margin-bottom:8px;">${title}</div>
+        ${imgSrc ? `<div style=\"text-align:center;margin-bottom:10px\"><img src=\"${imgSrc}\" style=\"max-width:100%;border-radius:8px;\"/></div>` : ''}
+        <div style="font-size:14px;line-height:1.5;margin-bottom:10px;">${message || ''}</div>
+        <div style="font-size:13px;opacity:0.85">From: ${''}</div>
+      </div>
+    `
+  }
+
+  // keep ecardHtml in sync for submission
+  useEffect(() => {
+    setEcardHtml(buildEcardHtml())
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [design, message, attachments])
+
+  function handleTopNext() {
+    // validation for step 1: require at least one recipient
+    if (step === 1) {
+      if (!nominees.length) {
+        setValidationError('Please select at least one recipient to continue.')
+        return
+      }
+    }
+    // clear previous errors
+    setValidationError('')
+    if (step < 3) setStep(step + 1)
+    else handleSubmit()
+  }
 
   // Schedule
   const [scheduledDate, setScheduledDate] = useState('')
@@ -31,12 +88,14 @@ export default function NominateModal({ open, onClose, onSubmit, initialCategory
 
   function resetAll() {
     setSearch('')
-    setNominee(null)
+    setNominees([])
     setCategory(CATEGORIES[0])
     setMessage('')
     setAttachments([])
     setScheduledDate('')
     setScheduledTime('')
+    setEcardHtml('')
+    setEcardUrl('')
   }
 
   function handleFileChange(e) {
@@ -73,9 +132,23 @@ export default function NominateModal({ open, onClose, onSubmit, initialCategory
     setAttachments((s) => s.filter((_, i) => i !== idx))
   }
 
-  function handleSubmit(e) {
-    e.preventDefault()
-    if (!nominee) return
+  async function handleCoach() {
+    if (!message || coachLoading) return
+    setCoachLoading(true)
+    try {
+      const res = await api.post('/recognition/coach', { message })
+      setCoachTips(res.data || null)
+    } catch (err) {
+      console.error('Coach failed', err)
+      setCoachTips({ tips: ['Could not generate suggestions at this time.'], improved_message: message })
+    } finally {
+      setCoachLoading(false)
+    }
+  }
+
+  async function handleSubmit(e) {
+    e && e.preventDefault()
+    if (!nominees.length) return
     // embed uploaded attachments into message so backend receives references
     const base = api.defaults.baseURL || ''
     let fullMessage = message || ''
@@ -91,13 +164,24 @@ export default function NominateModal({ open, onClose, onSubmit, initialCategory
     })
 
     const payload = {
-      nominee_id: nominee,
+      nominee_id: null, // set per-recipient when sending
       points: Number(points),
       value_tag: category,
+      // Provide ecard_html (so backend can persist) and/or ecard_url (uploaded image)
       message: fullMessage || undefined,
+      ecard_html: category === 'E-Card' ? (ecardHtml || undefined) : undefined,
+      ecard_url: category === 'E-Card' ? (ecardUrl || undefined) : undefined,
+      ecard_design: category === 'E-Card' ? design : undefined,
       is_public: true,
     }
-    onSubmit(payload)
+
+    // send one recognition per selected nominee
+    for (const id of nominees) {
+      const p = Object.assign({}, payload, { nominee_id: id, area_of_focus: areaOfFocus || undefined })
+      // parent will perform API call; await to preserve order
+      // eslint-disable-next-line no-await-in-loop
+      await onSubmit(p)
+    }
     resetAll()
     onClose()
   }
@@ -120,16 +204,73 @@ export default function NominateModal({ open, onClose, onSubmit, initialCategory
   }, [search])
 
   return (
-    <Modal open={open} onClose={onClose} className="max-w-4xl">
+    <Modal open={open} onClose={onClose} className="max-w-6xl">
       <form onSubmit={handleSubmit} className="space-y-6">
         <div>
-          <h2 className="text-3xl font-normal text-text-main tracking-tight">Nominate a Peer</h2>
-          <div className="text-[13px] font-normal tracking-[0.08em] opacity-40 text-text-main mt-1">Reward excellence across your organization</div>
+          <h2 className="text-3xl font-normal text-text-main tracking-tight">{openedAsECard ? 'Send a E-Card' : 'Nominate a Peer'}</h2>
+          <div className="text-[13px] font-normal tracking-[0.08em] opacity-40 text-text-main mt-1">{openedAsECard ? 'Create and send a personalized e-card' : 'Reward excellence across your organization'}</div>
+
+            <div className="mt-6 flex items-center justify-between">
+            <div className="flex flex-col md:flex-row gap-4">
+              <div className="flex items-start gap-3">
+                <div className={`w-8 h-8 rounded-full flex items-center justify-center ${step===1 ? 'bg-indigo-500 text-white' : 'bg-surface text-text-main'}`}>1</div>
+                <div>
+                  <div className="text-sm font-semibold">Recipient</div>
+                  <div className="text-xs opacity-50">Select recipients in the left column</div>
+                </div>
+              </div>
+
+              <div className="flex items-start gap-3">
+                <div className={`w-8 h-8 rounded-full flex items-center justify-center ${step===2 ? 'bg-indigo-500 text-white' : 'bg-surface text-text-main'}`}>2</div>
+                <div>
+                  <div className="text-sm font-semibold">Design E-Card</div>
+                  <div className="text-xs opacity-50">Choose design and preview in the middle column</div>
+                </div>
+              </div>
+
+              <div className="flex items-start gap-3">
+                <div className={`w-8 h-8 rounded-full flex items-center justify-center ${step===3 ? 'bg-emerald-500 text-white' : 'bg-surface text-text-main'}`}>3</div>
+                <div>
+                  <div className="text-sm font-semibold">Review & Send</div>
+                  <div className="text-xs opacity-50">Finalize selections and send recognition</div>
+                </div>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-3">
+              <button
+                type="button"
+                onClick={() => setStep(Math.max(1, step - 1))}
+                disabled={step === 1}
+                className={`px-3 py-2 rounded-full ${step===1 ? 'opacity-50 cursor-not-allowed bg-surface text-text-main' : 'bg-surface border border-border-soft text-text-main hover:brightness-95'}`}
+              >
+                Back
+              </button>
+
+              <button
+                type="button"
+                onClick={() => { resetAll(); onClose(); }}
+                className={`px-4 py-2 rounded-full text-white shadow-lg bg-gradient-to-r from-gray-500 to-gray-600 hover:brightness-95`}
+              >
+                Cancel
+              </button>
+
+              <button
+                type="button"
+                onClick={handleTopNext}
+                disabled={step === 1 && nominees.length === 0}
+                className={`px-4 py-2 rounded-full text-white shadow-lg ${step===3 ? 'bg-emerald-500' : 'bg-gradient-to-r from-indigo-500 to-indigo-400' } ${step===1 && nominees.length === 0 ? 'opacity-60 cursor-not-allowed' : ''}`}
+              >
+                {step < 3 ? 'Next' : 'Send'}
+              </button>
+            </div>
+            {validationError && <div className="text-sm text-rose-400 mt-2">{validationError}</div>}
+          </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-stretch">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-stretch">
           {/* Left column: Entry Form */}
-          <div className="space-y-6 bg-indigo-500/5 p-6 rounded-2xl border border-indigo-500/10">
+          <div className="space-y-6 bg-card border border-border-soft p-6 rounded-2xl shadow-inner ring-2 ring-indigo-500/20 shadow-[0_0_20px_rgba(99,102,241,0.06)]">
             <section>
               <div className="text-[15px] font-normal tracking-tight text-white mb-3">Recipient</div>
               <div className="relative">
@@ -148,10 +289,17 @@ export default function NominateModal({ open, onClose, onSubmit, initialCategory
                     <button 
                       type="button" 
                       key={u.id} 
-                      onClick={() => { setNominee(u.id); setSearch(u.name); }} 
-                      className={`w-full text-left px-4 py-2.5 rounded-lg text-sm transition-all flex items-center gap-3 ${nominee === u.id ? 'bg-indigo-500 text-white font-bold' : 'bg-surface hover:bg-indigo-500/10 border border-indigo-500/10'}`}
+                      onClick={() => {
+                        // toggle selection
+                        setNominees((prev) => {
+                          if (prev.includes(u.id)) return prev.filter((x) => x !== u.id)
+                          return prev.concat(u.id)
+                        })
+                        setSearch('')
+                      }} 
+                      className={`w-full text-left px-4 py-2.5 rounded-lg text-sm transition-all flex items-center gap-3 ${nominees.includes(u.id) ? 'bg-indigo-500 text-white font-bold' : 'bg-surface hover:bg-indigo-500/10 border border-indigo-500/10'}`}
                     >
-                      <div className={`w-6 h-6 rounded-full flex items-center justify-center text-[10px] ${nominee === u.id ? 'bg-white/20' : 'bg-indigo-500/20 text-indigo-500'}`}>
+                      <div className={`w-6 h-6 rounded-full flex items-center justify-center text-[10px] ${nominees.includes(u.id) ? 'bg-white/20' : 'bg-indigo-500/20 text-indigo-500'}`}>
                         {u.name.charAt(0)}
                       </div>
                       {u.name}
@@ -162,37 +310,63 @@ export default function NominateModal({ open, onClose, onSubmit, initialCategory
               ) : null}
             </section>
 
-            <div className="grid grid-cols-1 gap-6">
-              <section>
-                <div className="text-[15px] font-normal tracking-tight text-white mb-3">Recognition Type</div>
-                <div className="flex bg-surface border border-indigo-500/10 p-1.5 rounded-2xl shadow-sm border border-border-soft">
-                  {CATEGORIES.map((c) => (
-                    <button
-                      key={c}
-                      type="button"
-                      onClick={() => setCategory(c)}
-                      className={`flex-1 px-4 py-2.5 rounded-xl text-sm font-normal transition-all ${
-                        category === c 
-                        ? 'btn-accent text-white shadow-lg shadow-indigo-500/20' 
-                        : 'text-text-main opacity-60 hover:opacity-100 hover:bg-white/5'
-                      }`}
-                    >
-                      {c}
-                    </button>
-                  ))}
-                </div>
-              </section>
+            {/* Selected recipients */}
+            {nominees.length > 0 && (
+              <div className="mt-3 flex flex-wrap gap-2">
+                {nominees.map((id) => {
+                  const u = users.find((x) => x.id === id) || { id, name: id }
+                  return (
+                    <div key={id} className="px-3 py-1 rounded-full bg-indigo-500/10 flex items-center gap-2 text-sm">
+                      <span>{u.name}</span>
+                      <button type="button" onClick={() => setNominees((s) => s.filter((x) => x !== id))} className="text-xs text-rose-400">✕</button>
+                    </div>
+                  )
+                })}
+              </div>
+            )}
 
-              <section>
-                <div className="text-[15px] font-normal tracking-tight text-white mb-3">Points</div>
-                <input 
-                  type="number" 
-                  value={points} 
-                  onChange={(e) => setPoints(Number(e.target.value))} 
-                  className="w-full bg-surface border border-indigo-500/20 rounded-xl p-3 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/30 font-normal text-indigo-500" 
-                  min={1} 
-                />
-              </section>
+            <div className="grid grid-cols-1 gap-6">
+              {openedAsECard ? (
+                <section>
+                  <div className="text-[15px] font-normal tracking-tight text-white mb-3">Recognition Type</div>
+                  <select value={category} onChange={(e) => setCategory(e.target.value)} className="w-full bg-surface border border-indigo-500/20 rounded-xl p-3 text-sm">
+                    <option value="E-Card">E-Card</option>
+                  </select>
+                </section>
+              ) : (
+                <>
+                  <section>
+                    <div className="text-[15px] font-normal tracking-tight text-white mb-3">Recognition Type</div>
+                    <div className="flex bg-surface border border-indigo-500/10 p-1.5 rounded-2xl shadow-sm border border-border-soft">
+                      {CATEGORIES.map((c) => (
+                        <button
+                          key={c}
+                          type="button"
+                          onClick={() => setCategory(c)}
+                          className={`flex-1 px-4 py-2.5 rounded-xl text-sm font-normal transition-all ${
+                            category === c 
+                            ? 'btn-accent text-white shadow-lg shadow-indigo-500/20' 
+                            : 'text-text-main opacity-60 hover:opacity-100 hover:bg-white/5'
+                          }`}
+                        >
+                          {c}
+                        </button>
+                      ))}
+                    </div>
+                  </section>
+
+                  <section>
+                    <div className="text-[15px] font-normal tracking-tight text-white mb-3">Points</div>
+                    <input 
+                      type="number" 
+                      value={points} 
+                      onChange={(e) => setPoints(Number(e.target.value))} 
+                      className="w-full bg-surface border border-indigo-500/20 rounded-xl p-3 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/30 font-normal text-indigo-500" 
+                      min={1} 
+                    />
+                  </section>
+                </>
+              )}
             </div>
 
             <section>
@@ -203,47 +377,103 @@ export default function NominateModal({ open, onClose, onSubmit, initialCategory
                 className="w-full bg-surface border border-indigo-500/20 rounded-xl p-4 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/30 min-h-[120px] font-normal placeholder:opacity-30" 
                 placeholder="Why does this person deserve recognition?" 
               />
+              <div className="mt-2 flex items-center gap-2">
+                <button type="button" onClick={handleCoach} disabled={coachLoading || !message} className="px-3 py-2 rounded-xl bg-indigo-500/10 text-sm hover:bg-indigo-500/15">{coachLoading ? 'Improving…' : 'Improve your message'}</button>
+                {coachTips?.improved_message && (
+                  <button type="button" onClick={() => setMessage(coachTips.improved_message)} className="text-sm text-emerald-400">Apply suggestion</button>
+                )}
+              </div>
+              {coachTips && (
+                <div className="mt-3 p-3 bg-surface border border-border-soft rounded-lg text-sm">
+                  <div className="font-semibold text-white mb-1">Recognition Coach</div>
+                  {coachTips.tips && coachTips.tips.map((t, i) => <div key={i} className="text-text-main/80 text-sm">• {t}</div>)}
+                </div>
+              )}
             </section>
 
             <section>
-              <div className="text-[15px] font-normal tracking-tight text-white mb-3">Attachments</div>
-              <div className="flex flex-wrap gap-2">
-                <label className="flex items-center gap-2 px-4 py-2.5 bg-indigo-500/10 hover:bg-indigo-500/20 border border-indigo-500/20 rounded-xl cursor-pointer transition-all active:scale-95 group">
-                  <span className="text-lg group-hover:rotate-12 transition-transform">📁</span>
-                  <span className="text-[12px] font-normal text-indigo-300">Upload Media</span>
-                  <input type="file" accept="image/*,video/*" multiple onChange={handleFileChange} className="hidden" />
-                </label>
-                
-                {attachments.map((a, i) => (
-                  <div key={i} className="relative w-14 h-14 bg-surface border border-indigo-500/20 rounded-xl overflow-hidden group">
-                    {a.type && a.type.startsWith('image/') ? (
-                      <img src={a.preview} alt={a.name} className="w-full h-full object-cover" />
-                    ) : (
-                      <div className="w-full h-full bg-indigo-500/10 flex items-center justify-center text-[8px] font-bold">VID</div>
-                    )}
-                    <button type="button" onClick={() => removeAttachment(i)} className="absolute inset-0 bg-rose-500/80 opacity-0 group-hover:opacity-100 flex items-center justify-center text-white text-xs transition-opacity rounded-xl">✕</button>
-                  </div>
-                ))}
-              </div>
+              <div className="text-[15px] font-normal tracking-tight text-white mb-3">Area of Focus</div>
+              <select value={areaOfFocus} onChange={(e) => setAreaOfFocus(e.target.value)} className="w-full bg-surface border border-indigo-500/20 rounded-xl p-3 text-sm">
+                <option value="">-- Select area --</option>
+                <option value="Collaboration">Collaboration</option>
+                <option value="Innovation">Innovation</option>
+                <option value="Customer Focus">Customer Focus</option>
+                <option value="Execution">Execution</option>
+                <option value="Leadership">Leadership</option>
+              </select>
             </section>
+
+            
+
+            {/* left column remains for recipient, message, attachments etc. */}
           </div>
 
-          {/* Right column: Summary & Schedule */}
+          {/* Middle column: Design chooser + preview */}
+          <div className="space-y-6 bg-card border border-border-soft p-6 rounded-2xl shadow-inner ring-2 ring-indigo-500/20 shadow-[0_0_20px_rgba(99,102,241,0.06)]">
+            <div className="text-[15px] font-normal tracking-tight text-white border-b border-border-soft pb-3">Design</div>
+            <div>
+              { (category === 'E-Card' || openedAsECard) ? (
+                <>
+                  <select value={design} onChange={(e) => setDesign(e.target.value)} className="w-full bg-surface border border-indigo-500/20 rounded-xl p-3 text-sm">
+                    <option>Classic</option>
+                    <option>Modern</option>
+                    <option>Fun</option>
+                  </select>
+                  <div className="mt-3 p-4 bg-surface border border-border-soft rounded-xl">
+                    <div id="ecard-preview" dangerouslySetInnerHTML={{ __html: ecardHtml }} />
+                  </div>
+                </>
+              ) : (
+                <div className="text-sm opacity-50">Designs available when E-Card is selected</div>
+              ) }
+            </div>
+
+          </div>
+
+          {/* Right column: Summary, steps and review */}
           <div className="flex flex-col gap-6">
+            {/* Stepper + Review area */}
+            <div className="space-y-6 bg-card border border-border-soft p-6 rounded-2xl shadow-inner ring-2 ring-indigo-500/20 shadow-[0_0_20px_rgba(99,102,241,0.06)]">
+              <div className="text-[15px] font-normal tracking-tight text-white border-b border-border-soft pb-3">Review Recognition</div>
+              {/* Top stepper shows the flow; right-column step list removed to avoid duplication */}
+
+              <div className="pt-4 border-t border-border-soft">
+                {step === 2 && (
+                  <div>
+                    <div className="text-sm mb-2">Design: {design}</div>
+                    <div className="p-3 bg-surface border border-border-soft rounded-md">
+                      <div dangerouslySetInnerHTML={{ __html: ecardHtml }} />
+                    </div>
+                  </div>
+                )}
+
+                {step === 3 && (
+                  <div>
+                    <div className="text-sm font-semibold mb-2">Review</div>
+                    <div className="text-sm">Category: {category}</div>
+                    <div className="text-sm">Area of Focus: {areaOfFocus || '—'}</div>
+                    <div className="mt-3 p-3 bg-indigo-500/5 rounded-md border border-indigo-500/5">
+                      <div className="font-semibold">Message</div>
+                      <div className="text-sm italic">{message || '—'}</div>
+                    </div>
+                    <div className="mt-3">
+                      <div className="font-semibold">E-Card Preview</div>
+                      <div className="mt-2 p-3 bg-surface border border-border-soft rounded-md">
+                        <div dangerouslySetInnerHTML={{ __html: ecardHtml }} />
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* navigation moved to top controls */}
+            </div>
+            {/* middle column: Design chooser + preview (shows when E-Card selected or opened as E-Card) */}
+          
             <div className="flex-1 space-y-6 bg-card border border-border-soft p-6 rounded-2xl shadow-inner">
               <div className="text-[15px] font-normal tracking-tight text-white border-b border-border-soft pb-3">Preview Recognition</div>
-              
-              <div className="space-y-4">
-                  <div className="flex justify-between items-center bg-indigo-500/5 p-3 rounded-xl border border-indigo-500/5">
-                    <span className="text-[16px] font-normal text-white">Recipient</span>
-                    <span className="text-sm font-normal text-indigo-500">{users.find((x)=>x.id===nominee)?.name || 'None selected'}</span>
-                  </div>
-                
-                  <div className="flex justify-between items-center bg-indigo-500/5 p-3 rounded-xl border border-indigo-500/5">
-                    <span className="text-[16px] font-normal text-white">Category</span>
-                    <span className="text-sm font-normal text-emerald-500">{category}</span>
-                  </div>
 
+              <div className="space-y-4">
                 <div className="bg-indigo-500/5 p-4 rounded-xl border border-indigo-500/5 min-h-[100px]">
                   <span className="text-[15px] font-normal text-white block mb-2">Message Preview</span>
                   <p className="text-sm text-text-main/80 font-normal italic leading-relaxed">
@@ -252,23 +482,25 @@ export default function NominateModal({ open, onClose, onSubmit, initialCategory
                 </div>
               </div>
 
-              <section className="pt-4 border-t border-border-soft">
-                <div className="text-[11px] font-normal text-text-main/30 mb-4">Schedule (Optional)</div>
-                <div className="grid grid-cols-2 gap-3">
-                  <input 
-                    type="date" 
-                    value={scheduledDate} 
-                    onChange={(e) => setScheduledDate(e.target.value)} 
-                    className="bg-surface border border-border-soft rounded-xl p-3 text-[13px] font-normal focus:outline-none focus:ring-2 focus:ring-indigo-500/30 transition-all cursor-pointer text-text-main" 
-                  />
-                  <input 
-                    type="time" 
-                    value={scheduledTime} 
-                    onChange={(e) => setScheduledTime(e.target.value)} 
-                    className="bg-surface border border-border-soft rounded-xl p-3 text-[13px] font-normal focus:outline-none focus:ring-2 focus:ring-indigo-500/30 transition-all cursor-pointer text-text-main" 
-                  />
-                </div>
-              </section>
+              {!openedAsECard && (
+                <section className="pt-4 border-t border-border-soft">
+                  <div className="text-[11px] font-normal text-text-main/30 mb-4">Schedule (Optional)</div>
+                  <div className="grid grid-cols-2 gap-3">
+                    <input 
+                      type="date" 
+                      value={scheduledDate} 
+                      onChange={(e) => setScheduledDate(e.target.value)} 
+                      className="bg-surface border border-border-soft rounded-xl p-3 text-[13px] font-normal focus:outline-none focus:ring-2 focus:ring-indigo-500/30 transition-all cursor-pointer text-text-main" 
+                    />
+                    <input 
+                      type="time" 
+                      value={scheduledTime} 
+                      onChange={(e) => setScheduledTime(e.target.value)} 
+                      className="bg-surface border border-border-soft rounded-xl p-3 text-[13px] font-normal focus:outline-none focus:ring-2 focus:ring-indigo-500/30 transition-all cursor-pointer text-text-main" 
+                    />
+                  </div>
+                </section>
+              )}
             </div>
 
             <div className="flex gap-4">
@@ -278,13 +510,6 @@ export default function NominateModal({ open, onClose, onSubmit, initialCategory
                 className="flex-1 py-4 rounded-2xl bg-indigo-500/5 border border-indigo-500/10 text-text-main text-[13px] font-normal hover:bg-slate-500/5 transition-all active:scale-95"
               >
                 Cancel
-              </button>
-              <button 
-                type="submit" 
-                disabled={!nominee} 
-                className="flex-[2] py-4 rounded-2xl btn-accent text-white font-normal text-[13px] shadow-xl shadow-indigo-600/20 disabled:opacity-30 disabled:grayscale transition-all active:scale-95"
-              >
-                Submit Recognition
               </button>
             </div>
           </div>
