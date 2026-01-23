@@ -48,16 +48,40 @@ export default function NominateModal({ open, onClose, onSubmit, initialCategory
   function buildEcardHtml() {
     const img = attachments.find((a) => (a.type || '').startsWith('image/'))
     const imgSrc = img?.url || img?.preview || ''
-    const bg = design === 'Classic' ? '#ffffff' : design === 'Modern' ? '#0b1220' : '#fffbf0'
-    const text = design === 'Classic' ? '#0f172a' : design === 'Modern' ? '#e6eef8' : '#2b2b2b'
-    const title = message ? 'Congrats!' : 'Congrats!'
 
+    // Keep the same overall card dimensions/box but vary visual style strongly per design
+    if (design === 'Classic') {
+      return `
+        <div style="width:100%;box-sizing:border-box;padding:28px;border-radius:14px;background:linear-gradient(135deg,#f8fbff,#eef6ff);color:#0f172a;font-family:Georgia,'Times New Roman',serif;">
+          <div style="font-size:22px;font-weight:700;margin-bottom:8px;">${message ? 'Well done!' : 'Congratulations!'}</div>
+          ${imgSrc ? `<div style=\"text-align:center;margin:10px 0\"><img src=\"${imgSrc}\" style=\"max-width:100%;border-radius:10px;\"/></div>` : ''}
+          <div style="font-size:16px;line-height:1.6;margin-bottom:10px;color:#0f172a">${message || ''}</div>
+          <div style="font-size:14px;opacity:0.9">— From your team</div>
+        </div>
+      `
+    }
+
+    if (design === 'Modern') {
+      return `
+        <div style="width:100%;box-sizing:border-box;padding:30px;border-radius:14px;background:linear-gradient(90deg,#071021 0%,#0b1a2b 100%);color:#e6eef8;font-family:Inter,system-ui,Arial;">
+          <div style="display:flex;align-items:center;gap:12px;margin-bottom:10px">
+            <div style="width:56px;height:56px;border-radius:10px;background:linear-gradient(135deg,#7c3aed,#06b6d4);display:flex;align-items:center;justify-content:center;font-weight:700;color:white;font-size:18px">★</div>
+            <div style="font-size:22px;font-weight:700">Nice work</div>
+          </div>
+          ${imgSrc ? `<div style=\"margin:14px 0;text-align:center\"><img src=\"${imgSrc}\" style=\"max-width:100%;border-radius:12px;\"/></div>` : ''}
+          <div style="font-size:15px;line-height:1.5;color:#cfe8ff">${message || ''}</div>
+          <div style="margin-top:12px;font-size:13px;opacity:0.85;color:#9fb8d9">Shared on ${new Date().toLocaleDateString()}</div>
+        </div>
+      `
+    }
+
+    // Fun
     return `
-      <div style="background:${bg};color:${text};padding:24px;border-radius:12px;font-family:Inter,system-ui,Arial;width:100%;box-sizing:border-box;">
-        <div style="font-size:20px;font-weight:700;margin-bottom:8px;">${title}</div>
-        ${imgSrc ? `<div style=\"text-align:center;margin-bottom:10px\"><img src=\"${imgSrc}\" style=\"max-width:100%;border-radius:8px;\"/></div>` : ''}
-        <div style="font-size:14px;line-height:1.5;margin-bottom:10px;">${message || ''}</div>
-        <div style="font-size:13px;opacity:0.85">From: ${''}</div>
+      <div style="width:100%;box-sizing:border-box;padding:22px;border-radius:14px;background:linear-gradient(135deg,#ffecd2 0%,#fcb69f 100%);color:#2b2b2b;font-family:Comic Sans MS,'Comic Neue','Segoe UI',sans-serif;">
+        <div style="font-size:22px;font-weight:800;margin-bottom:6px">Woohoo!</div>
+        ${imgSrc ? `<div style=\"text-align:center;margin:10px 0\"><img src=\"${imgSrc}\" style=\"max-width:100%;border-radius:10px;\"/></div>` : ''}
+        <div style="font-size:16px;line-height:1.5">${message || ''}</div>
+        <div style="margin-top:12px;font-size:13px;opacity:0.9">🎉</div>
       </div>
     `
   }
@@ -176,7 +200,8 @@ export default function NominateModal({ open, onClose, onSubmit, initialCategory
     }
 
     // send one recognition per selected nominee
-    for (const id of nominees) {
+    for (const nominee of nominees) {
+      const id = typeof nominee === 'string' ? nominee : nominee.id
       const p = Object.assign({}, payload, { nominee_id: id, area_of_focus: areaOfFocus || undefined })
       // parent will perform API call; await to preserve order
       // eslint-disable-next-line no-await-in-loop
@@ -267,26 +292,29 @@ export default function NominateModal({ open, onClose, onSubmit, initialCategory
 
               {search.trim() ? (
                 <div className="mt-3 max-h-40 overflow-y-auto space-y-1 pr-1 custom-scrollbar">
-                  {users.map((u) => (
-                    <button 
-                      type="button" 
-                      key={u.id} 
-                      onClick={() => {
-                        // toggle selection
-                        setNominees((prev) => {
-                          if (prev.includes(u.id)) return prev.filter((x) => x !== u.id)
-                          return prev.concat(u.id)
-                        })
-                        setSearch('')
-                      }} 
-                      className={`w-full text-left px-4 py-2.5 rounded-lg text-sm transition-all flex items-center gap-3 ${nominees.includes(u.id) ? 'bg-indigo-500 text-white font-bold' : 'bg-surface hover:bg-indigo-500/10 border border-indigo-500/10'}`}
-                    >
-                      <div className={`w-6 h-6 rounded-full flex items-center justify-center text-[10px] ${nominees.includes(u.id) ? 'bg-white/20' : 'bg-indigo-500/20 text-indigo-500'}`}>
-                        {u.name.charAt(0)}
-                      </div>
-                      {u.name}
-                    </button>
-                  ))}
+                  {users.map((u) => {
+                    const selected = nominees.some((n) => (typeof n === 'string' ? n === u.id : n.id === u.id))
+                    return (
+                      <button
+                        type="button"
+                        key={u.id}
+                        onClick={() => {
+                          setNominees((prev) => {
+                            const already = prev.some((n) => (typeof n === 'string' ? n === u.id : n.id === u.id))
+                            if (already) return prev.filter((n) => (typeof n === 'string' ? n !== u.id : n.id !== u.id))
+                            return prev.concat({ id: u.id, name: u.name })
+                          })
+                          setSearch('')
+                        }}
+                        className={`w-full text-left px-4 py-2.5 rounded-lg text-sm transition-all flex items-center gap-3 ${selected ? 'bg-indigo-500 text-white font-bold' : 'bg-surface hover:bg-indigo-500/10 border border-indigo-500/10'}`}
+                      >
+                        <div className={`w-6 h-6 rounded-full flex items-center justify-center text-[10px] ${selected ? 'bg-white/20' : 'bg-indigo-500/20 text-indigo-500'}`}>
+                          {u.name.charAt(0)}
+                        </div>
+                        {u.name}
+                      </button>
+                    )
+                  })}
                   {!users.length && <div className="text-xs opacity-40 italic py-2">No teammates found</div>}
                 </div>
               ) : null}
@@ -295,12 +323,13 @@ export default function NominateModal({ open, onClose, onSubmit, initialCategory
             {/* Selected recipients */}
             {nominees.length > 0 && (
               <div className="mt-3 flex flex-wrap gap-2">
-                {nominees.map((id) => {
-                  const u = users.find((x) => x.id === id) || { id, name: id }
+                {nominees.map((n) => {
+                  const id = typeof n === 'string' ? n : n.id
+                  const name = typeof n === 'string' ? (users.find((x) => x.id === n)?.name || n) : n.name
                   return (
                     <div key={id} className="px-3 py-1 rounded-full bg-indigo-500/10 flex items-center gap-2 text-sm">
-                      <span>{u.name}</span>
-                      <button type="button" onClick={() => setNominees((s) => s.filter((x) => x !== id))} className="text-xs text-rose-400">✕</button>
+                      <span>{name}</span>
+                      <button type="button" onClick={() => setNominees((s) => s.filter((x) => (typeof x === 'string' ? x !== id : x.id !== id)))} className="text-xs text-rose-400">✕</button>
                     </div>
                   )
                 })}
@@ -345,6 +374,18 @@ export default function NominateModal({ open, onClose, onSubmit, initialCategory
             </div>
 
             <section>
+              <div className="text-[15px] font-normal tracking-tight text-white mb-3">Area of Focus</div>
+              <select value={areaOfFocus} onChange={(e) => setAreaOfFocus(e.target.value)} className="w-full bg-surface border border-indigo-500/20 rounded-xl p-3 text-sm">
+                <option value="">-- Select area --</option>
+                <option value="Collaboration">Collaboration</option>
+                <option value="Innovation">Innovation</option>
+                <option value="Customer Focus">Customer Focus</option>
+                <option value="Execution">Execution</option>
+                <option value="Leadership">Leadership</option>
+              </select>
+            </section>
+
+            <section>
               <div className="text-[15px] font-normal tracking-tight text-white mb-3">Message</div>
               <textarea 
                 value={message} 
@@ -366,18 +407,6 @@ export default function NominateModal({ open, onClose, onSubmit, initialCategory
                   <div className="text-text-main/80 text-sm">Timing: Note when or which project it occurred.</div>
                 </div>
               )}
-            </section>
-
-            <section>
-              <div className="text-[15px] font-normal tracking-tight text-white mb-3">Area of Focus</div>
-              <select value={areaOfFocus} onChange={(e) => setAreaOfFocus(e.target.value)} className="w-full bg-surface border border-indigo-500/20 rounded-xl p-3 text-sm">
-                <option value="">-- Select area --</option>
-                <option value="Collaboration">Collaboration</option>
-                <option value="Innovation">Innovation</option>
-                <option value="Customer Focus">Customer Focus</option>
-                <option value="Execution">Execution</option>
-                <option value="Leadership">Leadership</option>
-              </select>
             </section>
 
             
