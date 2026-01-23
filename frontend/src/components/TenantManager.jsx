@@ -76,7 +76,7 @@ const TenantManager = ({ tenants, onRefresh, onAddTenant }) => {
 
   return (
     <>
-      <div className="bg-card border border-indigo-500/5 rounded-3xl overflow-hidden shadow-sm transition-colors duration-300">
+      <div className="bg-card border border-indigo-500/5 rounded-3xl overflow-auto styled-scrollbar max-h-[70vh] shadow-sm transition-colors duration-300">
         <div className="p-8 border-b border-indigo-500/5 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
           <div>
             <h2 className="text-2xl font-normal text-text-main tracking-tight">Tenant Registry</h2>
