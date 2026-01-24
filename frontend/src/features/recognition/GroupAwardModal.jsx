@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import Modal from '../../components/Modal'
 import GroupRecipientPool from './GroupRecipientPool'
 import api from '../../api/axiosClient'
@@ -11,6 +11,12 @@ export default function GroupAwardModal({ open, onClose, onSubmit, initialData }
   const [awardLevel, setAwardLevel] = useState('Bronze - 300')
   const [behaviorAlignment, setBehaviorAlignment] = useState('Moderately')
   const [impactDuration, setImpactDuration] = useState('One-time')
+  const awardLevelRef = useRef(null)
+  const [awardLevelOpen, setAwardLevelOpen] = useState(false)
+  const behaviorRef = useRef(null)
+  const [behaviorOpen, setBehaviorOpen] = useState(false)
+  const impactRef = useRef(null)
+  const [impactOpen, setImpactOpen] = useState(false)
 
   // Step 3
   const [message, setMessage] = useState('')
@@ -103,7 +109,15 @@ export default function GroupAwardModal({ open, onClose, onSubmit, initialData }
         console.error('Failed to fetch lead budget:', err)
       }
     })()
-    return () => { mounted = false }
+
+    function handleClickOutside(e) {
+      if (awardLevelRef.current && !awardLevelRef.current.contains(e.target)) setAwardLevelOpen(false)
+      if (behaviorRef.current && !behaviorRef.current.contains(e.target)) setBehaviorOpen(false)
+      if (impactRef.current && !impactRef.current.contains(e.target)) setImpactOpen(false)
+    }
+    window.addEventListener('mousedown', handleClickOutside)
+
+    return () => { mounted = false; window.removeEventListener('mousedown', handleClickOutside) }
   }, [open])
 
   useEffect(() => {
@@ -144,28 +158,56 @@ export default function GroupAwardModal({ open, onClose, onSubmit, initialData }
             <section className="p-4 bg-card border border-border-soft rounded-lg space-y-4">
               <div>
                 <label className="block text-sm font-semibold mb-2">Award Level</label>
-                <select value={awardLevel} onChange={(e) => setAwardLevel(e.target.value)} className="w-full bg-surface border border-indigo-500/20 rounded-md p-3 text-sm">
-                  <option>Bronze - 300</option>
-                  <option>Silver - 500</option>
-                  <option>Gold - 1000</option>
-                </select>
+                <div ref={awardLevelRef} className="relative">
+                  <button type="button" onClick={() => setAwardLevelOpen(!awardLevelOpen)} className="w-full text-left bg-black/10 border border-indigo-500/10 rounded-md p-3 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20 transition-all text-white flex items-center justify-between">
+                    <span>{awardLevel}</span>
+                    <span className="ml-3 text-white/70">▾</span>
+                  </button>
+
+                  {awardLevelOpen && (
+                    <ul className="absolute left-0 right-0 mt-2 z-50 rounded-md overflow-hidden shadow-lg bg-black/30 border border-white/10" role="listbox">
+                      {['Bronze - 300','Silver - 500','Gold - 1000'].map((opt) => (
+                        <li key={opt} role="option" onClick={() => { setAwardLevel(opt); setAwardLevelOpen(false) }} className={`px-4 py-3 text-sm text-white hover:bg-white/5 cursor-pointer ${awardLevel === opt ? 'font-bold' : 'font-normal'}`}>{opt}</li>
+                      ))}
+                    </ul>
+                  )}
+                </div>
               </div>
 
               <div>
                 <label className="block text-sm font-semibold mb-2">Behavior Alignment</label>
-                <select value={behaviorAlignment} onChange={(e) => setBehaviorAlignment(e.target.value)} className="w-full bg-surface border border-indigo-500/20 rounded-md p-3 text-sm">
-                  <option>Slightly</option>
-                  <option>Moderately</option>
-                  <option>Significantly</option>
-                </select>
+                <div ref={behaviorRef} className="relative">
+                  <button type="button" onClick={() => setBehaviorOpen(!behaviorOpen)} className="w-full text-left bg-black/10 border border-indigo-500/10 rounded-md p-3 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20 transition-all text-white flex items-center justify-between">
+                    <span>{behaviorAlignment}</span>
+                    <span className="ml-3 text-white/70">▾</span>
+                  </button>
+
+                  {behaviorOpen && (
+                    <ul className="absolute left-0 right-0 mt-2 z-50 rounded-md overflow-hidden shadow-lg bg-black/30 border border-white/10" role="listbox">
+                      {['Slightly','Moderately','Significantly'].map((opt) => (
+                        <li key={opt} role="option" onClick={() => { setBehaviorAlignment(opt); setBehaviorOpen(false) }} className={`px-4 py-3 text-sm text-white hover:bg-white/5 cursor-pointer ${behaviorAlignment === opt ? 'font-bold' : 'font-normal'}`}>{opt}</li>
+                      ))}
+                    </ul>
+                  )}
+                </div>
               </div>
 
               <div>
                 <label className="block text-sm font-semibold mb-2">Impact Duration</label>
-                <select value={impactDuration} onChange={(e) => setImpactDuration(e.target.value)} className="w-full bg-surface border border-indigo-500/20 rounded-md p-3 text-sm">
-                  <option>One-time</option>
-                  <option>Long-term</option>
-                </select>
+                <div ref={impactRef} className="relative">
+                  <button type="button" onClick={() => setImpactOpen(!impactOpen)} className="w-full text-left bg-black/10 border border-indigo-500/10 rounded-md p-3 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20 transition-all text-white flex items-center justify-between">
+                    <span>{impactDuration}</span>
+                    <span className="ml-3 text-white/70">▾</span>
+                  </button>
+
+                  {impactOpen && (
+                    <ul className="absolute left-0 right-0 mt-2 z-50 rounded-md overflow-hidden shadow-lg bg-black/30 border border-white/10" role="listbox">
+                      {['One-time','Long-term'].map((opt) => (
+                        <li key={opt} role="option" onClick={() => { setImpactDuration(opt); setImpactOpen(false) }} className={`px-4 py-3 text-sm text-white hover:bg-white/5 cursor-pointer ${impactDuration === opt ? 'font-bold' : 'font-normal'}`}>{opt}</li>
+                      ))}
+                    </ul>
+                  )}
+                </div>
               </div>
             </section>
           )}
