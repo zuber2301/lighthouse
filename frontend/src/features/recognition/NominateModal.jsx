@@ -59,6 +59,9 @@ export default function NominateModal({ open, onClose, onSubmit, initialCategory
   // Area of focus (align recognition to company goals)
   const [areaOfFocus, setAreaOfFocus] = useState('')
 
+  // Award Type selection (e.g., Gold/Silver/Bronze tiers)
+  const [awardType, setAwardType] = useState('Gold - Annual Excellence')
+
   // Recognition coach suggestions
   const [coachTips, setCoachTips] = useState(null)
   const [coachLoading, setCoachLoading] = useState(false)
@@ -142,6 +145,7 @@ export default function NominateModal({ open, onClose, onSubmit, initialCategory
     setSearch('')
     setNominees([])
     setCategory(CATEGORIES[0])
+    setAwardType('Gold - Annual Excellence')
     setMessage('')
     setAttachments([])
     setScheduledDate('')
@@ -230,7 +234,7 @@ export default function NominateModal({ open, onClose, onSubmit, initialCategory
     // send one recognition per selected nominee
     for (const nominee of nominees) {
       const id = typeof nominee === 'string' ? nominee : nominee.id
-      const p = Object.assign({}, payload, { nominee_id: id, area_of_focus: areaOfFocus || undefined })
+      const p = Object.assign({}, payload, { nominee_id: id, area_of_focus: areaOfFocus || undefined, award_type: awardType || undefined })
       // parent will perform API call; await to preserve order
       // eslint-disable-next-line no-await-in-loop
       await onSubmit(p)
@@ -380,6 +384,14 @@ export default function NominateModal({ open, onClose, onSubmit, initialCategory
               {!openedAsECard && (
                 <>
 
+                  <section>
+                    <div className="text-[15px] font-normal tracking-tight text-white mb-3">Award Type</div>
+                    <select value={awardType} onChange={(e) => setAwardType(e.target.value)} className={`w-full bg-surface border border-${themeColor}-500/20 rounded-md p-3 text-sm`}>
+                      <option value="Gold - Annual Excellence">Gold - Annual Excellence</option>
+                      <option value="Silver - Quarterly Achievements">Silver - Quarterly Achievements</option>
+                      <option value="Bronze - Monthly Recognition">Bronze - Monthly Recognition</option>
+                    </select>
+                  </section>
 
                   <section>
                     <div className="text-[15px] font-normal tracking-tight text-white mb-3">Points</div>
@@ -392,7 +404,7 @@ export default function NominateModal({ open, onClose, onSubmit, initialCategory
                     />
                   </section>
                 </>
-              )}
+              )} 
             </div>
 
             <section>
