@@ -13,6 +13,17 @@ export default function BudgetLoadLogs({ tenantId }) {
   const [startDate, setStartDate] = useState('')
   const [endDate, setEndDate] = useState('')
 
+  const limitWrapperRef = useRef(null)
+  const [limitOpen, setLimitOpen] = useState(false)
+
+  useEffect(() => {
+    function handleClickOutside(e) {
+      if (limitWrapperRef.current && !limitWrapperRef.current.contains(e.target)) setLimitOpen(false)
+    }
+    window.addEventListener('mousedown', handleClickOutside)
+    return () => window.removeEventListener('mousedown', handleClickOutside)
+  }, [])
+
   useEffect(() => {
     let mounted = true
     ;(async () => {
@@ -54,12 +65,19 @@ export default function BudgetLoadLogs({ tenantId }) {
         <label className="text-sm">To:</label>
         <input type="date" className="px-2 py-1 border rounded" value={endDate} onChange={(e)=>setEndDate(e.target.value)} />
         <label className="text-sm">Per page:</label>
-        <select className="px-2 py-1 border rounded" value={limit} onChange={(e)=>{ setLimit(Number(e.target.value)); setPage(0); }}>
-          <option value={10}>10</option>
-          <option value={25}>25</option>
-          <option value={50}>50</option>
-          <option value={100}>100</option>
-        </select>
+        <div ref={limitWrapperRef} className="relative inline-block">
+          <button type="button" onClick={() => setLimitOpen(!limitOpen)} className="px-2 py-1 border rounded bg-card text-text-main">
+            {limit}
+            <span className="ml-2 text-text-main/60">▾</span>
+          </button>
+          {limitOpen && (
+            <ul className="absolute left-0 mt-2 z-50 rounded-md overflow-hidden shadow-lg bg-card/20 border border-indigo-500/10">
+              {[10,25,50,100].map((opt) => (
+                <li key={opt} onClick={() => { setLimit(opt); setPage(0); setLimitOpen(false) }} className={`px-4 py-2 text-sm text-text-main hover:bg-indigo-500/10 cursor-pointer ${limit === opt ? 'font-bold' : 'font-normal'}`}>{opt}</li>
+              ))}
+            </ul>
+          )}
+        </div>
       </div>
 
       {logs.length === 0 ? (
