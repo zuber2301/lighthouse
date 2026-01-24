@@ -30,7 +30,7 @@ const ECard = ({ data }) => {
               <span className="leading-none truncate max-w-[80px]">{data?.badge_name || data?.value_tag || 'E-Card'}</span>
             </span>
 
-            <span className="bg-white text-indigo-900 px-2.5 py-1 rounded-full text-[10px] font-black uppercase tracking-tight shadow-sm-md">
+            <span className="px-2.5 py-1 rounded-full text-[10px] font-black uppercase tracking-tight bg-gradient-to-r from-indigo-500 to-indigo-400 text-white shadow-sm-md">
               +{data?.points ?? 0} Points
             </span>
           </div>
