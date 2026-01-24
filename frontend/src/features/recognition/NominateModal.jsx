@@ -413,10 +413,20 @@ export default function NominateModal({ open, onClose, onSubmit, initialCategory
                     </select>
                   </section>
 
-                  <section className="flex items-center gap-4">
+                  <section className="flex items-center gap-3">
                     <div className="flex-1">
                       <div className="text-[15px] font-normal tracking-tight text-white">Points</div>
                     </div>
+
+                    <button
+                      type="button"
+                      onClick={() => { setPoints(AWARD_POINTS[awardType]); setPointsManual(false); }}
+                      title="Use award default points"
+                      className={`px-3 py-1 rounded-md text-sm border border-${themeColor}-500/20 bg-${themeColor}-500/10 text-${themeColor}-300 hover:bg-${themeColor}-500/15 transition`}
+                    >
+                      {AWARD_POINTS[awardType].toLocaleString()}
+                    </button>
+
                     <div className="w-36">
                       <input
                         type="number"
