@@ -70,13 +70,13 @@ export default function GroupRecipientPool({ value = [], onChange = () => {}, pl
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           placeholder={placeholder}
-          className="flex-1 bg-surface border border-indigo-500/20 rounded-xl p-3 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/30"
+          className="flex-1 bg-surface border border-indigo-500/20 rounded-md p-3 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/30"
         />
         <button
           type="button"
           onClick={selectMyTeam}
           disabled={presetLoading}
-          className="px-3 py-2 rounded-xl bg-indigo-500 text-white text-sm shadow-sm"
+          className="px-3 py-2 rounded-md bg-indigo-500 text-white text-sm shadow-sm"
         >
           {presetLoading ? 'Adding…' : 'Select My Team'}
         </button>
@@ -92,9 +92,9 @@ export default function GroupRecipientPool({ value = [], onChange = () => {}, pl
                 key={u.id}
                 type="button"
                 onClick={() => addUser(u)}
-                className={`w-full text-left px-3 py-2 rounded-lg text-sm mb-1 flex items-center gap-3 ${isSelected(u.id) ? 'bg-indigo-500 text-white' : 'bg-surface hover:bg-indigo-500/10'}`}
+                className={`w-full text-left px-3 py-2 rounded-md text-sm mb-1 flex items-center gap-3 ${isSelected(u.id) ? 'bg-indigo-500 text-white' : 'bg-surface hover:bg-indigo-500/10'}`}
               >
-                <div className={`w-7 h-7 rounded-full flex items-center justify-center text-xs ${isSelected(u.id) ? 'bg-white/20 text-white' : 'bg-indigo-500/20 text-indigo-500'}`}>{u.name?.charAt(0) || '?'}</div>
+                  <div className={`w-7 h-7 rounded-md flex items-center justify-center text-xs ${isSelected(u.id) ? 'bg-white/20 text-white' : 'bg-indigo-500/20 text-indigo-500'}`}>{u.name?.charAt(0) || '?'}</div>
                 <div className="truncate">{u.name} <span className="text-xs opacity-50 ml-2">{u.email}</span></div>
               </button>
             ))
@@ -107,7 +107,7 @@ export default function GroupRecipientPool({ value = [], onChange = () => {}, pl
       {value.length > 0 && (
         <div className="mb-3 flex flex-wrap gap-2">
           {value.map((u) => (
-            <div key={u.id} className="px-3 py-1 rounded-full bg-indigo-500/10 flex items-center gap-2 text-sm">
+            <div key={u.id} className="px-3 py-1 rounded-md bg-indigo-500/10 flex items-center gap-2 text-sm">
               <span className="font-medium">{u.name}</span>
               <button type="button" onClick={() => removeUser(u.id)} className="text-xs text-rose-400">✕</button>
             </div>

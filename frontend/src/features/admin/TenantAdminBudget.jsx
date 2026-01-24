@@ -193,7 +193,7 @@ export default function TenantAdminBudget() {
                   { label: "Code Quality Month", color: "bg-indigo-500/10 text-indigo-500", icon: "💻" },
                   { label: "Wellness Week", color: "bg-emerald-500/10 text-emerald-500", icon: "🧘" }
                 ].map((init, i) => (
-                  <div key={i} className="flex items-center gap-3 p-3 rounded-2xl bg-indigo-500/5 border border-indigo-500/10">
+                  <div key={i} className="flex items-center gap-3 p-3 rounded-lg bg-indigo-500/5 border border-indigo-500/10">
                     <span className="text-lg">{init.icon}</span>
                     <div className="flex-1">
                       <p className="text-xs font-bold text-text-main">{init.label}</p>
@@ -224,7 +224,7 @@ export default function TenantAdminBudget() {
               </div>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 {forecast.map((f, i) => (
-                  <div key={i} className="p-4 bg-white/50 border border-purple-500/10 rounded-2xl flex items-center justify-between">
+                  <div key={i} className="p-4 bg-white/50 border border-purple-500/10 rounded-lg flex items-center justify-between">
                     <div>
                       <p className="text-[10px] font-black uppercase text-purple-600 tracking-widest">{f.label}</p>
                       <p className="text-lg font-bold text-text-main">{f.count} <span className="text-sm font-normal opacity-60">Milestones</span></p>

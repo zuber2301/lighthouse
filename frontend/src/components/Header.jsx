@@ -77,7 +77,7 @@ export default function Header() {
         <div className="relative" ref={themeDropdownRef}>
           <button
             onClick={() => setIsThemeDropdownOpen(!isThemeDropdownOpen)}
-            className="flex items-center gap-2 px-4 py-2 bg-indigo-500/5 hover:bg-indigo-500/10 border border-indigo-500/20 rounded-full transition-all text-[17px] font-bold text-text-main"
+            className="flex items-center gap-2 px-4 py-2 bg-indigo-500/5 hover:bg-indigo-500/10 border border-indigo-500/20 rounded-md transition-all text-[17px] font-bold text-text-main"
           >
             <span className="opacity-70">🎨</span>
             <span>Theme</span>
@@ -87,7 +87,7 @@ export default function Header() {
           </button>
 
           {isThemeDropdownOpen && (
-            <div className="absolute left-0 mt-3 w-44 bg-card border border-border-soft rounded-2xl shadow-2xl z-50 overflow-hidden py-2 animate-in fade-in slide-in-from-top-2 duration-200">
+            <div className="absolute left-0 mt-3 w-44 bg-card border border-border-soft rounded-lg shadow-2xl z-50 overflow-hidden py-2 animate-in fade-in slide-in-from-top-2 duration-200">
               <button 
                 onClick={() => { setTheme('light'); setIsThemeDropdownOpen(false); }} 
                 className={`w-full text-left px-4 py-2.5 text-[11px] font-black uppercase tracking-widest hover:bg-indigo-500/5 flex items-center gap-3 transition-colors ${theme === 'light' ? 'text-indigo-500 bg-indigo-500/5' : 'text-text-main opacity-60'}`}
@@ -124,7 +124,7 @@ export default function Header() {
 
         {/* PROMINENT POINTS BALANCE FOR CORPORATE USERS */}
         {isCorporate && (
-            <div className="hidden sm:flex items-center gap-2 px-4 py-2 bg-indigo-500/10 border border-indigo-500/20 rounded-full">
+            <div className="hidden sm:flex items-center gap-2 px-4 py-2 bg-indigo-500/10 border border-indigo-500/20 rounded-md">
             <span className="text-[16px]">💰</span>
             <span className="font-bold text-indigo-500 text-[17px]">{user?.points_balance?.toLocaleString() || 0}</span>
             <span className="text-[12px] uppercase tracking-wider text-indigo-500/60 font-black">Pts</span>
@@ -136,21 +136,21 @@ export default function Header() {
           <div className="hidden sm:flex items-center gap-2">
             <button
               onClick={() => navigate(`/recognition?tab=${encodeURIComponent('Individual Award')}&_=${Date.now()}`)}
-              className="px-6 py-2 rounded-full btn-recognition text-[16px] font-bold transition-all shadow-lg active:scale-95"
+              className="px-6 py-2 rounded-md btn-recognition text-[16px] font-bold transition-all shadow-lg active:scale-95"
             >
               Individual Award
             </button>
 
             <button
               onClick={() => navigate(`/recognition?tab=${encodeURIComponent('E-Card')}&_=${Date.now()}`)}
-              className="px-6 py-2 rounded-full btn-recognition text-[16px] font-bold transition-all shadow-lg active:scale-95"
+              className="px-6 py-2 rounded-md btn-recognition text-[16px] font-bold transition-all shadow-lg active:scale-95"
             >
               E-Card
             </button>
 
             <button
               onClick={() => setIsGroupModalOpen(true)}
-              className="px-6 py-2 rounded-full btn-recognition text-[16px] font-bold transition-all shadow-lg active:scale-95"
+              className="px-6 py-2 rounded-md btn-recognition text-[16px] font-bold transition-all shadow-lg active:scale-95"
             >
               Group Award
             </button>
@@ -163,7 +163,7 @@ export default function Header() {
         <div className="relative" ref={dropdownRef}>
           <button
             onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-            className="flex items-center gap-2.5 p-1 rounded-full transition-colors focus:outline-none hover:bg-surface active:scale-95"
+            className="flex items-center gap-2.5 p-1 rounded-md transition-colors focus:outline-none hover:bg-surface active:scale-95"
           >
             <div className="w-9 h-9 rounded-full bg-indigo-600 flex items-center justify-center text-accent-contrast font-black text-[16px] ring-2 ring-indigo-500/30 shadow-md">
               {firstLetter}
@@ -176,7 +176,7 @@ export default function Header() {
 
           {/* Dropdown Menu */}
           {isDropdownOpen && (
-            <div className="absolute right-0 mt-3 w-60 border bg-card border-border-soft rounded-2xl shadow-2xl z-50 overflow-hidden py-1 animate-in fade-in slide-in-from-top-2 duration-200">
+            <div className="absolute right-0 mt-3 w-60 border bg-card border-border-soft rounded-lg shadow-2xl z-50 overflow-hidden py-1 animate-in fade-in slide-in-from-top-2 duration-200">
               <div className="p-4 border-b border-border-soft bg-indigo-500/5">
                 <div className="text-[17px] font-black text-text-main">{displayName}</div>
                 <div className="text-xs text-text-main/50 font-normal truncate">{user?.email}</div>

@@ -37,7 +37,17 @@ module.exports = {
         'tm-neon': '0 8px 30px rgba(0,255,204,0.08), 0 0 40px rgba(0,255,204,0.04)'
       },
       borderRadius: {
-        'xl-2': '16px'
+        // Centralized: square with soft edges across the portal
+        none: '0',
+        sm: '0.25rem',    // 4px
+        DEFAULT: '0.375rem', // 6px — soft square default
+        md: '0.375rem',   // 6px
+        lg: '0.5rem',     // 8px
+        xl: '0.5rem',     // 8px (was 12px)
+        '2xl': '0.625rem', // 10px (was 16px)
+        '3xl': '0.75rem', // 12px (was 24px)
+        full: '9999px',
+        'xl-2': '0.625rem' // legacy token
       },
       fontFamily: {
         sans: ['Inter', 'ui-sans-serif', 'system-ui', 'Segoe UI', 'Roboto', 'Helvetica', 'Arial'],

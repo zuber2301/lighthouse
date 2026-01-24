@@ -13,10 +13,10 @@ const MilestoneBanner = () => {
         initial={{ opacity: 0, height: 0 }}
         animate={{ opacity: 1, height: 'auto' }}
         exit={{ opacity: 0, height: 0 }}
-        className="relative overflow-hidden bg-gradient-to-r from-amber-50 to-orange-50 rounded-[2rem] border border-amber-200 shadow-sm"
+        className="relative overflow-hidden bg-gradient-to-r from-amber-50 to-orange-50 rounded-lg border border-amber-200 shadow-sm"
       >
         <div className="p-6 flex flex-col md:flex-row items-center gap-6">
-          <div className="flex-shrink-0 w-16 h-16 bg-white rounded-2xl flex items-center justify-center text-4xl shadow-sm border border-amber-100 animate-bounce">
+          <div className="flex-shrink-0 w-16 h-16 bg-white rounded-md flex items-center justify-center text-4xl shadow-sm border border-amber-100 animate-bounce">
             🎉
           </div>
           <div className="flex-1 text-center md:text-left">
@@ -39,7 +39,7 @@ const MilestoneBanner = () => {
             </div>
           </div>
           <div className="flex-shrink-0">
-            <button className="px-6 py-2.5 bg-amber-500 hover:bg-amber-600 text-white rounded-xl text-xs font-bold uppercase tracking-widest transition-all shadow-lg hover:shadow-amber-500/20 active:scale-95">
+            <button className="px-6 py-2.5 bg-amber-500 hover:bg-amber-600 text-white rounded-md text-xs font-bold uppercase tracking-widest transition-all shadow-lg hover:shadow-amber-500/20 active:scale-95">
               Congratulate All
             </button>
           </div>

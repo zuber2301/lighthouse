@@ -256,31 +256,42 @@ export default function NominateModal({ open, onClose, onSubmit, initialCategory
     return () => clearTimeout(searchTimer.current)
   }, [search])
 
+  // Determine theme colors based on category
+  const isECard = category === 'E-Card' || openedAsECard;
+  const themeColor = isECard ? 'violet' : 'indigo';
+  const themeHex = isECard ? '#8B5CF6' : '#6366f1';
+
   return (
-    <Modal open={open} onClose={onClose} className="max-w-6xl">
+    <Modal open={open} onClose={onClose} className={`max-w-6xl transition-all duration-700 
+      ${isECard 
+        ? '!bg-gradient-to-br !from-[#040f0d] !via-[#052e1f] !to-[#020a09]' 
+        : '!bg-gradient-to-br !from-[#0f172a] !via-[#1e1b4b] !to-[#0f172a]'}`}>
       <form onSubmit={handleSubmit} className="space-y-6">
         <div>
-          <h2 className="text-3xl font-normal text-text-main tracking-tight">{openedAsECard ? 'Send a E-Card' : 'Nominate a Peer'}</h2>
-          <div className="text-[13px] font-normal tracking-[0.08em] opacity-40 text-text-main mt-1">{openedAsECard ? 'Create and send a personalized e-card' : 'Reward excellence across your organization'}</div>
+          <h2 className={`text-4xl font-extrabold tracking-tighter ${category === 'Individual Award' ? 'text-white' : `text-${themeColor}-400`} mb-2`}>{openedAsECard ? 'Send a E-Card' : 'Nominate a Peer'}</h2>
+          <div className="text-[13px] font-medium tracking-widest uppercase opacity-40 text-text-main">{openedAsECard ? 'Personalized Appreciation' : 'Reward excellence across your organization'}</div>
 
-            <div className="mt-6 flex items-center justify-between">
+            <div className="mt-8 flex items-center justify-between">
             <div className="flex flex-col md:flex-row gap-4">
             </div>
 
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-4">
               <button
                 type="button"
                 onClick={() => setStep(Math.max(1, step - 1))}
                 disabled={step === 1}
-                className={`px-3 py-2 rounded-full ${step===1 ? 'opacity-50 cursor-not-allowed bg-surface text-text-main' : 'bg-surface border border-border-soft text-text-main hover:brightness-95'}`}
+                className={`px-5 py-2.5 rounded-md transition-all flex items-center gap-2 group ${step===1 
+                  ? 'opacity-20 cursor-not-allowed bg-white/5 text-text-main' 
+                  : `bg-${themeColor}-500/5 border border-${themeColor}-500/30 ${category === 'Individual Award' ? 'text-white' : `text-${themeColor}-400`} hover:bg-${themeColor}-500/10 hover:border-${themeColor}-500/60 font-bold shadow-lg`}`} 
               >
-                Back
+                <svg className={`w-4 h-4 transition-transform group-hover:-translate-x-1 ${step===1 ? 'hidden' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M15 19l-7-7 7-7" strokeWidth={3} strokeLinecap="round" strokeLinejoin="round"/></svg>
+                Back 
               </button>
 
               <button
                 type="button"
                 onClick={() => { resetAll(); onClose(); }}
-                className={`px-4 py-2 rounded-full text-white shadow-lg bg-gradient-to-r from-gray-500 to-gray-600 hover:brightness-95`}
+                className={`px-5 py-2.5 rounded-md text-white/70 hover:text-white transition-colors font-bold`}
               >
                 Cancel
               </button>
@@ -289,22 +300,23 @@ export default function NominateModal({ open, onClose, onSubmit, initialCategory
                 type="button"
                 onClick={handleTopNext}
                 disabled={step === 1 && nominees.length === 0}
-                className={`px-4 py-2 rounded-full text-white shadow-lg ${step===3 ? 'bg-emerald-500' : 'bg-gradient-to-r from-indigo-500 to-indigo-400' } ${step===1 && nominees.length === 0 ? 'opacity-60 cursor-not-allowed' : ''}`}
+                className={`px-8 py-2.5 rounded-md text-white shadow-xl font-black tracking-tight transition-all active:scale-95
+                  ${step===3 ? 'bg-violet-500 shadow-violet-500/20' : (isECard ? 'bg-violet-600 shadow-violet-600/20' : 'bg-indigo-600 shadow-indigo-600/20') } 
+                  ${step===1 && nominees.length === 0 ? 'opacity-60 cursor-not-allowed' : 'hover:brightness-110 hover:scale-[1.02]'}`}
               >
-                {step < 3 ? 'Next' : 'Send'}
+                {step < 3 ? 'Next Step' : 'Send Recognition'}
               </button>
             </div>
             {validationError && <div className="text-sm text-rose-400 mt-2">{validationError}</div>}
           </div>
-        </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-stretch">
           {/* Left column: Entry Form */}
-          <div className="space-y-6 bg-card border border-border-soft p-6 rounded-2xl shadow-inner ring-2 ring-indigo-500/20 shadow-[0_0_20px_rgba(99,102,241,0.06)]">
+          <div className={`space-y-6 bg-black/30 border border-${themeColor}-500/10 p-6 rounded-lg backdrop-blur-md shadow-2xl`}>
             <div className="flex items-center gap-3">
-              <div className={`w-8 h-8 rounded-full flex items-center justify-center ${step===1 ? 'bg-indigo-500 text-white' : 'bg-surface text-text-main'}`}>1</div>
+              <div className={`w-8 h-8 rounded-md flex items-center justify-center font-bold ${step===1 ? `bg-${themeColor}-500 text-white shadow-lg shadow-${themeColor}-500/20` : 'bg-white/10 text-white/40'}`}>1</div>
               <div>
-                <div className="text-sm font-semibold">Recipient</div>
+                <div className="text-sm font-bold uppercase tracking-widest text-white/70">Recipient</div>
               </div>
             </div>
             <section>
@@ -312,10 +324,10 @@ export default function NominateModal({ open, onClose, onSubmit, initialCategory
                 <input 
                   value={search} 
                   onChange={(e) => setSearch(e.target.value)} 
-                  placeholder="Search by name or email..." 
-                  className="w-full bg-surface border border-indigo-500/20 rounded-xl p-3 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/30 transition-all font-normal" 
+                  placeholder="Find teammate..." 
+                  className={`w-full bg-white/5 border border-white/10 rounded-md p-4 text-sm focus:outline-none focus:ring-2 focus:ring-${themeColor}-500/30 transition-all font-medium placeholder:text-white/20`} 
                 />
-                <svg className="w-4 h-4 absolute right-3 top-3.5 opacity-30" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" strokeWidth={3} strokeLinecap="round" strokeLinejoin="round"/></svg>
+                <svg className="w-4 h-4 absolute right-4 top-4.5 opacity-20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" strokeWidth={3} strokeLinecap="round" strokeLinejoin="round"/></svg>
               </div>
 
               {search.trim() ? (
@@ -334,9 +346,9 @@ export default function NominateModal({ open, onClose, onSubmit, initialCategory
                           })
                           setSearch('')
                         }}
-                        className={`w-full text-left px-4 py-2.5 rounded-lg text-sm transition-all flex items-center gap-3 ${selected ? 'bg-indigo-500 text-white font-bold' : 'bg-surface hover:bg-indigo-500/10 border border-indigo-500/10'}`}
+                        className={`w-full text-left px-4 py-2.5 rounded-md text-sm transition-all flex items-center gap-3 ${selected ? `bg-${themeColor}-500 text-white font-bold` : `bg-surface hover:bg-${themeColor}-500/10 border border-${themeColor}-500/10`}`}
                       >
-                        <div className={`w-6 h-6 rounded-full flex items-center justify-center text-[10px] ${selected ? 'bg-white/20' : 'bg-indigo-500/20 text-indigo-500'}`}>
+                        <div className={`w-6 h-6 rounded-md flex items-center justify-center text-[10px] ${selected ? 'bg-white/20' : `bg-${themeColor}-500/20 ${category === 'Individual Award' ? 'text-white' : `text-${themeColor}-500`}`}`}>
                           {u.name.charAt(0)}
                         </div>
                         {u.name}
@@ -355,7 +367,7 @@ export default function NominateModal({ open, onClose, onSubmit, initialCategory
                   const id = typeof n === 'string' ? n : n.id
                   const name = typeof n === 'string' ? (users.find((x) => x.id === n)?.name || n) : n.name
                   return (
-                    <div key={id} className="px-3 py-1 rounded-full bg-indigo-500/10 flex items-center gap-2 text-sm">
+                    <div key={id} className={`px-3 py-1 rounded-md bg-${themeColor}-500/10 flex items-center gap-2 text-sm ${category === 'Individual Award' ? 'text-white font-bold' : `text-${themeColor}-300 font-bold`}`}>
                       <span>{name}</span>
                       <button type="button" onClick={() => setNominees((s) => s.filter((x) => (typeof x === 'string' ? x !== id : x.id !== id)))} className="text-xs text-rose-400">✕</button>
                     </div>
@@ -369,7 +381,7 @@ export default function NominateModal({ open, onClose, onSubmit, initialCategory
                 <>
                   <section>
                     <div className="text-[15px] font-normal tracking-tight text-white mb-3">Recognition Type</div>
-                    <div className="flex bg-surface border border-indigo-500/10 p-1.5 rounded-2xl shadow-sm border border-border-soft">
+                    <div className={`flex bg-surface border border-${themeColor}-500/10 p-1.5 rounded-lg shadow-sm border border-border-soft`}>
                       {CATEGORIES.map((c) => (
                         <button
                           key={c}
@@ -377,7 +389,7 @@ export default function NominateModal({ open, onClose, onSubmit, initialCategory
                           onClick={() => setCategory(c)}
                           className={`flex-1 px-4 py-2.5 rounded-md text-sm font-normal transition-all ${
                             category === c 
-                            ? 'btn-accent tab-accent text-white shadow-lg shadow-indigo-500/20' 
+                            ? `bg-${themeColor}-500 text-white shadow-lg shadow-${themeColor}-500/20` 
                             : 'text-text-main opacity-60 hover:opacity-100 hover:bg-white/5'
                           }`}
                         >
@@ -393,7 +405,7 @@ export default function NominateModal({ open, onClose, onSubmit, initialCategory
                       type="number" 
                       value={points} 
                       onChange={(e) => setPoints(Number(e.target.value))} 
-                      className="w-full bg-surface border border-indigo-500/20 rounded-xl p-3 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/30 font-normal text-indigo-500" 
+                      className={`w-full bg-surface border border-${themeColor}-500/20 rounded-md p-3 text-sm focus:outline-none focus:ring-2 focus:ring-${themeColor}-500/30 font-normal ${category === 'Individual Award' ? 'text-white' : `text-${themeColor}-500`}`}  
                       min={1} 
                     />
                   </section>
@@ -403,7 +415,7 @@ export default function NominateModal({ open, onClose, onSubmit, initialCategory
 
             <section>
               <div className="text-[15px] font-normal tracking-tight text-white mb-3">Area of Focus</div>
-              <select value={areaOfFocus} onChange={(e) => setAreaOfFocus(e.target.value)} className="w-full bg-surface border border-indigo-500/20 rounded-xl p-3 text-sm">
+              <select value={areaOfFocus} onChange={(e) => setAreaOfFocus(e.target.value)} className={`w-full bg-surface border border-${themeColor}-500/20 rounded-md p-3 text-sm`}>
                 <option value="">-- Select area --</option>
                 <option value="Collaboration">Collaboration</option>
                 <option value="Innovation">Innovation</option>
@@ -418,13 +430,13 @@ export default function NominateModal({ open, onClose, onSubmit, initialCategory
               <textarea 
                 value={message} 
                 onChange={(e) => setMessage(e.target.value)} 
-                className="w-full bg-surface border border-indigo-500/20 rounded-xl p-4 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/30 min-h-[120px] font-normal placeholder:opacity-30" 
+                className={`w-full bg-surface border border-${themeColor}-500/20 rounded-md p-4 text-sm focus:outline-none focus:ring-2 focus:ring-${themeColor}-500/30 min-h-[120px] font-normal placeholder:opacity-30`} 
                 placeholder="Why does this person deserve recognition?" 
               />
               <div className="mt-2 flex items-center gap-2">
-                <button type="button" onClick={handleCoach} disabled={coachLoading || !message} className="px-3 py-2 rounded-xl bg-indigo-500/10 text-sm hover:bg-indigo-500/15">{coachLoading ? 'Improving…' : 'Improve your message'}</button>
+                  <button type="button" onClick={handleCoach} disabled={coachLoading || !message} className={`px-3 py-2 rounded-md bg-${themeColor}-500/10 text-sm hover:bg-${themeColor}-500/15 ${category === 'Individual Award' ? 'text-white' : `text-${themeColor}-400`} font-bold`}>{coachLoading ? 'Improving…' : 'Improve your message'}</button> 
                 {coachTips?.improved_message && (
-                  <button type="button" onClick={() => setMessage(coachTips.improved_message)} className="text-sm text-emerald-400">Apply suggestion</button>
+                  <button type="button" onClick={() => setMessage(coachTips.improved_message)} className="text-sm text-violet-400">Apply suggestion</button>
                 )}
               </div>
               {coachTips && (
@@ -443,109 +455,110 @@ export default function NominateModal({ open, onClose, onSubmit, initialCategory
           </div>
 
           {/* Middle column: Design chooser + preview */}
-          <div className="space-y-6 bg-card border border-border-soft p-6 rounded-2xl shadow-inner ring-2 ring-indigo-500/20 shadow-[0_0_20px_rgba(99,102,241,0.06)]">
+          <div className={`space-y-6 bg-black/30 border border-${themeColor}-500/10 p-6 rounded-lg backdrop-blur-md shadow-2xl`}>
             <div className="flex items-center gap-3">
-              <div className={`w-8 h-8 rounded-full flex items-center justify-center ${step===2 ? 'bg-indigo-500 text-white' : 'bg-surface text-text-main'}`}>2</div>
+              <div className={`w-8 h-8 rounded-md flex items-center justify-center font-bold ${step===2 ? `bg-${themeColor}-500 text-white shadow-lg shadow-${themeColor}-500/20` : 'bg-white/10 text-white/40'}`}>2</div>
               <div>
-                <div className="text-sm font-semibold">Design E-Card</div>
+                <div className="text-sm font-bold uppercase tracking-widest text-white/70">Design E-Card</div>
               </div>
             </div>
             <div>
               { (category === 'E-Card' || openedAsECard) ? (
                 <>
-                  <select value={design} onChange={(e) => setDesign(e.target.value)} className="w-full bg-surface border border-indigo-500/20 rounded-xl p-3 text-sm">
-                    <option>Classic</option>
-                    <option>Modern</option>
-                    <option>Fun</option>
+                  <select value={design} onChange={(e) => setDesign(e.target.value)} className={`w-full bg-white/5 border border-white/10 rounded-md p-4 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500/30 transition-all text-white`}>
+                    <option className="bg-[#040f0d]">Classic</option>
+                    <option className="bg-[#040f0d]">Modern</option>
+                    <option className="bg-[#040f0d]">Fun</option>
                   </select>
-                  <div className="mt-3 p-4 bg-surface border border-border-soft rounded-xl">
+                  <div className={`mt-3 p-4 rounded-md ${isECard ? 'bg-[#130b21] border border-violet-500/30 shadow-[inset_0_0_30px_rgba(139,92,246,0.04)]' : 'bg-surface border border-border-soft'}`}>
                     <div id="ecard-preview" dangerouslySetInnerHTML={{ __html: ecardHtml }} />
                   </div>
                 </>
               ) : (
-                <div className="text-sm opacity-50">Designs available when E-Card is selected</div>
+                <div className="text-sm opacity-50 flex items-center justify-center h-40 border-2 border-dashed border-white/5 rounded-lg italic">
+                  Select E-Card category to unlock designs
+                </div>
               ) }
             </div>
 
           </div>
 
           {/* Right column: Summary, steps and review */}
-          <div className="flex flex-col gap-6">
+          <div className="flex flex-col gap-8">
             {/* Stepper + Review area */}
-            <div className="space-y-6 bg-card border border-border-soft p-6 rounded-2xl shadow-inner ring-2 ring-indigo-500/20 shadow-[0_0_20px_rgba(99,102,241,0.06)]">
+            <div className={`space-y-6 bg-black/30 border border-${themeColor}-500/10 p-6 rounded-lg backdrop-blur-md shadow-2xl`}>
               <div className="flex items-center gap-3">
-                <div className={`w-8 h-8 rounded-full flex items-center justify-center ${step===3 ? 'bg-emerald-500 text-white' : 'bg-surface text-text-main'}`}>3</div>
+                <div className={`w-8 h-8 rounded-md flex items-center justify-center font-bold ${step===3 ? `bg-violet-500 text-white shadow-lg shadow-violet-500/20` : 'bg-white/10 text-white/40'}`}>3</div>
                 <div>
-                  <div className="text-sm font-semibold">Review & Send</div>
+                  <div className="text-sm font-bold uppercase tracking-widest text-white/70">Review & Send</div>
                 </div>
               </div>
-              {/* Top stepper shows the flow; right-column step list removed to avoid duplication */}
 
-              <div className="pt-4 border-t border-border-soft">
+              <div className="pt-6 border-t border-white/5 space-y-4">
                 {step === 2 && (
-                  <div>
-                    <div className="text-sm mb-2">Design: {design}</div>
-                    <div className="p-3 bg-surface border border-border-soft rounded-md">
+                  <div className="animate-in fade-in slide-in-from-bottom-2 duration-500">
+                    <div className="text-[10px] font-black uppercase tracking-tighter text-white/30 mb-2">Active Design</div>
+                    <div className="text-sm font-bold text-violet-400 mb-4">{design} Edition</div>
+                    <div className={`p-3 rounded-md ${isECard ? 'bg-[#130b21] border border-violet-500/30' : 'bg-surface/80 border border-border-soft'}`}>
                       <div dangerouslySetInnerHTML={{ __html: ecardHtml }} />
                     </div>
                   </div>
                 )}
 
                 {step === 3 && (
-                  <div>
-                    <div className="text-sm font-semibold mb-2">Review</div>
-                    <div className="text-sm">Category: {category}</div>
-                    <div className="text-sm">Area of Focus: {areaOfFocus || '—'}</div>
-                    <div className="mt-3 p-3 bg-indigo-500/5 rounded-md border border-indigo-500/5">
-                      <div className="font-semibold">Message</div>
-                      <div className="text-sm italic">{message || '—'}</div>
+                  <div className="animate-in fade-in slide-in-from-bottom-4 duration-700">
+                    <div className="grid grid-cols-2 gap-4 text-xs font-bold uppercase tracking-widest text-white/40">
+                      <div>Category</div>
+                      <div className={`${category === 'Individual Award' ? 'text-white text-right' : `text-${themeColor}-400 text-right`}`}>{category}</div>
                     </div>
-                    <div className="mt-3">
-                      <div className="font-semibold">E-Card Preview</div>
-                      <div className="mt-2 p-3 bg-surface border border-border-soft rounded-md">
-                        <div dangerouslySetInnerHTML={{ __html: ecardHtml }} />
-                      </div>
+
+                    <div className={`mt-6 p-4 bg-${themeColor}-500/5 rounded-md border border-${themeColor}-500/10`}>
+                      <div className="text-[10px] font-black uppercase tracking-tighter opacity-30 mb-2">Final Message</div>
+                      <div className="text-sm italic text-white/90 leading-relaxed">"{message || 'No message provided'}"</div>
                     </div>
                   </div>
                 )}
               </div>
-
-              {/* navigation moved to top controls */}
             </div>
-            {/* middle column: Design chooser + preview (shows when E-Card selected or opened as E-Card) */}
           
-            <div className="flex-1 space-y-6 bg-card border border-border-soft p-6 rounded-2xl shadow-inner">
-              <div className="text-[15px] font-normal tracking-tight text-white border-b border-border-soft pb-3">Preview Recognition</div>
-
-              <div className="space-y-4">
-                <div className="bg-indigo-500/5 p-4 rounded-xl border border-indigo-500/5 min-h-[100px]">
-                  <span className="text-[15px] font-normal text-white block mb-2">Message Preview</span>
-                  <p className="text-sm text-text-main/80 font-normal italic leading-relaxed">
-                    {message ? message : 'Write a message to see it previewed here...'}
-                  </p>
-                </div>
+            <div className={`flex-1 space-y-6 bg-black/30 border border-${themeColor}-500/10 p-6 rounded-lg backdrop-blur-md shadow-2xl`}>
+              <div className="text-xs font-bold uppercase tracking-widest text-white/70 border-b border-white/5 pb-4 flex items-center justify-between">
+                Live Preview
+                {isECard && <span className="bg-violet-500/20 text-violet-400 px-2 py-0.5 rounded text-[10px]">E-CARD MODE</span>}
               </div>
 
-              {!openedAsECard && (
-                <section className="pt-4 border-t border-border-soft">
-                  <div className="text-[11px] font-normal text-text-main/30 mb-4">Schedule (Optional)</div>
-                  <div className="grid grid-cols-2 gap-3">
-                    <input 
-                      type="date" 
-                      value={scheduledDate} 
-                      onChange={(e) => setScheduledDate(e.target.value)} 
-                      className="bg-surface border border-border-soft rounded-xl p-3 text-[13px] font-normal focus:outline-none focus:ring-2 focus:ring-indigo-500/30 transition-all cursor-pointer text-text-main" 
-                    />
-                    <input 
-                      type="time" 
-                      value={scheduledTime} 
-                      onChange={(e) => setScheduledTime(e.target.value)} 
-                      className="bg-surface border border-border-soft rounded-xl p-3 text-[13px] font-normal focus:outline-none focus:ring-2 focus:ring-indigo-500/30 transition-all cursor-pointer text-text-main" 
-                    />
-                  </div>
-                </section>
-              )}
+              <div className="space-y-6">
+                <div className={`p-5 rounded-md shadow-inner ${isECard ? 'bg-[#130b21] border border-violet-500/30' : 'bg-white/5 border border-white/5'}`}>
+                  <p className="text-sm text-white/60 font-medium italic leading-relaxed">
+                    {message ? message : 'Start typing to see your message here...'}
+                  </p>
+                </div>
+
+                {!openedAsECard && (
+                  <section className="pt-4 border-t border-white/5">
+                    <div className="text-[10px] font-bold uppercase tracking-widest text-white/20 mb-4">Delivery Schedule</div>
+                    <div className="grid grid-cols-1 gap-3">
+                      <div className="flex gap-2">
+                        <input 
+                          type="date" 
+                          value={scheduledDate} 
+                          onChange={(e) => setScheduledDate(e.target.value)} 
+                          className={`flex-1 bg-white/5 border border-white/10 rounded-md p-3 text-xs font-bold focus:outline-none focus:ring-2 focus:ring-${themeColor}-500/30 text-white`} 
+                        />
+                        <input 
+                          type="time" 
+                          value={scheduledTime} 
+                          onChange={(e) => setScheduledTime(e.target.value)} 
+                          className={`flex-1 bg-white/5 border border-white/10 rounded-md p-3 text-xs font-bold focus:outline-none focus:ring-2 focus:ring-${themeColor}-500/30 text-white`} 
+                        />
+                      </div>
+                      <p className="text-[10px] opacity-20 italic">Leave empty for immediate delivery</p>
+                    </div>
+                  </section>
+                )}
+              </div>
             </div>
+</div>
 
             {/* bottom cancel removed per design — top Cancel remains in header */}
           </div>

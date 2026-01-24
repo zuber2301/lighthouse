@@ -5,7 +5,7 @@ const CompactBudgetCard = ({ master = 0, allocated = 0, spent = 0 }) => {
   const spentPercent = allocated > 0 ? (spent / allocated) * 100 : 0;
 
   return (
-    <div className="bg-card border border-indigo-500/5 rounded-3xl p-6 shadow-sm">
+    <div className="bg-card border border-indigo-500/5 rounded-lg p-6 shadow-sm">
       <div className="flex justify-between items-center mb-6">
         <h3 className="text-sm font-bold opacity-60 text-text-main uppercase tracking-tighter">Budget Utilization</h3>
         <span className="text-xs bg-indigo-500/10 text-indigo-500 px-3 py-1 rounded-full font-bold">Q1 2026</span>

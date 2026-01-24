@@ -122,11 +122,11 @@ export default function GroupAwardModal({ open, onClose, onSubmit, initialData }
         <div className="flex items-center justify-between">
           <h2 className="text-2xl font-semibold">Create Group Award</h2>
           <div className="flex items-center gap-3">
-            <button type="button" onClick={() => setStep(Math.max(1, step - 1))} className="px-3 py-2 rounded-full bg-surface">Back</button>
+            <button type="button" onClick={() => setStep(Math.max(1, step - 1))} className="px-3 py-2 rounded-md bg-surface">Back</button>
             {step < 3 ? (
-              <button type="button" onClick={handleNext} className="px-4 py-2 rounded-full bg-gradient-to-r from-indigo-500 to-indigo-400 text-white">Next</button>
+              <button type="button" onClick={handleNext} className="px-4 py-2 rounded-md bg-gradient-to-r from-indigo-500 to-indigo-400 text-white">Next</button>
             ) : (
-              <button type="submit" className="px-4 py-2 rounded-full bg-emerald-500 text-white">Send</button>
+              <button type="submit" className="px-4 py-2 rounded-md bg-emerald-500 text-white">Send</button>
             )}
           </div>
         </div>
@@ -144,7 +144,7 @@ export default function GroupAwardModal({ open, onClose, onSubmit, initialData }
             <section className="p-4 bg-card border border-border-soft rounded-lg space-y-4">
               <div>
                 <label className="block text-sm font-semibold mb-2">Award Level</label>
-                <select value={awardLevel} onChange={(e) => setAwardLevel(e.target.value)} className="w-full bg-surface border border-indigo-500/20 rounded-xl p-3 text-sm">
+                <select value={awardLevel} onChange={(e) => setAwardLevel(e.target.value)} className="w-full bg-surface border border-indigo-500/20 rounded-md p-3 text-sm">
                   <option>Bronze - 300</option>
                   <option>Silver - 500</option>
                   <option>Gold - 1000</option>
@@ -153,7 +153,7 @@ export default function GroupAwardModal({ open, onClose, onSubmit, initialData }
 
               <div>
                 <label className="block text-sm font-semibold mb-2">Behavior Alignment</label>
-                <select value={behaviorAlignment} onChange={(e) => setBehaviorAlignment(e.target.value)} className="w-full bg-surface border border-indigo-500/20 rounded-xl p-3 text-sm">
+                <select value={behaviorAlignment} onChange={(e) => setBehaviorAlignment(e.target.value)} className="w-full bg-surface border border-indigo-500/20 rounded-md p-3 text-sm">
                   <option>Slightly</option>
                   <option>Moderately</option>
                   <option>Significantly</option>
@@ -162,7 +162,7 @@ export default function GroupAwardModal({ open, onClose, onSubmit, initialData }
 
               <div>
                 <label className="block text-sm font-semibold mb-2">Impact Duration</label>
-                <select value={impactDuration} onChange={(e) => setImpactDuration(e.target.value)} className="w-full bg-surface border border-indigo-500/20 rounded-xl p-3 text-sm">
+                <select value={impactDuration} onChange={(e) => setImpactDuration(e.target.value)} className="w-full bg-surface border border-indigo-500/20 rounded-md p-3 text-sm">
                   <option>One-time</option>
                   <option>Long-term</option>
                 </select>
@@ -174,7 +174,7 @@ export default function GroupAwardModal({ open, onClose, onSubmit, initialData }
             <section className="p-4 bg-card border border-border-soft rounded-lg space-y-4">
               <div>
                 <label className="block text-sm font-semibold mb-2">Collective Message</label>
-                <textarea value={message} onChange={(e) => setMessage(e.target.value)} className="w-full bg-surface border border-indigo-500/20 rounded-xl p-3 min-h-[140px]" placeholder="Describe the team's accomplishment..." />
+                <textarea value={message} onChange={(e) => setMessage(e.target.value)} className="w-full bg-surface border border-indigo-500/20 rounded-md p-3 min-h-[140px]" placeholder="Describe the team's accomplishment..." />
               </div>
 
               <div>

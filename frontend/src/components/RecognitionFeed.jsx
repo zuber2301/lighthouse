@@ -2,7 +2,7 @@ import React from 'react'
 
 const RecognitionCard = ({ data }) => (
   <article role="article" className="w-full max-w-xs">
-    <div className="rounded-2xl bg-gradient-to-r from-indigo-600 via-indigo-500 to-teal-400 p-[1px] h-full shadow-lg shadow-indigo-600/10">
+    <div className="rounded-lg bg-gradient-to-r from-indigo-600 via-indigo-500 to-teal-400 p-[1px] h-full shadow-lg shadow-indigo-600/10">
       <div className="card-base p-4 flex flex-col gap-3 h-full">
         <div className="flex items-center justify-center">
           <div className="h-12 w-12 rounded-full bg-gradient-to-br from-indigo-500 to-teal-400 text-accent-contrast flex items-center justify-center text-lg font-bold shadow-md shadow-indigo-500/20">
@@ -44,7 +44,7 @@ const RecognitionCard = ({ data }) => (
 export const RecognitionFeed = ({ items = [] }) => {
   if (!items.length) {
     return (
-      <div className="text-center py-20 flex flex-col items-center justify-center bg-card/50 rounded-3xl border border-dashed border-indigo-500/10 transition-colors duration-300">
+      <div className="text-center py-20 flex flex-col items-center justify-center bg-card/50 rounded-lg border border-dashed border-indigo-500/10 transition-colors duration-300">
         <div className="w-16 h-16 rounded-full bg-indigo-500/5 flex items-center justify-center text-3xl mb-4">✨</div>
         <p className="text-text-main font-bold opacity-30 uppercase tracking-widest text-xs">No recognitions yet</p>
         <p className="text-text-main opacity-20 text-[10px] mt-1">Be the first to appreciate someone's work!</p>

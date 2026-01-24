@@ -34,7 +34,7 @@ const RedemptionModal = ({ isOpen, onClose, reward, currentBalance, onConfirm })
       <motion.div 
         initial={{ scale: 0.9, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
-        className="bg-card dark:bg-card w-full max-w-md rounded-3xl overflow-hidden shadow-sm-2xl border dark:border-border-soft"
+        className="bg-card dark:bg-card w-full max-w-md rounded-lg overflow-hidden shadow-sm-2xl border dark:border-border-soft"
       >
         {status !== 'success' ? (
           <div className="p-8">
@@ -42,7 +42,7 @@ const RedemptionModal = ({ isOpen, onClose, reward, currentBalance, onConfirm })
             <p className="text-text-main opacity-70 text-sm mb-6">You are about to redeem your hard-earned points for this reward.</p>
 
             {/* Reward Summary Card */}
-            <div className="flex items-center gap-4 bg-surface dark:bg-card/50 p-4 rounded-2xl mb-6">
+            <div className="flex items-center gap-4 bg-surface dark:bg-card/50 p-4 rounded-lg mb-6">
               <div className="h-16 w-16 bg-card dark:bg-card rounded-xl flex items-center justify-center text-3xl shadow-sm-sm">
                 {reward.icon || '🎁'}
               </div>

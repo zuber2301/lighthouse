@@ -81,9 +81,9 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="bg-card/20 border border-indigo-500/10 backdrop-blur-sm border border-indigo-500/10 rounded-2xl p-8 shadow-2xl transition-colors duration-200">
+    <div className="bg-card/20 border border-indigo-500/10 backdrop-blur-sm border border-indigo-500/10 rounded-lg p-8 shadow-2xl transition-colors duration-200">
       <div className="text-center mb-8">
-        <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-tm-teal to-tm-teal-2 rounded-2xl mb-4 shadow-tm-neon">
+        <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-tm-teal to-tm-teal-2 rounded-lg mb-4 shadow-tm-neon">
           <svg className="w-8 h-8 text-tm-bg-dark" fill="currentColor" viewBox="0 0 20 20">
             <path fillRule="evenodd" d="M10 2L3 7v11a1 1 0 001 1h3a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1h3a1 1 0 001-1V7l-7-5z" clipRule="evenodd" />
           </svg>
@@ -106,7 +106,7 @@ export default function LoginPage() {
             value={formData.email}
             onChange={handleInputChange}
             required
-            className="w-full px-4 py-3 bg-surface/50 border border-indigo-500/10 rounded-xl text-text-main placeholder:opacity-40 focus:outline-none focus:ring-2 focus:ring-tm-teal/50 focus:border-tm-teal transition-all duration-200"
+            className="w-full px-4 py-3 bg-surface/50 border border-indigo-500/10 rounded-md text-text-main placeholder:opacity-40 focus:outline-none focus:ring-2 focus:ring-tm-teal/50 focus:border-tm-teal transition-all duration-200"
             placeholder="Enter your email"
           />
         </div>
@@ -122,7 +122,7 @@ export default function LoginPage() {
             value={formData.password}
             onChange={handleInputChange}
             required
-            className="w-full px-4 py-3 bg-surface/50 border border-indigo-500/10 rounded-xl text-text-main placeholder:opacity-40 focus:outline-none focus:ring-2 focus:ring-tm-teal/50 focus:border-tm-teal transition-all duration-200"
+            className="w-full px-4 py-3 bg-surface/50 border border-indigo-500/10 rounded-md text-text-main placeholder:opacity-40 focus:outline-none focus:ring-2 focus:ring-tm-teal/50 focus:border-tm-teal transition-all duration-200"
             placeholder="Enter your password"
           />
         </div>
@@ -140,7 +140,7 @@ export default function LoginPage() {
         <button
           type="submit"
           disabled={isLoading}
-          className="w-full py-3 px-4 bg-gradient-to-r from-tm-teal to-tm-teal-2 text-tm-bg-dark font-semibold rounded-xl hover:shadow-lg hover:shadow-tm-teal/25 transform hover:scale-[1.02] transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+          className="w-full py-3 px-4 bg-gradient-to-r from-tm-teal to-tm-teal-2 text-tm-bg-dark font-semibold rounded-md hover:shadow-lg hover:shadow-tm-teal/25 transform hover:scale-[1.02] transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
         >
           {isLoading ? 'Signing in...' : 'Sign In'}
         </button>
@@ -162,7 +162,7 @@ export default function LoginPage() {
         <div className="mt-6 grid grid-cols-3 gap-3">
           <button
             onClick={() => handleSocialLogin('Google')}
-            className="flex items-center justify-center px-4 py-3 bg-card/20 border border-indigo-500/10 rounded-xl hover:bg-card/30 transition-colors duration-200 group"
+            className="flex items-center justify-center px-4 py-3 bg-card/20 border border-indigo-500/10 rounded-md hover:bg-card/30 transition-colors duration-200 group"
           >
             <svg className="w-5 h-5 text-red-500 group-hover:scale-110 transition-transform" viewBox="0 0 24 24">
               <path fill="currentColor" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
@@ -174,7 +174,7 @@ export default function LoginPage() {
 
           <button
             onClick={() => handleSocialLogin('Facebook')}
-            className="flex items-center justify-center px-4 py-3 bg-card/20 border border-indigo-500/10 rounded-xl hover:bg-card/30 transition-colors duration-200 group"
+            className="flex items-center justify-center px-4 py-3 bg-card/20 border border-indigo-500/10 rounded-md hover:bg-card/30 transition-colors duration-200 group"
           >
             <svg className="w-5 h-5 text-blue-500 group-hover:scale-110 transition-transform" viewBox="0 0 24 24">
               <path fill="currentColor" d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
@@ -183,7 +183,7 @@ export default function LoginPage() {
 
           <button
             onClick={() => handleSocialLogin('SSO')}
-            className="flex items-center justify-center px-4 py-3 bg-card/20 border border-indigo-500/10 rounded-xl hover:bg-card/30 transition-colors duration-200 group"
+            className="flex items-center justify-center px-4 py-3 bg-card/20 border border-indigo-500/10 rounded-md hover:bg-card/30 transition-colors duration-200 group"
           >
             <svg className="w-5 h-5 text-text-main/60 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />

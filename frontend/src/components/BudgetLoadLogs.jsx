@@ -89,7 +89,7 @@ export default function BudgetLoadLogs({ tenantId }) {
 
       {selectedLog && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
-          <div className="bg-card border border-indigo-500/10 rounded-2xl p-6 w-full max-w-lg border border-indigo-500/10">
+          <div className="bg-card border border-indigo-500/10 rounded-lg p-6 w-full max-w-lg border border-indigo-500/10">
             <h3 className="text-xl font-bold mb-2">Budget Log Detail</h3>
             <div className="text-sm text-text-main opacity-60 mb-2">{selectedLog.created_at ? new Date(selectedLog.created_at).toLocaleString() : ''}</div>
             <div className="mb-2"><strong>Type:</strong> {selectedLog.transaction_type}</div>

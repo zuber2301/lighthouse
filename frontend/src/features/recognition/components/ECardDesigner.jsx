@@ -131,7 +131,7 @@ export default function ECardDesigner({ onChange, onExport, initial = {} }) {
 
       <div>
         <div className="text-[13px] font-normal text-white mb-2">Preview</div>
-        <div className="p-6 bg-card border border-border-soft rounded-2xl shadow-2xl">
+        <div className="p-6 bg-card border border-border-soft rounded-lg shadow-2xl">
           <div className="w-full">
             <div ref={previewRef} id="ecard-preview" className="w-full" dangerouslySetInnerHTML={{ __html: buildHtml() }} />
           </div>

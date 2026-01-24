@@ -5,7 +5,7 @@ const CelebrationWidget = ({ celebrations = [] }) => {
   // Empty State
   if (celebrations.length === 0) {
     return (
-      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-[2.5rem] p-8 text-center shadow-sm">
+      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg p-8 text-center shadow-sm">
         <div className="w-16 h-16 bg-slate-50 dark:bg-slate-800 rounded-full flex items-center justify-center mx-auto mb-4">
           <PartyPopper className="text-slate-300" size={32} />
         </div>
@@ -16,7 +16,7 @@ const CelebrationWidget = ({ celebrations = [] }) => {
   }
 
   return (
-    <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-[2.5rem] overflow-hidden shadow-sm">
+    <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg overflow-hidden shadow-sm">
       <div className="p-6 border-b border-slate-50 dark:border-slate-800 flex justify-between items-center">
         <h3 className="text-sm font-black text-slate-400 uppercase tracking-widest flex items-center gap-2">
           <PartyPopper size={16} className="text-indigo-500" />
@@ -34,7 +34,7 @@ const CelebrationWidget = ({ celebrations = [] }) => {
               <div className="flex items-center gap-4">
                 {/* Avatar with Celebration Badge */}
                 <div className="relative">
-                  <div className="w-12 h-12 rounded-2xl bg-slate-200 flex items-center justify-center font-bold text-slate-500 overflow-hidden">
+                  <div className="w-12 h-12 rounded-md bg-slate-200 flex items-center justify-center font-bold text-slate-500 overflow-hidden">
                     {person.imageUrl ? (
                       <img src={person.imageUrl} alt={person.full_name} className="w-full h-full object-cover" />
                     ) : (
@@ -67,7 +67,7 @@ const CelebrationWidget = ({ celebrations = [] }) => {
                 onClick={() => {
                   window.location.href = `/recognition?userId=${person.user_id || person.id}&note=Happy ${person.type === 'BIRTHDAY' ? 'Birthday' : `${person.years}y Anniversary`}!`;
                 }}
-                className="p-3 bg-slate-50 dark:bg-slate-800 text-slate-400 group-hover:bg-indigo-600 group-hover:text-white rounded-xl transition-all shadow-sm"
+                className="p-3 bg-slate-50 dark:bg-slate-800 text-slate-400 group-hover:bg-indigo-600 group-hover:text-white rounded-md transition-all shadow-sm"
               >
                 <Send size={18} />
               </button>

@@ -4,7 +4,7 @@ import { useApproveRecognition } from '../hooks'
 function Avatar({ name }) {
   const initials = name ? name.split(' ').map(s => s[0]).slice(0,2).join('').toUpperCase() : 'U'
   return (
-    <div className="w-10 h-10 rounded-full bg-surface flex items-center justify-center font-semibold text-sm">{initials}</div>
+    <div className="w-10 h-10 rounded-full bg-surface flex items-center justify-center font-normal text-sm">{initials}</div>
   )
 }
 
@@ -22,7 +22,7 @@ export default function RecognitionList({ pages, fetchNextPage, hasNextPage, isF
                 <div className="flex items-center justify-between">
                   <div>
                     <div className="text-sm font-normal">{r.nominee_name || r.nominee_id}</div>
-                    <div className="text-xs text-text-main opacity-60">Points: <span className="font-semibold">{r.points}</span></div>
+                    <div className="text-xs text-text-main opacity-60">Points: <span className="font-normal">{r.points}</span></div>
                   </div>
                   <div>
                     <span className={`px-2 py-1 text-xs rounded ${r.status === 'APPROVED' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}`}>

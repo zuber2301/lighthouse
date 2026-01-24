@@ -124,7 +124,7 @@ export default function TenantLeadDashboard() {
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {upcomingMilestones.map((m, i) => (
-              <div key={i} className="p-4 bg-white/40 border border-amber-500/10 rounded-2xl flex justify-between items-center group hover:shadow-md transition-all">
+              <div key={i} className="p-4 bg-white/40 border border-amber-500/10 rounded-lg flex justify-between items-center group hover:shadow-md transition-all">
                 <div>
                   <p className="font-bold text-text-main">{m.full_name}</p>
                   <p className="text-[11px] text-amber-600/70 uppercase font-black tracking-tighter">

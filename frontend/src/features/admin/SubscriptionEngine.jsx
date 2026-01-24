@@ -9,7 +9,7 @@ const SubscriptionEngine = () => {
   return (
     <div className="p-8">
       <h1 className="text-3xl font-bold mb-8">Subscription Engine</h1>
-      <div className="bg-card border border-indigo-500/10 dark:bg-card border border-indigo-500/10 rounded-2xl border dark:border-border-soft overflow-hidden">
+      <div className="bg-card border border-indigo-500/10 dark:bg-card border border-indigo-500/10 rounded-lg border dark:border-border-soft overflow-hidden">
         <table className="w-full text-left">
           <thead className="bg-surface dark:bg-card border border-indigo-500/10/50">
             <tr className="text-text-main/60 text-sm">

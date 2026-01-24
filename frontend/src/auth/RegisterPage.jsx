@@ -42,9 +42,9 @@ export default function RegisterPage() {
   }
 
   return (
-    <div className="bg-card/20 border border-indigo-500/10 backdrop-blur-sm border border-indigo-500/10 rounded-2xl p-8 shadow-2xl transition-colors duration-200">
+    <div className="bg-card/20 border border-indigo-500/10 backdrop-blur-sm border border-indigo-500/10 rounded-lg p-8 shadow-2xl transition-colors duration-200">
       <div className="text-center mb-8">
-        <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-tm-teal to-tm-teal-2 rounded-2xl mb-4 shadow-tm-neon">
+        <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-tm-teal to-tm-teal-2 rounded-lg mb-4 shadow-tm-neon">
           <svg className="w-8 h-8 text-tm-bg-dark" fill="currentColor" viewBox="0 0 20 20">
             <path d="M8 9a3 3 0 100-6 3 3 0 000 6zM8 11a6 6 0 016 6H2a6 6 0 016-6zM16 7a1 1 0 10-2 0v1h-1a1 1 0 100 2h1v1a1 1 0 102 0v-1h1a1 1 0 100-2h-1V7z" />
           </svg>

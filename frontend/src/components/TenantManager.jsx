@@ -83,7 +83,7 @@ const TenantManager = ({ tenants, onRefresh, onAddTenant }) => {
 
   return (
     <>
-      <div className="bg-card border border-indigo-500/5 rounded-3xl overflow-auto styled-scrollbar max-h-[70vh] shadow-sm transition-colors duration-300">
+      <div className="bg-card border border-indigo-500/5 rounded-lg overflow-auto styled-scrollbar max-h-[70vh] shadow-sm transition-colors duration-300">
         <div className="p-8 border-b border-indigo-500/5 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
           <div>
             <h2 className="text-2xl font-normal text-text-main tracking-tight">Tenant Registry</h2>
@@ -96,7 +96,7 @@ const TenantManager = ({ tenants, onRefresh, onAddTenant }) => {
                 placeholder="Search by company..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full bg-indigo-500/10 border border-indigo-500/20 rounded-2xl px-5 py-3 text-[15px] focus:outline-none focus:ring-2 focus:ring-indigo-500/30 focus:bg-indigo-500/20 transition-all pl-12 text-text-main placeholder:text-text-main/50 font-normal"
+                className="w-full bg-indigo-500/10 border border-indigo-500/20 rounded-md px-5 py-3 text-[15px] focus:outline-none focus:ring-2 focus:ring-indigo-500/30 focus:bg-indigo-500/20 transition-all pl-12 text-text-main placeholder:text-text-main/50 font-normal"
               />
               <svg className="w-5 h-5 absolute left-4 top-3.5 opacity-30 text-text-main" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
@@ -104,7 +104,7 @@ const TenantManager = ({ tenants, onRefresh, onAddTenant }) => {
             </div>
             <button 
               onClick={() => setIsDrawerOpen(true)}
-              className="btn-accent px-8 py-3 rounded-2xl text-[14px] font-black uppercase tracking-wider shadow-xl hover:scale-[1.02] transition-all whitespace-nowrap active:scale-95"
+              className="btn-accent px-8 py-3 rounded-md text-[14px] font-black uppercase tracking-wider shadow-xl hover:scale-[1.02] transition-all whitespace-nowrap active:scale-95"
             >
               + Create Tenant
             </button>

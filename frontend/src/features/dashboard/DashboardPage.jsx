@@ -30,7 +30,7 @@ export default function DashboardPage() {
   return (
     <div className="space-y-6">
       <PageHeader title="Dashboard" subtitle="What's happening right now?" actions={<button onClick={() => setOpen(true)} className="px-4 py-1.5 rounded-full btn-recognition text-xs font-normal transition-all shadow-lg">Nominate</button>} />
-      <div className="bg-surface p-6 rounded-[2rem] border border-border-soft transition-colors duration-300">
+      <div className="bg-surface p-6 rounded-lg border border-border-soft transition-colors duration-300">
         {/* Hero */}
         <div className="mb-6">
           <ThemeHero />
