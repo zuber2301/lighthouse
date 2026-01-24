@@ -122,11 +122,11 @@ body, input, button, textarea, select {
 
 html { font-size: var(--font-size-base); }
 
-/* Keep hierarchy but avoid heavy weights — use semi-bold (600) for headings */
-h1 { font-size: var(--h1-size); font-weight: 600; line-height: 1.1; margin: 0; }
-h2 { font-size: var(--h2-size); font-weight: 600; line-height: 1.15; margin: 0; }
-h3 { font-size: var(--h3-size); font-weight: 600; line-height: 1.2; margin: 0; }
-h4 { font-size: var(--h4-size); font-weight: 600; line-height: 1.25; margin: 0; }
+/* Headings: use normal weight to avoid bold text across the portal */
+h1 { font-size: var(--h1-size); font-weight: 400; line-height: 1.1; margin: 0; }
+h2 { font-size: var(--h2-size); font-weight: 400; line-height: 1.15; margin: 0; }
+h3 { font-size: var(--h3-size); font-weight: 400; line-height: 1.2; margin: 0; }
+h4 { font-size: var(--h4-size); font-weight: 400; line-height: 1.25; margin: 0; }
 
 /* Ensure body text and small UI labels use normal weight */
 p, label, span, a, li, button, input, textarea, select {
@@ -138,11 +138,11 @@ p, label, span, a, li, button, input, textarea, select {
     --tab-selected-text-alt: #F4C95D; /* sunset gold (alternate) */
 
 /* Reduce visual heaviness of Tailwind utility classes used across app */
-.font-bold, .font-black, .font-extrabold, .font-semibold { font-weight: 600 !important; }
+.font-bold, .font-black, .font-extrabold, .font-semibold { font-weight: 400 !important; }
 .font-medium, .font-normal { font-weight: 400 !important; }
 
-/* Buttons: prefer semi-bold rather than fully bold */
-.btn-accent, .btn-recognition, .btn-danger, .btn-success { font-weight: 600 !important; }
+/* Buttons: use normal weight to avoid bold buttons across portal */
+.btn-accent, .btn-recognition, .btn-danger, .btn-success { font-weight: 400 !important; }
 
 /* Utility to remove uppercase where used accidentally */
 .no-uppercase { text-transform: none !important; }
@@ -161,7 +161,8 @@ p, label, span, a, li, button, input, textarea, select {
     --tab-selected-text-alt: #F4C95D;
 
   .btn-accent {
-    @apply inline-flex items-center justify-center font-bold text-accent-contrast;
+    @apply inline-flex items-center justify-center font-normal text-accent-contrast;
+    font-weight: 400 !important;
     background-color: var(--accent);
     box-shadow: var(--card-shadow);
     border-radius: var(--radius);
@@ -232,19 +233,22 @@ p, label, span, a, li, button, input, textarea, select {
   }
 
   .btn-danger {
-    @apply inline-flex items-center justify-center font-bold text-accent-contrast;
+    @apply inline-flex items-center justify-center font-normal text-accent-contrast;
+    font-weight: 400 !important;
     background-color: #dc2626; /* red-600 */
     box-shadow: 0 8px 24px rgba(220,38,38,0.06);
     border-radius: var(--radius);
   }
   .btn-success {
-    @apply inline-flex items-center justify-center font-bold text-accent-contrast;
+    @apply inline-flex items-center justify-center font-normal text-accent-contrast;
+    font-weight: 400 !important;
     background-color: #16a34a; /* green-600 */
     box-shadow: 0 8px 24px rgba(16,163,127,0.06);
     border-radius: var(--radius);
   }
   .btn-warning {
-    @apply inline-flex items-center justify-center font-bold text-accent-contrast;
+    @apply inline-flex items-center justify-center font-normal text-accent-contrast;
+    font-weight: 400 !important;
     background-color: var(--warning); /* orange */
     box-shadow: 0 8px 24px rgba(202,138,4,0.06);
     border-radius: var(--radius);
@@ -281,7 +285,7 @@ p, label, span, a, li, button, input, textarea, select {
     content: 'LH';
     color: white;
     font-size: 14px;
-    font-weight: 800;
+    font-weight: 400;
     display: flex;
     align-items: center;
     justify-content: center;
