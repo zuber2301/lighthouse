@@ -269,7 +269,7 @@ export default function NominateModal({ open, onClose, onSubmit, initialCategory
       <form onSubmit={handleSubmit} className="space-y-6">
         <div>
           <h2 className={`text-4xl font-normal tracking-tighter ${category === 'Individual Award' ? 'text-white' : `text-${themeColor}-400`} mb-2`}>{openedAsECard ? 'Send a E-Card' : 'Individual Excellence Nomination Form'}</h2>
-          <div className="text-[13px] font-medium tracking-widest uppercase opacity-40 text-text-main">{openedAsECard ? 'Personalized Appreciation' : 'Reward excellence across your organization'}</div>
+          {openedAsECard && <div className="text-[13px] font-medium tracking-widest uppercase opacity-40 text-text-main">Personalized Appreciation</div>}
 
             <div className="mt-8 flex items-center justify-between">
             <div className="flex flex-col md:flex-row gap-4">
