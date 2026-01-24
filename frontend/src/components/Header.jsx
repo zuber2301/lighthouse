@@ -4,7 +4,7 @@ import { useAuth } from '../lib/AuthContext'
 import { useTenant } from '../lib/TenantContext'
 import { useAppTheme } from '../lib/ThemeContext'
 import TenantSelector from './TenantSelector'
-import GroupAwardModal from '../features/recognition/GroupAwardModal'
+import GroupAwardWizard from '../features/recognition/GroupAwardWizard'
 import { createRecognition } from '../api/recognitions'
 
 export default function Header() {
@@ -200,12 +200,20 @@ export default function Header() {
     </header>
 
       {isGroupModalOpen && (
-        <GroupAwardModal
+        <GroupAwardWizard
           open={isGroupModalOpen}
           onClose={() => setIsGroupModalOpen(false)}
           onSubmit={async (payload) => {
             try {
-              await createRecognition(payload)
+              // map group payload to recognition API payload expected shape
+              const nominee = payload.recipients?.[0]
+              const apiPayload = {
+                nominee_id: nominee?.id || null,
+                points: payload.points || 0,
+                message: payload.message || payload.message || '',
+                value_tag: payload.award_level || 'Group Award'
+              }
+              await createRecognition(apiPayload)
               setIsGroupModalOpen(false)
               navigate('/recognition')
             } catch (err) {
