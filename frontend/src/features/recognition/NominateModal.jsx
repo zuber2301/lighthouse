@@ -268,7 +268,7 @@ export default function NominateModal({ open, onClose, onSubmit, initialCategory
         : '!bg-gradient-to-br !from-[#0f172a] !via-[#1e1b4b] !to-[#0f172a]'}`}>
       <form onSubmit={handleSubmit} className="space-y-6">
         <div>
-          <h2 className={`text-4xl font-normal tracking-tighter ${category === 'Individual Award' ? 'text-white' : `text-${themeColor}-400`} mb-2`}>{openedAsECard ? 'Send a E-Card' : 'Nominate a Peer'}</h2>
+          <h2 className={`text-4xl font-normal tracking-tighter ${category === 'Individual Award' ? 'text-white' : `text-${themeColor}-400`} mb-2`}>{openedAsECard ? 'Send a E-Card' : 'Individual Excellence Nomination Form'}</h2>
           <div className="text-[13px] font-medium tracking-widest uppercase opacity-40 text-text-main">{openedAsECard ? 'Personalized Appreciation' : 'Reward excellence across your organization'}</div>
 
             <div className="mt-8 flex items-center justify-between">
