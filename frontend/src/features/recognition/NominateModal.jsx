@@ -379,25 +379,7 @@ export default function NominateModal({ open, onClose, onSubmit, initialCategory
             <div className="grid grid-cols-1 gap-6">
               {!openedAsECard && (
                 <>
-                  <section>
-                    <div className="text-[15px] font-normal tracking-tight text-white mb-3">Recognition Type</div>
-                    <div className={`flex bg-surface border border-${themeColor}-500/10 p-1.5 rounded-lg shadow-sm border border-border-soft`}>
-                      {CATEGORIES.map((c) => (
-                        <button
-                          key={c}
-                          type="button"
-                          onClick={() => setCategory(c)}
-                          className={`flex-1 px-4 py-2.5 rounded-md text-sm font-normal transition-all ${
-                            category === c 
-                            ? `bg-${themeColor}-500 text-white shadow-lg shadow-${themeColor}-500/20` 
-                            : 'text-text-main opacity-60 hover:opacity-100 hover:bg-white/5'
-                          }`}
-                        >
-                          {c}
-                        </button>
-                      ))}
-                    </div>
-                  </section>
+
 
                   <section>
                     <div className="text-[15px] font-normal tracking-tight text-white mb-3">Points</div>
