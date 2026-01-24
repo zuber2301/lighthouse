@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useRef, useEffect } from 'react'
 
 const OnboardTenantModal = ({ isOpen, onClose, onSave }) => {
   const [formData, setFormData] = useState({
@@ -7,6 +7,16 @@ const OnboardTenantModal = ({ isOpen, onClose, onSave }) => {
     adminEmail: '',
     planId: 1  // Default to Basic plan
   })
+  const planWrapperRef = useRef(null)
+  const [planOpen, setPlanOpen] = useState(false)
+
+  useEffect(() => {
+    function handleClickOutside(e) {
+      if (planWrapperRef.current && !planWrapperRef.current.contains(e.target)) setPlanOpen(false)
+    }
+    window.addEventListener('mousedown', handleClickOutside)
+    return () => window.removeEventListener('mousedown', handleClickOutside)
+  }, [])
 
   if (!isOpen) return null
 
@@ -66,15 +76,20 @@ const OnboardTenantModal = ({ isOpen, onClose, onSave }) => {
 
           <div>
             <label className="block text-sm font-normal mb-1">Subscription Plan</label>
-            <select 
-              className="w-full px-4 py-2 rounded-lg border bg-card/20 border-indigo-500/10 outline-none focus:ring-2 focus:ring-indigo-500 text-text-main"
-              value={formData.planId}
-              onChange={(e) => setFormData({...formData, planId: e.target.value})}
-            >
-              <option value={1}>Basic (Free)</option>
-              <option value={2}>Pro (₹15,000/mo)</option>
-              <option value={3}>Enterprise (Custom)</option>
-            </select>
+            <div ref={planWrapperRef} className="relative">
+              <button type="button" onClick={() => setPlanOpen(!planOpen)} className="w-full text-left bg-card/20 border border-indigo-500/10 rounded-lg p-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 text-text-main flex items-center justify-between">
+                <span>{formData.planId === 1 ? 'Basic (Free)' : formData.planId === 2 ? 'Pro (₹15,000/mo)' : 'Enterprise (Custom)'}</span>
+                <span className="text-text-main/60">▾</span>
+              </button>
+
+              {planOpen && (
+                <ul className="absolute left-0 right-0 mt-2 z-50 rounded-md overflow-hidden shadow-lg bg-card/20 border border-indigo-500/10" role="listbox">
+                  {[{id:1,label:'Basic (Free)'},{id:2,label:'Pro (₹15,000/mo)'},{id:3,label:'Enterprise (Custom)'}].map((opt) => (
+                    <li key={opt.id} role="option" onClick={() => { setFormData({...formData, planId: opt.id}); setPlanOpen(false) }} className={`px-4 py-3 text-sm text-text-main hover:bg-indigo-500/10 cursor-pointer ${formData.planId === opt.id ? 'font-bold' : 'font-normal'}`}>{opt.label}</li>
+                  ))}
+                </ul>
+              )}
+            </div>
           </div>
 
           <div className="flex gap-3 justify-end pt-4">
