@@ -74,10 +74,10 @@ export default function PlatformAdminPage() {
           <h3 className="text-4xl font-normal text-text-main mt-4">₹{((stats.INR || 0) / 100).toLocaleString()}</h3>
           <p className="text-[11px] text-indigo-400 font-normal mt-2 uppercase tracking-widest opacity-80">Growth: +12.5%</p>
         </Card>
-        <Card className="border-l-[6px] border-l-emerald-500 bg-gradient-to-br from-emerald-500/10 to-transparent hover:shadow-2xl hover:shadow-emerald-500/10 hover:translate-y-[-4px] transition-all border border-emerald-500/5">
+        <Card className="border-l-[6px] border-l-teal-500 bg-gradient-to-br from-teal-500/10 to-transparent hover:shadow-2xl hover:shadow-teal-500/10 hover:translate-y-[-4px] transition-all border border-teal-500/5">
           <p className="text-[12px] font-normal opacity-60 text-text-main uppercase tracking-widest leading-none">Active Users</p>
           <h3 className="text-4xl font-normal text-text-main mt-4">{stats.total_active_users || 0}</h3>
-          <p className="text-[11px] text-emerald-400 font-normal mt-2 uppercase tracking-widest opacity-80">Across {tenants.length} tenants</p>
+          <p className="text-[11px] text-teal-400 font-normal mt-2 uppercase tracking-widest opacity-80">Across {tenants.length} tenants</p>
         </Card>
         <Card className="border-l-[6px] border-l-amber-500 bg-gradient-to-br from-amber-500/10 to-transparent hover:shadow-2xl hover:shadow-amber-500/10 hover:translate-y-[-4px] transition-all border border-amber-500/5">
           <p className="text-[12px] font-normal opacity-60 text-text-main uppercase tracking-widest leading-none">System Uptime</p>
@@ -110,8 +110,8 @@ export default function PlatformAdminPage() {
           <Card className="h-full border border-indigo-500/10 bg-card/60 backdrop-blur-md">
             <div className="flex items-center justify-between mb-6">
               <h3 className="text-[12px] font-normal opacity-60 text-text-main uppercase tracking-widest">Platform Pulse</h3>
-              <div className="text-[10px] font-bold text-emerald-500 flex items-center gap-2">
-                <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></div>
+              <div className="text-[10px] font-bold text-teal-500 flex items-center gap-2">
+                <div className="w-1.5 h-1.5 rounded-full bg-teal-500 animate-pulse"></div>
                 LIVE
               </div>
             </div>
@@ -126,7 +126,7 @@ export default function PlatformAdminPage() {
                   <div key={i} className="flex gap-4 group">
                     <div className="relative">
                       <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs z-10 relative ${
-                        event.type === 'provision' ? 'bg-indigo-500/20 text-indigo-400' : 'bg-emerald-500/20 text-emerald-400'
+                        event.type === 'provision' ? 'bg-indigo-500/20 text-indigo-400' : 'bg-teal-500/20 text-teal-400'
                       }`}>
                         {event.type === 'provision' ? '🚀' : '💰'}
                       </div>

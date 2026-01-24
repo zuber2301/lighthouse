@@ -161,7 +161,7 @@ const TenantManager = ({ tenants, onRefresh, onAddTenant }) => {
                     </td>
                     <td className="px-8 py-6 text-center border-r border-indigo-500/10 last:border-r-0">
                       <div className={`inline-flex px-3.5 py-1.5 rounded-xl text-[12px] font-normal uppercase tracking-[0.1em] ${
-                        tenant.status === 'active' ? 'bg-emerald-500/10 text-emerald-500 border border-emerald-500/20' : 'bg-rose-500/10 text-rose-500 border border-rose-500/20'
+                        tenant.status === 'active' ? 'bg-teal-500/10 text-teal-500 border border-teal-500/20' : 'bg-rose-500/10 text-rose-500 border border-rose-500/20'
                       }`}>
                         {tenant.status}
                       </div>
@@ -181,12 +181,12 @@ const TenantManager = ({ tenants, onRefresh, onAddTenant }) => {
                         className={`text-[12px] font-normal tracking-widest px-4 py-2 rounded-xl border transition-all active:scale-95 ${
                           tenant.status === 'active' 
                             ? 'text-rose-500 border-rose-500/20 hover:bg-rose-500/20' 
-                            : 'text-emerald-500 border-emerald-500/20 hover:bg-emerald-500/20'
+                            : 'text-teal-500 border-teal-500/20 hover:bg-teal-500/20'
                         }`}
                       >
                         {tenant.status === 'active' ? 'SUSPEND' : 'ACTIVATE'}
                       </button>
-
+                      
                       <button
                         onClick={() => openLoadModal(tenant)}
                         title="Load Master Budget"

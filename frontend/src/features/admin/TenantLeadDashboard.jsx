@@ -109,7 +109,7 @@ export default function TenantLeadDashboard() {
 
       {/* Budget Display */}
       <Card className="mb-6">
-        <div className="bg-emerald-900/20 text-emerald-400 p-6 rounded-xl">
+        <div className="bg-teal-900/20 text-teal-400 p-6 rounded-xl">
           <h2 className="text-sm uppercase tracking-widest opacity-70">Your Recognition Budget</h2>
           <h1 className="text-3xl font-bold text-text-main">₹{budget.toLocaleString()}</h1>
         </div>
@@ -219,7 +219,7 @@ export default function TenantLeadDashboard() {
                 <p className="text-sm text-text-main opacity-60">Points Balance: {member.points_balance}</p>
               </div>
               <div className="text-right">
-                <span className="text-2xl font-bold text-emerald-500">{member.points_balance}</span>
+                <span className="text-2xl font-bold text-teal-500">{member.points_balance}</span>
                 <p className="text-xs text-text-main opacity-60">points</p>
               </div>
             </div>

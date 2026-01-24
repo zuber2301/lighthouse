@@ -157,7 +157,7 @@ export default function TenantAdminBudget() {
             <Card>
               <p className="text-xs font-bold opacity-70 text-text-main uppercase">Active Users</p>
               <h2 className="text-2xl font-bold text-text-main mt-2">1,284</h2>
-              <p className="text-xs text-emerald-500 font-normal mt-auto">+12 this week</p>
+              <p className="text-xs text-teal-500 font-normal mt-auto">+12 this week</p>
             </Card>
             <Card>
               <p className="text-xs font-bold opacity-70 text-text-main uppercase">Total Recognition</p>
@@ -191,7 +191,7 @@ export default function TenantAdminBudget() {
                 {[
                   { label: "Q1 Safety Sprint", color: "bg-amber-500/10 text-amber-500", icon: "⚓" },
                   { label: "Code Quality Month", color: "bg-indigo-500/10 text-indigo-500", icon: "💻" },
-                  { label: "Wellness Week", color: "bg-emerald-500/10 text-emerald-500", icon: "🧘" }
+                  { label: "Wellness Week", color: "bg-teal-500/10 text-teal-500", icon: "🧘" }
                 ].map((init, i) => (
                   <div key={i} className="flex items-center gap-3 p-3 rounded-lg bg-indigo-500/5 border border-indigo-500/10">
                     <span className="text-lg">{init.icon}</span>

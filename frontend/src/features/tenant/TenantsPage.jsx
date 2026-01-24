@@ -92,7 +92,7 @@ export default function TenantsPage() {
               <div className="w-full">
                 <div className="flex items-center justify-between text-base opacity-90">
                   <span className="text-text-main text-base">{formatMoney(t.master_budget_balance || 0)}</span>
-                  <span className={`px-2 py-0.5 rounded-full text-[15px] ${t.status === 'active' ? 'bg-emerald-600' : 'bg-amber-600'}`}>{t.status ? (t.status[0].toUpperCase() + t.status.slice(1)) : ''}</span>
+                  <span className={`px-2 py-0.5 rounded-full text-[15px] ${t.status === 'active' ? 'bg-teal-600' : 'bg-amber-600'}`}>{t.status ? (t.status[0].toUpperCase() + t.status.slice(1)) : ''}</span>
                 </div>
                 <div className="mt-2 text-[14px] text-slate-200 truncate">ID: {t.id}</div>
               </div>

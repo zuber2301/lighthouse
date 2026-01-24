@@ -25,7 +25,7 @@ const SubscriptionEngine = () => {
                 <td className="p-4 font-bold">{p.name}</td>
                 <td className="p-4"><span className="bg-indigo-100 text-indigo-700 px-2 py-1 rounded text-xs font-bold uppercase">{p.plan}</span></td>
                 <td className="p-4">
-                   <span className={p.status === 'Active' ? 'text-emerald-500' : 'text-rose-500'}>● {p.status}</span>
+                   <span className={p.status === 'Active' ? 'text-teal-500' : 'text-rose-500'}>● {p.status}</span>
                 </td>
                 <td className="p-4 text-text-main/60">{p.renewal}</td>
               </tr>

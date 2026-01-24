@@ -1,45 +1,18 @@
 import React from 'react'
+import { IndividualAwardCard, GroupAwardCard, ECard } from '../features/recognition/components'
 
-const RecognitionCard = ({ data }) => (
-  <article role="article" className="w-full max-w-xs">
-    <div className="rounded-lg bg-gradient-to-r from-indigo-600 via-indigo-500 to-teal-400 p-[1px] h-full shadow-lg shadow-indigo-600/10">
-      <div className="card-base p-4 flex flex-col gap-3 h-full">
-        <div className="flex items-center justify-center">
-          <div className="h-12 w-12 rounded-full bg-gradient-to-br from-indigo-500 to-teal-400 text-accent-contrast flex items-center justify-center text-lg font-bold shadow-md shadow-indigo-500/20">
-            {data.sender_avatar}
-          </div>
-        </div>
+const RecognitionCard = ({ data }) => {
+  const tag = (data.value_tag || data.tag || '').toLowerCase()
 
-        <div className="text-center">
-          <p className="text-sm text-text-main truncate">
-            <span className="font-bold">{data.sender_name}</span>
-            <span className="opacity-50 mx-1">recognized</span>
-            <span className="font-bold">{data.receiver_name}</span>
-          </p>
-        </div>
-
-        <div className="flex items-center justify-center gap-2">
-          <span className="px-2 py-0.5 bg-indigo-500/10 text-indigo-500 text-[10px] rounded font-black uppercase inline-flex items-center gap-1 border border-indigo-500/10">
-            <span>🏆</span>
-            <span className="leading-none truncate">{data.badge_name}</span>
-          </span>
-
-          <span className="text-emerald-500 text-[10px] font-black uppercase tracking-tight">+{data.points} Points</span>
-        </div>
-
-        <p className="mt-2 text-sm text-text-main opacity-70 italic text-center line-clamp-3 font-normal leading-relaxed">"{data.message}"</p>
-
-        <div className="mt-auto flex justify-between items-center">
-          <div className="flex -space-x-1">
-             <div className="w-5 h-5 rounded-full border border-card bg-indigo-100 flex items-center justify-center text-[8px]">👍</div>
-             <div className="w-5 h-5 rounded-full border border-card bg-rose-100 flex items-center justify-center text-[8px]">❤️</div>
-          </div>
-          <span className="text-[10px] opacity-40 text-text-main font-bold uppercase tracking-widest">{data.time_ago}</span>
-        </div>
-      </div>
-    </div>
-  </article>
-)
+  if (tag.includes('group')) {
+    return <GroupAwardCard data={data} />
+  }
+  if (tag.includes('e-card') || tag.includes('ecard')) {
+    return <ECard data={data} />
+  }
+  // Default to Individual Award
+  return <IndividualAwardCard data={data} />
+}
 
 export const RecognitionFeed = ({ items = [] }) => {
   if (!items.length) {

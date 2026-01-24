@@ -126,7 +126,7 @@ export default function GroupAwardModal({ open, onClose, onSubmit, initialData }
             {step < 3 ? (
               <button type="button" onClick={handleNext} className="px-4 py-2 rounded-md bg-gradient-to-r from-indigo-500 to-indigo-400 text-white">Next</button>
             ) : (
-              <button type="submit" className="px-4 py-2 rounded-md bg-emerald-500 text-white">Send</button>
+              <button type="submit" className="px-4 py-2 rounded-md bg-teal-500 text-white">Send</button>
             )}
           </div>
         </div>

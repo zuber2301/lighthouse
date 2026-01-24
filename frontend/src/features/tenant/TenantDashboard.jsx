@@ -46,7 +46,7 @@ export default function TenantDashboard() {
           <p className="opacity-70 text-text-main">Active Users</p>
         </Card>
         <Card>
-          <h3 className="text-2xl font-bold text-emerald-400">{data.recognitions_30d}</h3>
+          <h3 className="text-2xl font-bold text-teal-400">{data.recognitions_30d}</h3>
           <p className="opacity-70 text-text-main">Recognitions (30d)</p>
         </Card>
         <Card>

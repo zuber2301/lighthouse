@@ -64,7 +64,7 @@ const RedemptionModal = ({ isOpen, onClose, reward, currentBalance, onConfirm })
               </div>
               <div className="flex justify-between font-bold text-lg text-text-main dark:text-accent-contrast pt-2 border-t border-dashed dark:border-border-soft">
                 <span>Remaining Balance</span>
-                <span className={remainingBalance < 0 ? 'text-rose-500' : 'text-emerald-500'}>
+                <span className={remainingBalance < 0 ? 'text-rose-500' : 'text-teal-500'}>
                   {remainingBalance} pts
                 </span>
               </div>
@@ -90,7 +90,7 @@ const RedemptionModal = ({ isOpen, onClose, reward, currentBalance, onConfirm })
         ) : (
           /* Success State */
           <div className="p-10 text-center space-y-4">
-             <div className="w-20 h-20 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 rounded-full flex items-center justify-center text-4xl mx-auto mb-4">
+             <div className="w-20 h-20 bg-teal-100 dark:bg-teal-900/30 text-teal-600 rounded-full flex items-center justify-center text-4xl mx-auto mb-4">
                ✓
              </div>
              <h2 className="text-3xl font-black text-text-main dark:text-accent-contrast">Awesome Choice!</h2>

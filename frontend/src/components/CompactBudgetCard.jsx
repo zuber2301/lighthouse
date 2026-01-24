@@ -30,11 +30,11 @@ const CompactBudgetCard = ({ master = 0, allocated = 0, spent = 0 }) => {
         <div>
           <div className="flex justify-between mb-2">
             <span className="text-sm font-normal opacity-70 text-text-main">Employee Recognition Spending</span>
-            <span className="text-sm font-bold text-emerald-500">₹{spent.toLocaleString()} spent</span>
+            <span className="text-sm font-bold text-teal-500">₹{spent.toLocaleString()} spent</span>
           </div>
           <div className="h-2 w-full bg-indigo-500/10 rounded-full overflow-hidden">
             <div 
-              className="h-full bg-emerald-500 rounded-full transition-all duration-500 shadow-[0_0_10px_rgba(16,185,129,0.4)]" 
+              className="h-full bg-teal-500 rounded-full transition-all duration-500 shadow-[0_0_10px_rgba(20,184,166,0.4)]" 
               style={{ width: `${Math.min(spentPercent, 100)}%` }} 
             />
           </div>

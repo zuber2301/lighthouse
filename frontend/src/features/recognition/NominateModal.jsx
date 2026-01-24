@@ -282,13 +282,13 @@ export default function NominateModal({ open, onClose, onSubmit, initialCategory
 
   // Determine theme colors based on category
   const isECard = category === 'E-Card' || openedAsECard;
-  const themeColor = isECard ? 'violet' : 'indigo';
-  const themeHex = isECard ? '#8B5CF6' : '#6366f1';
+  const themeColor = isECard ? 'blue' : 'indigo';
+  const themeHex = isECard ? '#1d4ed8' : '#6366f1';
 
   return (
     <Modal open={open} onClose={onClose} className={`max-w-6xl transition-all duration-700 
       ${isECard 
-        ? '!bg-gradient-to-br !from-[#040f0d] !via-[#052e1f] !to-[#020a09]' 
+        ? '!bg-gradient-to-br !from-[#0f172a] !via-[#1d4ed8] !to-[#0f172a]' 
         : '!bg-gradient-to-br !from-[#0f172a] !via-[#1e1b4b] !to-[#0f172a]'}`}>
       <form onSubmit={handleSubmit} className="space-y-6">
         <div>
@@ -454,7 +454,7 @@ export default function NominateModal({ open, onClose, onSubmit, initialCategory
               <div className="mt-2 flex items-center gap-2">
                   <button type="button" onClick={handleCoach} disabled={coachLoading || !message} className={`px-3 py-2 rounded-md bg-${themeColor}-500/10 text-sm hover:bg-${themeColor}-500/15 ${category === 'Individual Award' ? 'text-white' : `text-${themeColor}-400`} font-bold`}>{coachLoading ? 'Improving…' : 'Improve your message'}</button> 
                 {coachTips?.improved_message && (
-                  <button type="button" onClick={() => setMessage(coachTips.improved_message)} className="text-sm text-violet-400">Apply suggestion</button>
+                  <button type="button" onClick={() => setMessage(coachTips.improved_message)} className="text-sm text-blue-400">Apply suggestion</button>
                 )}
               </div>
               {coachTips && (
@@ -483,12 +483,12 @@ export default function NominateModal({ open, onClose, onSubmit, initialCategory
             <div>
               { (category === 'E-Card' || openedAsECard) ? (
                 <>
-                  <select value={design} onChange={(e) => setDesign(e.target.value)} className={`w-full bg-white/5 border border-white/10 rounded-md p-4 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500/30 transition-all text-white`}>
-                    <option className="bg-[#040f0d]">Classic</option>
-                    <option className="bg-[#040f0d]">Modern</option>
-                    <option className="bg-[#040f0d]">Fun</option>
+                  <select value={design} onChange={(e) => setDesign(e.target.value)} className={`w-full bg-white/5 border border-white/10 rounded-md p-4 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/30 transition-all text-white`}>
+                    <option className="bg-[#0f172a]">Classic</option>
+                    <option className="bg-[#0f172a]">Modern</option>
+                    <option className="bg-[#0f172a]">Fun</option>
                   </select>
-                  <div className={`mt-3 p-4 rounded-md ${isECard ? 'bg-[#130b21] border border-violet-500/30 shadow-[inset_0_0_30px_rgba(139,92,246,0.04)]' : 'bg-surface border border-border-soft'}`}>
+                  <div className={`mt-3 p-4 rounded-md ${isECard ? 'bg-[#0f172a] border border-blue-500/30 shadow-[inset_0_0_30px_rgba(29,78,216,0.04)]' : 'bg-surface border border-border-soft'}`}>
                     <div id="ecard-preview" dangerouslySetInnerHTML={{ __html: ecardHtml }} />
                   </div>
                 </>
@@ -506,7 +506,7 @@ export default function NominateModal({ open, onClose, onSubmit, initialCategory
             {/* Stepper + Review area */}
             <div className={`space-y-6 bg-black/30 border border-${themeColor}-500/10 p-6 rounded-lg backdrop-blur-md shadow-2xl`}>
               <div className="flex items-center gap-3">
-                <div className={`w-8 h-8 rounded-md flex items-center justify-center font-bold ${step===3 ? `bg-violet-500 text-white shadow-lg shadow-violet-500/20` : 'bg-white/10 text-white/40'}`}>3</div>
+                <div className={`w-8 h-8 rounded-md flex items-center justify-center font-bold ${step===3 ? `bg-blue-500 text-white shadow-lg shadow-blue-500/20` : 'bg-white/10 text-white/40'}`}>3</div>
                 <div>
                   <div className="text-sm font-bold uppercase tracking-widest text-white/70">Review & Send</div>
                 </div>
@@ -516,8 +516,8 @@ export default function NominateModal({ open, onClose, onSubmit, initialCategory
                 {step === 2 && (
                   <div className="animate-in fade-in slide-in-from-bottom-2 duration-500">
                     <div className="text-[10px] font-black uppercase tracking-tighter text-white/30 mb-2">Active Design</div>
-                    <div className="text-sm font-bold text-violet-400 mb-4">{design} Edition</div>
-                    <div className={`p-3 rounded-md ${isECard ? 'bg-[#130b21] border border-violet-500/30' : 'bg-surface/80 border border-border-soft'}`}>
+                    <div className="text-sm font-bold text-blue-400 mb-4">{design} Edition</div>
+                    <div className={`p-3 rounded-md ${isECard ? 'bg-[#0f172a] border border-blue-500/30' : 'bg-surface/80 border border-border-soft'}`}>
                       <div dangerouslySetInnerHTML={{ __html: ecardHtml }} />
                     </div>
                   </div>
@@ -541,12 +541,12 @@ export default function NominateModal({ open, onClose, onSubmit, initialCategory
           
             <div className={`flex-1 space-y-6 bg-black/30 border border-${themeColor}-500/10 p-6 rounded-lg backdrop-blur-md shadow-2xl`}>
               <div className="text-xs font-bold uppercase tracking-widest text-white/70 border-b border-white/5 pb-4 flex items-center justify-between">
-                Live Preview
-                {isECard && <span className="bg-violet-500/20 text-violet-400 px-2 py-0.5 rounded text-[10px]">E-CARD MODE</span>}
-              </div>
+                  Live Preview
+                  {isECard && <span className="bg-blue-500/20 text-blue-400 px-2 py-0.5 rounded text-[10px]">E-CARD MODE</span>}
+                </div>
 
               <div className="space-y-6">
-                <div className={`p-5 rounded-md shadow-inner ${isECard ? 'bg-[#130b21] border border-violet-500/30' : 'bg-white/5 border border-white/5'}`}>
+                <div className={`p-5 rounded-md shadow-inner ${isECard ? 'bg-[#0f172a] border border-blue-500/30' : 'bg-white/5 border border-white/5'}`}>
                   <p className="text-sm text-white/60 font-medium italic leading-relaxed">
                     {message ? message : 'Start typing to see your message here...'}
                   </p>
