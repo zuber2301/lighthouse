@@ -136,7 +136,7 @@ export default function Header() {
           <div className="hidden sm:flex items-center gap-2">
             <button
               onClick={() => navigate(`/recognition?tab=${encodeURIComponent('Individual Award')}&_=${Date.now()}`)}
-              className="px-6 py-2 rounded-md btn-recognition text-[16px] font-bold transition-all shadow-lg active:scale-95"
+              className="px-6 py-2 rounded-md btn-recognition text-white text-[16px] font-bold transition-all shadow-lg active:scale-95"
             >
               Individual Award
             </button>

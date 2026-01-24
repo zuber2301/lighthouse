@@ -244,7 +244,7 @@ export default function CorporateUserDashboard() {
               type="number"
               value={recognitionData.amount}
               onChange={(e) => setRecognitionData({...recognitionData, amount: e.target.value})}
-              className="w-full bg-surface border border-indigo-500/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20 text-indigo-500 font-bold"
+              className={`w-full bg-surface border border-indigo-500/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20 ${recognitionData.category === 'Individual Award' ? 'text-white font-bold' : 'text-indigo-500 font-bold'}`}
             />
           </div>
 

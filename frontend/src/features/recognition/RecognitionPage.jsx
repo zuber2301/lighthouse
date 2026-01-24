@@ -49,7 +49,7 @@ export default function RecognitionPage() {
             isAllowedPersona && (
               <button 
                 onClick={() => setOpen(true)} 
-                className="px-6 py-2 rounded-full btn-recognition text-sm font-bold transition-all shadow-lg active:scale-95"
+                className={`px-6 py-2 rounded-full btn-recognition text-sm font-bold transition-all shadow-lg active:scale-95 ${activeTab === 'Individual Award' ? 'text-white' : ''}`}
               >
                 Give {activeTab}
               </button>
