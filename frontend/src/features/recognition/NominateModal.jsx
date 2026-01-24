@@ -15,7 +15,20 @@ export default function NominateModal({ open, onClose, onSubmit, initialCategory
 
   // Category
   const [category, setCategory] = useState(initialCategory || CATEGORIES[0])
-  const [points, setPoints] = useState(50)
+
+  // Award points mapping and selection
+  const AWARD_POINTS = {
+    'Gold - Annual Excellence': 5000,
+    'Silver - Quarterly Achievements': 2500,
+    'Bronze - Monthly Recognition': 1000,
+  }
+
+  // Award Type selection (e.g., Gold/Silver/Bronze tiers)
+  const [awardType, setAwardType] = useState('Gold - Annual Excellence')
+
+  // Points (auto-populated from award type but editable)
+  const [points, setPoints] = useState(AWARD_POINTS['Gold - Annual Excellence'])
+  const [pointsManual, setPointsManual] = useState(false)
 
   // Handle query params for pre-filling (e.g. from Celebration Widget)
   useEffect(() => {
@@ -65,6 +78,14 @@ export default function NominateModal({ open, onClose, onSubmit, initialCategory
   // Recognition coach suggestions
   const [coachTips, setCoachTips] = useState(null)
   const [coachLoading, setCoachLoading] = useState(false)
+
+  // When awardType changes, if the user hasn't manually edited points, auto-populate the points value
+  useEffect(() => {
+    if (!pointsManual) {
+      setPoints(AWARD_POINTS[awardType] ?? points)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [awardType])
 
   const openedAsECard = initialCategory === 'E-Card'
 
@@ -146,6 +167,8 @@ export default function NominateModal({ open, onClose, onSubmit, initialCategory
     setNominees([])
     setCategory(CATEGORIES[0])
     setAwardType('Gold - Annual Excellence')
+    setPoints(AWARD_POINTS['Gold - Annual Excellence'])
+    setPointsManual(false)
     setMessage('')
     setAttachments([])
     setScheduledDate('')
@@ -393,15 +416,20 @@ export default function NominateModal({ open, onClose, onSubmit, initialCategory
                     </select>
                   </section>
 
-                  <section>
-                    <div className="text-[15px] font-normal tracking-tight text-white mb-3">Points</div>
-                    <input 
-                      type="number" 
-                      value={points} 
-                      onChange={(e) => setPoints(Number(e.target.value))} 
-                      className={`w-full bg-surface border border-${themeColor}-500/20 rounded-md p-3 text-sm focus:outline-none focus:ring-2 focus:ring-${themeColor}-500/30 font-normal ${category === 'Individual Award' ? 'text-white' : `text-${themeColor}-500`}`}  
-                      min={1} 
-                    />
+                  <section className="flex items-center gap-4">
+                    <div className="flex-1">
+                      <div className="text-[15px] font-normal tracking-tight text-white">Points</div>
+                    </div>
+                    <div className="w-36">
+                      <input
+                        type="number"
+                        value={points}
+                        onChange={(e) => { setPoints(Number(e.target.value)); setPointsManual(true); }}
+                        className={`w-full bg-surface border border-${themeColor}-500/20 rounded-md p-2 text-sm focus:outline-none focus:ring-2 focus:ring-${themeColor}-500/30 font-normal text-right`}
+                        min={0}
+                        step={1}
+                      />
+                    </div>
                   </section>
                 </>
               )} 
