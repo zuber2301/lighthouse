@@ -72,9 +72,6 @@ export default function NominateModal({ open, onClose, onSubmit, initialCategory
   // Area of focus (align recognition to company goals)
   const [areaOfFocus, setAreaOfFocus] = useState('')
 
-  // Award Type selection (e.g., Gold/Silver/Bronze tiers)
-  const [awardType, setAwardType] = useState('Gold - Annual Excellence')
-
   // Recognition coach suggestions
   const [coachTips, setCoachTips] = useState(null)
   const [coachLoading, setCoachLoading] = useState(false)
