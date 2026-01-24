@@ -426,17 +426,6 @@ export default function NominateModal({ open, onClose, onSubmit, initialCategory
                     >
                       {AWARD_POINTS[awardType].toLocaleString()}
                     </button>
-
-                    <div className="w-36">
-                      <input
-                        type="number"
-                        value={points}
-                        onChange={(e) => { setPoints(Number(e.target.value)); setPointsManual(true); }}
-                        className={`w-full bg-surface border border-${themeColor}-500/20 rounded-md p-2 text-sm focus:outline-none focus:ring-2 focus:ring-${themeColor}-500/30 font-normal text-right`}
-                        min={0}
-                        step={1}
-                      />
-                    </div>
                   </section>
                 </>
               )} 
