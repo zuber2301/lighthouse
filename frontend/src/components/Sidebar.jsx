@@ -56,7 +56,6 @@ export default function Sidebar() {
   const { user: authUser } = useAuth()
   const { tenants, selectedTenant, setSelectedTenantId } = useTenant()
   const { switchTenant } = usePlatform()
-  const [tenantQuery, setTenantQuery] = useState('')
 
   const userRole = authUser?.role || 'CORPORATE_USER'
   const isAdmin = userRole === 'PLATFORM_OWNER' || userRole === 'TENANT_ADMIN'
@@ -120,6 +119,23 @@ export default function Sidebar() {
                   <TenantIcon className="w-5 h-5 text-white" />
                 </div>
                 <span className="font-normal text-[18px] text-white">Select Tenant</span>
+              </div>
+
+              <div className="mt-2 px-3 w-full">
+                <label className="flex items-center gap-3 text-sm cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={!selectedTenant}
+                    onChange={(e) => {
+                      if (e.target.checked) {
+                        setSelectedTenantId('')
+                        switchTenant(null)
+                      }
+                    }}
+                    className="w-4 h-4 rounded bg-card border border-indigo-500/10"
+                  />
+                  <span className="text-white">All Tenants</span>
+                </label>
               </div>
             </div>
           </div>

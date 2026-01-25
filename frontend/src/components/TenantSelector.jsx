@@ -73,19 +73,6 @@ export default function TenantSelector({ label = null, direction = 'down', compa
 
             {query.trim() !== '' && (
               <ul className="max-h-56 overflow-y-auto">
-                <li
-                  role="option"
-                  key="global"
-                  onClick={() => {
-                    setSelectedTenantId('')
-                    switchTenant(null)
-                    setOpen(false)
-                    setQuery('')
-                  }}
-                  className={`px-4 py-3 text-sm text-text-main hover:bg-indigo-500/10 cursor-pointer ${!selectedTenantId ? 'font-bold' : 'font-normal'}`}
-                >
-                  All Tenants
-                </li>
                 {filtered.map(t => (
                   <li
                     key={t.id}

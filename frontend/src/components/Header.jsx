@@ -68,9 +68,9 @@ export default function Header() {
         {/* Context display: shows selected tenant name/id or All Tenants */}
         <div className="ml-2">
           {selectedTenant ? (
-            <div className="px-3 py-1 rounded-md border border-indigo-500/10 bg-indigo-500/5 text-text-main">
-              <div className="text-sm font-semibold truncate max-w-[220px]">{selectedTenant.name}</div>
-              <div className="text-[11px] opacity-60">ID: {selectedTenant.id}</div>
+            <div className="px-3 py-1 rounded-md border border-indigo-500/10 bg-indigo-500/5">
+              <div className="text-sm font-semibold truncate max-w-[220px] text-[#45E20B]">{selectedTenant.name}</div>
+              <div className="text-[11px] text-[#45E20B]">ID: {selectedTenant.id}</div>
             </div>
           ) : (
             <div className="px-3 py-1 rounded-md border border-indigo-500/10 bg-indigo-500/5 text-text-main text-sm">Context: All Tenants</div>
