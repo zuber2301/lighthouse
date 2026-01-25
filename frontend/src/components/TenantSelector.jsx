@@ -2,7 +2,7 @@ import React, { useRef, useState, useEffect } from 'react'
 import { useTenant } from '../lib/TenantContext'
 import { usePlatform } from '../context/PlatformContext'
 
-export default function TenantSelector() {
+export default function TenantSelector({ label = null, direction = 'down' }) {
   const { tenants, selectedTenantId, setSelectedTenantId, selectedTenant } = useTenant()
   const { switchTenant } = usePlatform()
 
@@ -17,6 +17,7 @@ export default function TenantSelector() {
 
   const wrapperRef = useRef(null)
   const [open, setOpen] = useState(false)
+  const [query, setQuery] = useState('')
 
   useEffect(() => {
     function handleClickOutside(e) {
@@ -26,9 +27,11 @@ export default function TenantSelector() {
     return () => window.removeEventListener('mousedown', handleClickOutside)
   }, [])
 
+  const filtered = tenants?.filter(t => t.name.toLowerCase().includes(query.toLowerCase())) || []
+
   return (
-    <div className="flex items-center gap-3">
-      <span className="text-[13px] font-black uppercase tracking-widest text-white opacity-80">Context:</span>
+    <div className="flex flex-col">
+      {label && <div className="text-sm font-normal text-text-main opacity-80 mb-2">{label}</div>}
       <div ref={wrapperRef} className="relative">
         <button
           type="button"
@@ -40,34 +43,49 @@ export default function TenantSelector() {
         </button>
 
         {open && (
-          <ul className="absolute left-0 right-0 mt-2 z-50 rounded-md overflow-hidden shadow-lg bg-card/20 border border-indigo-500/10" role="listbox">
-            <li
-              role="option"
-              key="global"
-              onClick={() => {
-                setSelectedTenantId('')
-                switchTenant(null)
-                setOpen(false)
-              }}
-              className={`px-4 py-3 text-sm text-text-main hover:bg-indigo-500/10 cursor-pointer ${!selectedTenantId ? 'font-bold' : 'font-normal'}`}
-            >
-              Global Overview
-            </li>
-            {tenants.map(t => (
+          <div
+            className={`absolute left-0 right-0 z-50 rounded-md overflow-hidden shadow-lg bg-card/20 border border-indigo-500/10 ${direction === 'up' ? 'bottom-full mb-2' : 'mt-2'}`}
+            role="listbox"
+          >
+            <ul className="max-h-56 overflow-y-auto">
               <li
-                key={t.id}
                 role="option"
+                key="global"
                 onClick={() => {
-                  setSelectedTenantId(t.id)
-                  switchTenant(t)
+                  setSelectedTenantId('')
+                  switchTenant(null)
                   setOpen(false)
                 }}
-                className={`px-4 py-3 text-sm text-text-main hover:bg-indigo-500/10 cursor-pointer ${String(selectedTenantId) === String(t.id) ? 'font-bold' : 'font-normal'}`}
+                className={`px-4 py-3 text-sm text-text-main hover:bg-indigo-500/10 cursor-pointer ${!selectedTenantId ? 'font-bold' : 'font-normal'}`}
               >
-                {t.name}
+                Global Overview
               </li>
-            ))}
-          </ul>
+              <li className="px-3 py-2">
+                <input
+                  type="search"
+                  value={query}
+                  onChange={(e) => setQuery(e.target.value)}
+                  placeholder="Search tenants..."
+                  className="w-full bg-transparent border border-indigo-500/10 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/30"
+                />
+              </li>
+              {filtered.map(t => (
+                <li
+                  key={t.id}
+                  role="option"
+                  onClick={() => {
+                    setSelectedTenantId(t.id)
+                    switchTenant(t)
+                    setOpen(false)
+                    setQuery('')
+                  }}
+                  className={`px-4 py-3 text-sm text-text-main hover:bg-indigo-500/10 cursor-pointer ${String(selectedTenantId) === String(t.id) ? 'font-bold' : 'font-normal'}`}
+                >
+                  {t.name}
+                </li>
+              ))}
+            </ul>
+          </div>
         )}
       </div>
     </div>

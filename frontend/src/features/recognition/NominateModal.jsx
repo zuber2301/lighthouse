@@ -12,6 +12,13 @@ export default function NominateModal({ open, onClose, onSubmit, initialCategory
   const [nominees, setNominees] = useState([])
   const [users, setUsers] = useState([])
   const searchTimer = useRef()
+  const middleRef = useRef(null)
+  const designWrapperRef = useRef(null)
+  const [designOpen, setDesignOpen] = useState(false)
+  const awardWrapperRef = useRef(null)
+  const [awardOpen, setAwardOpen] = useState(false)
+  const areaWrapperRef = useRef(null)
+  const [areaOpen, setAreaOpen] = useState(false)
 
   // Category
   const [category, setCategory] = useState(initialCategory || CATEGORIES[0])
@@ -56,6 +63,16 @@ export default function NominateModal({ open, onClose, onSubmit, initialCategory
     }
   }, [open, searchParams, setSearchParams])
 
+  useEffect(() => {
+    function handleClickOutside(e) {
+      if (designWrapperRef.current && !designWrapperRef.current.contains(e.target)) setDesignOpen(false)
+      if (awardWrapperRef.current && !awardWrapperRef.current.contains(e.target)) setAwardOpen(false)
+      if (areaWrapperRef.current && !areaWrapperRef.current.contains(e.target)) setAreaOpen(false)
+    }
+    window.addEventListener('mousedown', handleClickOutside)
+    return () => window.removeEventListener('mousedown', handleClickOutside)
+  }, [])
+
   // Sync category if initialCategory changes
   useEffect(() => {
     if (initialCategory) {
@@ -87,11 +104,15 @@ export default function NominateModal({ open, onClose, onSubmit, initialCategory
   const openedAsECard = initialCategory === 'E-Card'
 
   // multi-step flow: 1=Recipients, 2=Design, 3=Review & Send
+  // simplified flow: 1=Recipients, 2=Design & Review (combined)
   const [step, setStep] = useState(1)
   const [validationError, setValidationError] = useState('')
 
-  // E-Card design selection (Classic, Modern, Fun)
-  const [design, setDesign] = useState('Classic')
+  // snapshot of values to show in Review & Send (only set when advancing from Design -> Review)
+  const [reviewSnapshot, setReviewSnapshot] = useState(null)
+
+  // E-Card design selection (Classic, Modern, Fun). Default: none (no preview shown)
+  const [design, setDesign] = useState('')
 
   // Build simple e-card HTML string based on selection + fields
   function buildEcardHtml() {
@@ -141,6 +162,35 @@ export default function NominateModal({ open, onClose, onSubmit, initialCategory
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [design, message, attachments])
 
+  // close on Escape key
+  useEffect(() => {
+    function onKey(e) {
+      if (!open) return
+      if (e.key === 'Escape') onClose()
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [open, onClose])
+
+  // smooth scroll & focus to middle (Design) column when advancing to step 2
+  useEffect(() => {
+    if (step !== 2) return
+    // small delay to ensure DOM updated
+    const t = setTimeout(() => {
+      try {
+        if (middleRef.current && middleRef.current.scrollIntoView) {
+          middleRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' })
+          // focus first focusable element inside the design column (select/input)
+          const el = middleRef.current.querySelector('select, input, textarea, button')
+          if (el && el.focus) el.focus({ preventScroll: true })
+        }
+      } catch (err) {
+        // ignore
+      }
+    }, 80)
+    return () => clearTimeout(t)
+  }, [step])
+
   function handleTopNext() {
     // validation for step 1: require at least one recipient
     if (step === 1) {
@@ -151,7 +201,29 @@ export default function NominateModal({ open, onClose, onSubmit, initialCategory
     }
     // clear previous errors
     setValidationError('')
-    if (step < 3) setStep(step + 1)
+    if (step < 3) {
+      // when advancing from Design (step 2) to Review (step 3), capture a snapshot
+      if (step === 2) {
+        try {
+          const snap = {
+            ecardHtml: buildEcardHtml(),
+            message: message,
+            design,
+            points,
+            nominees: Array.isArray(nominees) ? JSON.parse(JSON.stringify(nominees)) : nominees,
+            areaOfFocus,
+            awardType,
+            scheduledDate,
+            scheduledTime,
+            category,
+          }
+          setReviewSnapshot(snap)
+        } catch (err) {
+          setReviewSnapshot(null)
+        }
+      }
+      setStep(step + 1)
+    }
     else handleSubmit()
   }
 
@@ -285,6 +357,20 @@ export default function NominateModal({ open, onClose, onSubmit, initialCategory
   const themeColor = isECard ? 'blue' : 'indigo';
   const themeHex = isECard ? '#1d4ed8' : '#6366f1';
 
+  // Live ecard preview HTML (used only for live preview, does not replace backend ecard_html)
+  const _safe = (str = '') => String(str).replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/\n/g, '<br/>')
+  const previewDate = scheduledDate || new Date().toLocaleDateString('en-US')
+  const liveEcardHtml = `
+    <div style="width:100%;box-sizing:border-box;padding:30px;border-radius:14px;background:linear-gradient(90deg,#071021 0%,#0b1a2b 100%);color:#e6eef8;font-family:Inter,system-ui,Arial;">
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:10px">
+        <div style="width:56px;height:56px;border-radius:10px;background:linear-gradient(135deg,#7c3aed,#06b6d4);display:flex;align-items:center;justify-content:center;font-weight:700;color:white;font-size:18px">★</div>
+        <div style="font-size:22px;font-weight:700">Nice work</div>
+      </div>
+      <div style="font-size:15px;line-height:1.5;color:#cfe8ff">${_safe(message || 'I especially noticed when you [describe a specific example], which helped because [describe impact].')}</div>
+      <div style="margin-top:12px;font-size:13px;opacity:0.85;color:#9fb8d9">Shared on ${previewDate}</div>
+    </div>
+  `
+
   return (
     <Modal open={open} onClose={onClose} className={`max-w-6xl transition-all duration-700 
       ${isECard 
@@ -295,48 +381,15 @@ export default function NominateModal({ open, onClose, onSubmit, initialCategory
           <h2 className={`text-4xl font-normal tracking-tighter ${category === 'Individual Award' ? 'text-white' : `text-${themeColor}-400`} mb-2`}>{openedAsECard ? 'Send a E-Card' : 'Individual Excellence Nomination Form'}</h2>
           {openedAsECard && <div className="text-[13px] font-medium tracking-widest uppercase opacity-40 text-text-main">Personalized Appreciation</div>}
 
-            <div className="mt-8 flex items-center justify-between">
-            <div className="flex flex-col md:flex-row gap-4">
-            </div>
-
-            <div className="flex items-center gap-4">
-              <button
-                type="button"
-                onClick={() => setStep(Math.max(1, step - 1))}
-                disabled={step === 1}
-                className={`px-5 py-2.5 rounded-md transition-all flex items-center gap-2 group ${step===1 
-                  ? 'opacity-20 cursor-not-allowed bg-white/5 text-text-main' 
-                  : `bg-${themeColor}-500/5 border border-${themeColor}-500/30 ${category === 'Individual Award' ? 'text-white' : `text-${themeColor}-400`} hover:bg-${themeColor}-500/10 hover:border-${themeColor}-500/60 font-bold shadow-lg`}`} 
-              >
-                <svg className={`w-4 h-4 transition-transform group-hover:-translate-x-1 ${step===1 ? 'hidden' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M15 19l-7-7 7-7" strokeWidth={3} strokeLinecap="round" strokeLinejoin="round"/></svg>
-                Back 
-              </button>
-
-              <button
-                type="button"
-                onClick={() => { resetAll(); onClose(); }}
-                className={`px-5 py-2.5 rounded-md text-white/70 hover:text-white transition-colors font-bold`}
-              >
-                Cancel
-              </button>
-
-              <button
-                type="button"
-                onClick={handleTopNext}
-                disabled={step === 1 && nominees.length === 0}
-                className={`px-8 py-2.5 rounded-md text-white shadow-xl font-black tracking-tight transition-all active:scale-95
-                  ${step===3 ? 'bg-violet-500 shadow-violet-500/20' : (isECard ? 'bg-violet-600 shadow-violet-600/20' : 'bg-indigo-600 shadow-indigo-600/20') } 
-                  ${step===1 && nominees.length === 0 ? 'opacity-60 cursor-not-allowed' : 'hover:brightness-110 hover:scale-[1.02]'}`}
-              >
-                {step < 3 ? 'Next Step' : 'Send Recognition'}
-              </button>
+            <div className="mt-8 relative">
+              <button type="button" onClick={onClose} aria-label="Close" className="absolute top-0 right-0 text-white/80 hover:text-white p-2 rounded-md">✕</button>
             </div>
             {validationError && <div className="text-sm text-rose-400 mt-2">{validationError}</div>}
           </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-stretch">
           {/* Left column: Entry Form */}
-          <div className={`space-y-6 bg-black/30 border border-${themeColor}-500/10 p-6 rounded-lg backdrop-blur-md shadow-2xl`}>
+          <div ref={middleRef} className={`space-y-6 bg-black/30 p-6 rounded-lg backdrop-blur-md shadow-2xl`}>
             <div className="flex items-center gap-3">
               <div className={`w-8 h-8 rounded-md flex items-center justify-center font-bold ${step===1 ? `bg-${themeColor}-500 text-white shadow-lg shadow-${themeColor}-500/20` : 'bg-white/10 text-white/40'}`}>1</div>
               <div>
@@ -406,11 +459,20 @@ export default function NominateModal({ open, onClose, onSubmit, initialCategory
 
                   <section>
                     <div className="text-[15px] font-normal tracking-tight text-white mb-3">Award Type</div>
-                    <select value={awardType} onChange={(e) => setAwardType(e.target.value)} className={`w-full bg-surface border border-${themeColor}-500/20 rounded-md p-3 text-sm`}>
-                      <option value="Gold - Annual Excellence">Gold - Annual Excellence</option>
-                      <option value="Silver - Quarterly Achievements">Silver - Quarterly Achievements</option>
-                      <option value="Bronze - Monthly Recognition">Bronze - Monthly Recognition</option>
-                    </select>
+                    <div ref={awardWrapperRef} className="relative">
+                      <button type="button" onClick={() => setAwardOpen(!awardOpen)} className="w-full text-left bg-black/30 border border-white/10 rounded-md p-3 text-sm focus:outline-none focus:ring-2 focus:ring-white/10 transition-all text-white flex items-center justify-between">
+                        <span>{awardType}</span>
+                        <span className="ml-3 text-white/70">▾</span>
+                      </button>
+
+                      {awardOpen && (
+                        <ul className="absolute left-0 right-0 mt-2 z-50 rounded-md overflow-hidden shadow-lg bg-black/40 border border-white/10" role="listbox">
+                          {['Gold - Annual Excellence','Silver - Quarterly Achievements','Bronze - Monthly Recognition'].map((opt) => (
+                            <li key={opt} role="option" onClick={() => { setAwardType(opt); setAwardOpen(false) }} className={`px-4 py-3 text-sm text-white hover:bg-white/5 cursor-pointer ${awardType === opt ? 'font-bold' : 'font-normal'}`}>{opt}</li>
+                          ))}
+                        </ul>
+                      )}
+                    </div>
                   </section>
 
                   <section className="flex items-center gap-3">
@@ -433,14 +495,20 @@ export default function NominateModal({ open, onClose, onSubmit, initialCategory
 
             <section>
               <div className="text-[15px] font-normal tracking-tight text-white mb-3">Area of Focus</div>
-              <select value={areaOfFocus} onChange={(e) => setAreaOfFocus(e.target.value)} className={`w-full bg-surface border border-${themeColor}-500/20 rounded-md p-3 text-sm`}>
-                <option value="">-- Select area --</option>
-                <option value="Collaboration">Collaboration</option>
-                <option value="Innovation">Innovation</option>
-                <option value="Customer Focus">Customer Focus</option>
-                <option value="Execution">Execution</option>
-                <option value="Leadership">Leadership</option>
-              </select>
+            <div ref={areaWrapperRef} className="relative">
+              <button type="button" onClick={() => setAreaOpen(!areaOpen)} className="w-full text-left bg-black/30 border border-white/10 rounded-md p-3 text-sm focus:outline-none focus:ring-2 focus:ring-white/10 transition-all text-white flex items-center justify-between">
+                <span>{areaOfFocus || '-- Select area --'}</span>
+                <span className="ml-3 text-white/70">▾</span>
+              </button>
+
+              {areaOpen && (
+                <ul className="absolute left-0 right-0 mt-2 z-50 rounded-md overflow-hidden shadow-lg bg-black/40 border border-white/10" role="listbox">
+                  {['','Collaboration','Innovation','Customer Focus','Execution','Leadership'].map((opt) => (
+                    <li key={opt || 'blank'} role="option" onClick={() => { setAreaOfFocus(opt); setAreaOpen(false) }} className={`px-4 py-3 text-sm text-white hover:bg-white/5 cursor-pointer ${areaOfFocus === opt ? 'font-bold' : 'font-normal'}`}>{opt || '-- Select area --'}</li>
+                  ))}
+                </ul>
+              )}
+            </div>
             </section>
 
             <section>
@@ -452,7 +520,7 @@ export default function NominateModal({ open, onClose, onSubmit, initialCategory
                 placeholder="Why does this person deserve recognition?" 
               />
               <div className="mt-2 flex items-center gap-2">
-                  <button type="button" onClick={handleCoach} disabled={coachLoading || !message} className={`px-3 py-2 rounded-md bg-${themeColor}-500/10 text-sm hover:bg-${themeColor}-500/15 ${category === 'Individual Award' ? 'text-white' : `text-${themeColor}-400`} font-bold`}>{coachLoading ? 'Improving…' : 'Improve your message'}</button> 
+                  <button type="button" onClick={handleCoach} disabled={coachLoading || !message} className={`px-3 py-2 rounded-md bg-${themeColor}-500/10 text-sm hover:bg-${themeColor}-500/15 text-white font-bold`}>{coachLoading ? 'Improving…' : 'Improve your message'}</button> 
                 {coachTips?.improved_message && (
                   <button type="button" onClick={() => setMessage(coachTips.improved_message)} className="text-sm text-blue-400">Apply suggestion</button>
                 )}
@@ -465,6 +533,17 @@ export default function NominateModal({ open, onClose, onSubmit, initialCategory
                   <div className="text-text-main/80 text-sm">Timing: Note when or which project it occurred.</div>
                 </div>
               )}
+              
+              <div className="mt-6">
+                <button
+                  type="button"
+                  onClick={handleTopNext}
+                  disabled={step === 1 && nominees.length === 0}
+                  className={`w-full px-4 py-2 rounded-md text-white font-bold ${step===1 && nominees.length === 0 ? 'opacity-60 cursor-not-allowed bg-${themeColor}-500/10' : `bg-${themeColor}-600 hover:brightness-105`}`}
+                >
+                  Next Step
+                </button>
+              </div>
             </section>
 
             
@@ -473,7 +552,7 @@ export default function NominateModal({ open, onClose, onSubmit, initialCategory
           </div>
 
           {/* Middle column: Design chooser + preview */}
-          <div className={`space-y-6 bg-black/30 border border-${themeColor}-500/10 p-6 rounded-lg backdrop-blur-md shadow-2xl`}>
+          <div className={`space-y-6 bg-black/30 p-6 rounded-lg backdrop-blur-md shadow-2xl`}>
             <div className="flex items-center gap-3">
               <div className={`w-8 h-8 rounded-md flex items-center justify-center font-bold ${step===2 ? `bg-${themeColor}-500 text-white shadow-lg shadow-${themeColor}-500/20` : 'bg-white/10 text-white/40'}`}>2</div>
               <div>
@@ -483,13 +562,52 @@ export default function NominateModal({ open, onClose, onSubmit, initialCategory
             <div>
               { (category === 'E-Card' || openedAsECard) ? (
                 <>
-                  <select value={design} onChange={(e) => setDesign(e.target.value)} className={`w-full bg-white/5 border border-white/10 rounded-md p-4 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/30 transition-all text-white`}>
-                    <option className="bg-[#0f172a]">Classic</option>
-                    <option className="bg-[#0f172a]">Modern</option>
-                    <option className="bg-[#0f172a]">Fun</option>
-                  </select>
-                  <div className={`mt-3 p-4 rounded-md ${isECard ? 'bg-[#0f172a] border border-blue-500/30 shadow-[inset_0_0_30px_rgba(29,78,216,0.04)]' : 'bg-surface border border-border-soft'}`}>
-                    <div id="ecard-preview" dangerouslySetInnerHTML={{ __html: ecardHtml }} />
+                  {design ? (
+                    <div className={`mt-6 p-4 rounded-md min-h-[120px] ${isECard ? `bg-${themeColor}-500/5 border border-${themeColor}-500/10 shadow-[inset_0_0_30px_rgba(29,78,216,0.04)]` : 'bg-surface border border-border-soft'}`}>
+                      <div id="ecard-preview" dangerouslySetInnerHTML={{ __html: (isECard ? (ecardHtml || liveEcardHtml) : ecardHtml) }} />
+                    </div>
+                  ) : (
+                    <div className="mt-6 p-6 rounded-md bg-black/10 border border-white/5 text-sm text-white/60 text-center">No design selected — preview will appear once you choose a design.</div>
+                  )}
+
+                  <div ref={designWrapperRef} className="relative mt-6">
+                    <button
+                      type="button"
+                      onClick={() => setDesignOpen(!designOpen)}
+                      className="w-full text-left bg-black/30 border border-white/10 rounded-md p-4 text-sm focus:outline-none focus:ring-2 focus:ring-white/10 transition-all text-white flex items-center justify-between"
+                      aria-haspopup="listbox"
+                      aria-expanded={designOpen}
+                    >
+                      <span>{design || 'None'}</span>
+                      <span className="ml-3 text-white/70">▾</span>
+                    </button>
+
+                    {designOpen && (
+                      <ul className="absolute left-0 right-0 mt-2 z-50 rounded-md overflow-hidden shadow-lg bg-black/40 border border-white/10" role="listbox">
+                          {['None', 'Classic', 'Modern', 'Fun'].map((opt) => (
+                            <li
+                              key={opt}
+                              role="option"
+                              onClick={() => {
+                                setDesign(opt === 'None' ? '' : opt)
+                                setDesignOpen(false)
+                              }}
+                              className={`px-4 py-3 text-sm text-white hover:bg-white/5 cursor-pointer ${design === opt ? 'font-bold' : 'font-normal'}`}
+                            >
+                              {opt}
+                            </li>
+                          ))}
+                      </ul>
+                    )}
+                  </div>
+
+                  <div className="mt-4 flex items-center justify-end gap-3">
+                    <button type="button" onClick={() => setStep(Math.max(1, step - 1))} className={`px-4 py-2 rounded-md ${step===1 ? 'opacity-50 cursor-not-allowed bg-white/5 text-white/50' : `bg-${themeColor}-500/10 text-white hover:bg-${themeColor}-500/20 border border-${themeColor}-500/20 font-bold`}`}>
+                      Back
+                    </button>
+                    <button type="button" onClick={handleTopNext} className={`px-6 py-2 rounded-md text-white font-black ${isECard ? `bg-${themeColor}-600 shadow-${themeColor}-600/20` : 'bg-indigo-600 shadow-indigo-600/20'}`}>
+                      Next
+                    </button>
                   </div>
                 </>
               ) : (
@@ -504,7 +622,7 @@ export default function NominateModal({ open, onClose, onSubmit, initialCategory
           {/* Right column: Summary, steps and review */}
           <div className="flex flex-col gap-8">
             {/* Stepper + Review area */}
-            <div className={`space-y-6 bg-black/30 border border-${themeColor}-500/10 p-6 rounded-lg backdrop-blur-md shadow-2xl`}>
+            <div className={`space-y-6 bg-black/30 p-6 rounded-lg backdrop-blur-md shadow-2xl`}>
               <div className="flex items-center gap-3">
                 <div className={`w-8 h-8 rounded-md flex items-center justify-center font-bold ${step===3 ? `bg-blue-500 text-white shadow-lg shadow-blue-500/20` : 'bg-white/10 text-white/40'}`}>3</div>
                 <div>
@@ -517,8 +635,8 @@ export default function NominateModal({ open, onClose, onSubmit, initialCategory
                   <div className="animate-in fade-in slide-in-from-bottom-2 duration-500">
                     <div className="text-[10px] font-black uppercase tracking-tighter text-white/30 mb-2">Active Design</div>
                     <div className="text-sm font-bold text-blue-400 mb-4">{design} Edition</div>
-                    <div className={`p-3 rounded-md ${isECard ? 'bg-[#0f172a] border border-blue-500/30' : 'bg-surface/80 border border-border-soft'}`}>
-                      <div dangerouslySetInnerHTML={{ __html: ecardHtml }} />
+                    <div className={`p-3 rounded-md ${isECard ? `bg-${themeColor}-500/5 border border-${themeColor}-500/10` : 'bg-surface/80 border border-border-soft'}`}>
+                      <div dangerouslySetInnerHTML={{ __html: (isECard ? (ecardHtml || liveEcardHtml) : ecardHtml) }} />
                     </div>
                   </div>
                 )}
@@ -538,47 +656,16 @@ export default function NominateModal({ open, onClose, onSubmit, initialCategory
                 )}
               </div>
             </div>
-          
-            <div className={`flex-1 space-y-6 bg-black/30 border border-${themeColor}-500/10 p-6 rounded-lg backdrop-blur-md shadow-2xl`}>
-              <div className="text-xs font-bold uppercase tracking-widest text-white/70 border-b border-white/5 pb-4 flex items-center justify-between">
-                  Live Preview
-                  {isECard && <span className="bg-blue-500/20 text-blue-400 px-2 py-0.5 rounded text-[10px]">E-CARD MODE</span>}
-                </div>
 
-              <div className="space-y-6">
-                <div className={`p-5 rounded-md shadow-inner ${isECard ? 'bg-[#0f172a] border border-blue-500/30' : 'bg-white/5 border border-white/5'}`}>
-                  <p className="text-sm text-white/60 font-medium italic leading-relaxed">
-                    {message ? message : 'Start typing to see your message here...'}
-                  </p>
-                </div>
-
-                {!openedAsECard && (
-                  <section className="pt-4 border-t border-white/5">
-                    <div className="text-[10px] font-bold uppercase tracking-widest text-white/20 mb-4">Delivery Schedule</div>
-                    <div className="grid grid-cols-1 gap-3">
-                      <div className="flex gap-2">
-                        <input 
-                          type="date" 
-                          value={scheduledDate} 
-                          onChange={(e) => setScheduledDate(e.target.value)} 
-                          className={`flex-1 bg-white/5 border border-white/10 rounded-md p-3 text-xs font-bold focus:outline-none focus:ring-2 focus:ring-${themeColor}-500/30 text-white`} 
-                        />
-                        <input 
-                          type="time" 
-                          value={scheduledTime} 
-                          onChange={(e) => setScheduledTime(e.target.value)} 
-                          className={`flex-1 bg-white/5 border border-white/10 rounded-md p-3 text-xs font-bold focus:outline-none focus:ring-2 focus:ring-${themeColor}-500/30 text-white`} 
-                        />
-                      </div>
-                      <p className="text-[10px] opacity-20 italic">Leave empty for immediate delivery</p>
-                    </div>
-                  </section>
-                )}
-              </div>
+            {/* bottom area: Back + Submit for final column */}
+            <div className="mt-4 flex items-center justify-end gap-3">
+              <button type="button" onClick={() => setStep(Math.max(1, step - 1))} disabled={step === 1} className={`px-4 py-2 rounded-md ${step===1 ? 'opacity-50 cursor-not-allowed bg-white/5 text-white/50' : `bg-${themeColor}-500/10 text-white hover:bg-${themeColor}-500/20 border border-${themeColor}-500/20 font-bold`}`}>
+                Back
+              </button>
+              <button type="submit" className={`px-6 py-2 rounded-md text-white font-black ${isECard ? `bg-${themeColor}-600 shadow-${themeColor}-600/20` : 'bg-indigo-600 shadow-indigo-600/20'}`}>
+                Submit
+              </button>
             </div>
-</div>
-
-            {/* bottom cancel removed per design — top Cancel remains in header */}
           </div>
         </div>
       </form>

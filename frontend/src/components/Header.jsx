@@ -3,7 +3,6 @@ import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { useAuth } from '../lib/AuthContext'
 import { useTenant } from '../lib/TenantContext'
 import { useAppTheme } from '../lib/ThemeContext'
-import TenantSelector from './TenantSelector'
 import GroupAwardWizard from '../features/recognition/GroupAwardWizard'
 import { createRecognition } from '../api/recognitions'
 
@@ -66,10 +65,7 @@ export default function Header() {
           <div className="text-[26px] font-normal tracking-tight text-white">LightHouse</div>
         </Link>
         
-        {!isCorporate && (
-          <div className={`h-8 w-[1px] ${separatorClass} opacity-20`} />
-        )}
-        {!isCorporate && <TenantSelector />}
+        {/* TenantSelector moved to Sidebar */}
       </div>
 
       <div className="flex items-center gap-4">

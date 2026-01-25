@@ -1,8 +1,10 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { Link, NavLink } from 'react-router-dom'
 import { navLinkClass } from '../utils/navLinkClass'
 import { useAuth } from '../lib/AuthContext'
 import { useTenant } from '../lib/TenantContext'
+import { usePlatform } from '../context/PlatformContext'
+import TenantSelector from './TenantSelector'
 import { 
   HomeIcon, 
   RecognitionIcon, 
@@ -52,7 +54,9 @@ const NAV_ITEMS = {
 
 export default function Sidebar() {
   const { user: authUser } = useAuth()
-  const { selectedTenant } = useTenant()
+  const { tenants, selectedTenant, setSelectedTenantId } = useTenant()
+  const { switchTenant } = usePlatform()
+  const [tenantQuery, setTenantQuery] = useState('')
 
   const userRole = authUser?.role || 'CORPORATE_USER'
   const isAdmin = userRole === 'PLATFORM_OWNER' || userRole === 'TENANT_ADMIN'
@@ -65,13 +69,14 @@ export default function Sidebar() {
 
   return (
     <aside className={`w-64 h-screen ${sidebarClass} transition-colors duration-300`}>
-      <div className="p-6">
+      <div className="p-6 flex flex-col h-full">
         <Link to="/" className="flex items-center gap-3 mb-8 px-2 hover:opacity-80 transition-opacity group">
           <div className="w-9 h-9 rounded-lg bg-accent flex items-center justify-center shadow-accent-neon active:scale-95 transition-transform">
             <span className="text-white text-[16px]">LH</span>
           </div>
           <div className="text-2xl font-normal tracking-tight text-white">LightHouse</div>
         </Link>
+        {/* Tenant selector moved to bottom */}
         <nav className="flex flex-col gap-2" role="navigation" aria-label="Main navigation">
           {items.map((it) => (
             <NavLink
@@ -101,6 +106,24 @@ export default function Sidebar() {
             </NavLink>
           )}
         </nav>
+
+        {/* Bottom area: tenant selector for PLATFORM_OWNER */}
+        {userRole === 'PLATFORM_OWNER' && (
+          <div className="mt-auto pt-4 border-t border-indigo-500/5">
+            <div className="flex flex-col items-start">
+              <TenantSelector label={null} direction="up" />
+
+              {/* visible sidebar search removed; search is inside TenantSelector dropdown */}
+
+              <div className="mt-2 flex items-center gap-3 p-3 rounded-xl">
+                <div className="p-1.5 rounded-lg bg-white/5">
+                  <TenantIcon className="w-5 h-5 text-white" />
+                </div>
+                <span className="font-normal text-[18px] text-white">Select Tenant</span>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </aside>
   )
