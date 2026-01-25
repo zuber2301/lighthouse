@@ -388,20 +388,19 @@ export default function NominateModal({ open, onClose, onSubmit, initialCategory
       ${isECard 
         ? '!bg-gradient-to-br !from-[#661d66] !via-[#1d4ed8] !to-[#661d66]' 
         : '!bg-gradient-to-br !from-[#661d66] !via-[#1e1b4b] !to-[#661d66]'}`}>
-      <form onSubmit={handleSubmit} className="space-y-6">
+      <form onSubmit={handleSubmit} className="space-y-3">
         <div>
           <h2 className={`text-3xl font-normal tracking-tighter ${category === 'Individual Award' ? 'text-white' : `text-${themeColor}-400`} mb-2`}>{openedAsECard ? 'Send a E-Card' : 'Individual Excellence Nomination Form'}</h2>
-          {openedAsECard && <div className="text-[13px] font-medium tracking-widest uppercase opacity-40 text-text-main">Personalized Appreciation</div>}
 
-            <div className="mt-8 relative">
+            <div className="mt-4 relative">
               <button type="button" onClick={onClose} aria-label="Close" className="absolute top-0 right-0 text-white/80 hover:text-white p-2 rounded-md">✕</button>
             </div>
             {validationError && <div className="text-sm text-rose-400 mt-2">{validationError}</div>}
           </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-stretch">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-stretch">
           {/* Left column: Entry Form */}
-          <div ref={middleRef} className={`space-y-6 bg-black/30 p-6 rounded-lg backdrop-blur-md shadow-2xl`}>
+          <div ref={middleRef} className={`space-y-4 bg-black/30 p-4 rounded-lg backdrop-blur-md shadow-2xl`}>
             <div className="flex items-center gap-3">
               <div className={`w-8 h-8 rounded-md flex items-center justify-center font-bold ${step===1 ? `bg-${themeColor}-500 text-white shadow-lg shadow-${themeColor}-500/20` : 'bg-white/10 text-white/40'}`}>1</div>
               <div>
@@ -465,7 +464,7 @@ export default function NominateModal({ open, onClose, onSubmit, initialCategory
               </div>
             )}
 
-            <div className="grid grid-cols-1 gap-6">
+            <div className="grid grid-cols-1 gap-4">
               {!openedAsECard && (
                 <>
 
@@ -531,11 +530,11 @@ export default function NominateModal({ open, onClose, onSubmit, initialCategory
             </section>
 
             <section>
-              <div className="text-[15px] font-normal tracking-tight text-white mb-3">Message</div>
+              <div className="text-[15px] font-normal tracking-tight text-white mb-2">Message</div>
               <textarea 
                 value={message} 
                 onChange={(e) => setMessage(e.target.value)} 
-                className={`w-full bg-surface border border-${themeColor}-500/20 rounded-md p-4 text-sm focus:outline-none focus:ring-2 focus:ring-${themeColor}-500/30 min-h-[120px] font-normal placeholder:opacity-30`} 
+                className={`w-full bg-surface border border-${themeColor}-500/20 rounded-md p-3 text-sm focus:outline-none focus:ring-2 focus:ring-${themeColor}-500/30 min-h-[80px] font-normal placeholder:opacity-30`} 
                 placeholder="Why does this person deserve recognition?" 
               />
               <div className="mt-2 flex items-center gap-2">
@@ -553,7 +552,7 @@ export default function NominateModal({ open, onClose, onSubmit, initialCategory
                 </div>
               )}
               
-              <div className="mt-6">
+              <div className="mt-4">
                 <button
                   type="button"
                   onClick={handleTopNext}
@@ -571,7 +570,7 @@ export default function NominateModal({ open, onClose, onSubmit, initialCategory
           </div>
 
           {/* Middle column: Design chooser + preview */}
-          <div className={`space-y-6 bg-black/30 p-6 rounded-lg backdrop-blur-md shadow-2xl`}>
+          <div className={`space-y-4 bg-black/30 p-4 rounded-lg backdrop-blur-md shadow-2xl`}>
             <div className="flex items-center gap-3">
               <div className={`w-8 h-8 rounded-md flex items-center justify-center font-bold ${step===2 ? `bg-${themeColor}-500 text-white shadow-lg shadow-${themeColor}-500/20` : 'bg-white/10 text-white/40'}`}>2</div>
               <div>
@@ -582,18 +581,18 @@ export default function NominateModal({ open, onClose, onSubmit, initialCategory
               { (category === 'E-Card' || openedAsECard) ? (
                 <>
                   {design ? (
-                    <div className={`mt-6 p-4 rounded-md min-h-[120px] ${isECard ? `bg-${themeColor}-500/5 border border-${themeColor}-500/10 shadow-[inset_0_0_30px_rgba(29,78,216,0.04)]` : 'bg-surface border border-border-soft'}`}>
+                    <div className={`mt-4 p-3 rounded-md min-h-[80px] ${isECard ? `bg-${themeColor}-500/5 border border-${themeColor}-500/10 shadow-[inset_0_0_30px_rgba(29,78,216,0.04)]` : 'bg-surface border border-border-soft'}`}>
                       <div id="ecard-preview" dangerouslySetInnerHTML={{ __html: (isECard ? (ecardHtml || liveEcardHtml) : ecardHtml) }} />
                     </div>
                   ) : (
-                    <div className="mt-6 p-6 rounded-md bg-black/10 border border-white/5 text-sm text-white/60 text-center">No design selected — preview will appear once you choose a design.</div>
+                    <div className="mt-4 p-3 rounded-md bg-black/10 border border-white/5 text-sm text-white/60 text-center">No design selected — preview will appear once you choose a design.</div>
                   )}
 
-                  <div ref={designWrapperRef} className="relative mt-6">
+                  <div ref={designWrapperRef} className="relative mt-4">
                     <button
                       type="button"
                       onClick={() => setDesignOpen(!designOpen)}
-                      className="w-full text-left bg-black/30 border border-white/10 rounded-md p-4 text-sm focus:outline-none focus:ring-2 focus:ring-white/10 transition-all text-white flex items-center justify-between"
+                      className="w-full text-left bg-black/30 border border-white/10 rounded-md p-3 text-sm focus:outline-none focus:ring-2 focus:ring-white/10 transition-all text-white flex items-center justify-between"
                       aria-haspopup="listbox"
                       aria-expanded={designOpen}
                     >
@@ -641,9 +640,9 @@ export default function NominateModal({ open, onClose, onSubmit, initialCategory
           </div>
 
           {/* Right column: Summary, steps and review */}
-          <div className="flex flex-col gap-8">
+          <div className="flex flex-col gap-4">
             {/* Stepper + Review area */}
-            <div className={`space-y-6 bg-black/30 p-6 rounded-lg backdrop-blur-md shadow-2xl`}>
+            <div className={`space-y-4 bg-black/30 p-4 rounded-lg backdrop-blur-md shadow-2xl`}>
               <div className="flex items-center gap-3">
                 <div className={`w-8 h-8 rounded-md flex items-center justify-center font-bold ${step===3 ? `bg-blue-500 text-white shadow-lg shadow-blue-500/20` : 'bg-white/10 text-white/40'}`}>3</div>
                 <div>
@@ -651,7 +650,7 @@ export default function NominateModal({ open, onClose, onSubmit, initialCategory
                 </div>
               </div>
 
-              <div className="pt-6 border-t border-white/5 space-y-4">
+              <div className="pt-4 border-t border-white/5 space-y-3">
                 {step === 2 && (
                   <div className="animate-in fade-in slide-in-from-bottom-2 duration-500">
                     <div className="text-[10px] font-black uppercase tracking-tighter text-white/30 mb-2">Active Design</div>
@@ -669,7 +668,7 @@ export default function NominateModal({ open, onClose, onSubmit, initialCategory
                       <div className={`${category === 'Individual Award' ? 'text-white text-right' : `text-${themeColor}-400 text-right`}`}>{category}</div>
                     </div>
 
-                    <div className={`mt-6 p-4 bg-${themeColor}-500/5 rounded-md border border-${themeColor}-500/10`}>
+                    <div className={`mt-4 p-3 bg-${themeColor}-500/5 rounded-md border border-${themeColor}-500/10`}>
                       <div className="text-[10px] font-black uppercase tracking-tighter opacity-30 mb-2">Final Message</div>
                       <div className="text-sm italic text-white/90 leading-relaxed">"{message || 'No message provided'}"</div>
                     </div>
