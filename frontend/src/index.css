@@ -155,6 +155,10 @@ p, label, span, a, li, button, input, textarea, select {
     box-shadow: var(--card-shadow);
     transition: all 0.3s ease;
   }
+  /* Dashboard graph stat cards use a deeper indigo background */
+  .card-base[data-theme="graph-stat-card"] {
+    background-color: #211478;
+  }
     --tab-selected-from: #1A1F36;
     --tab-selected-to: #2C2F4A;
     --tab-selected-text: #5CE1E6;
@@ -298,6 +302,11 @@ p, label, span, a, li, button, input, textarea, select {
 */
 :root {
   --scroll-thumb-rgb: 99,102,241; /* indigo-ish */
+
+/* Override Tailwind-generated utility: set .bg-white/50 to #211478 */
+.bg-white\/50 {
+  background-color: #211478;
+}
   --scroll-thumb: rgba(var(--scroll-thumb-rgb), 0.9);
   --scroll-track: rgba(15,23,42, 0.02);
 }

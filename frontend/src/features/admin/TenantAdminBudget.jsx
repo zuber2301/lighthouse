@@ -222,16 +222,16 @@ export default function TenantAdminBudget() {
                   <p className="text-[10px] font-bold opacity-60 uppercase tracking-tighter">Total 90-Day Pts</p>
                 </div>
               </div>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
                 {forecast.map((f, i) => (
-                  <div key={i} className="p-4 bg-white/50 border border-purple-500/10 rounded-lg flex items-center justify-between">
-                    <div>
-                      <p className="text-[10px] font-black uppercase text-purple-600 tracking-widest">{f.label}</p>
-                      <p className="text-lg font-bold text-text-main">{f.count} <span className="text-sm font-normal opacity-60">Milestones</span></p>
+                  <div key={i} className="p-2 sm:p-3 bg-white/50 border border-purple-500/10 rounded-md flex items-center justify-between w-56 min-w-0">
+                    <div className="flex-1 min-w-0 pr-2">
+                      <p className="text-[9px] font-semibold uppercase text-purple-600 tracking-wider truncate leading-tight">{f.label}</p>
+                      <p className="text-lg font-bold text-text-main mt-1 leading-tight truncate">{f.count} <span className="text-xs font-normal opacity-60">Milestones</span></p>
                     </div>
-                    <div className="text-right">
-                      <p className="text-sm font-bold text-text-main">{f.points.toLocaleString()} pts</p>
-                      <div className="h-1.5 w-16 bg-purple-500/10 rounded-full mt-1 overflow-hidden">
+                    <div className="flex flex-col items-end ml-2">
+                      <p className="text-sm font-semibold text-text-main leading-tight">{f.points.toLocaleString()} pts</p>
+                      <div className="h-1 w-12 bg-purple-500/10 rounded-full mt-2 overflow-hidden">
                         <div className="h-full bg-purple-500" style={{ width: `${(f.count / Math.max(...forecast.map(x => x.count))) * 100}%` }} />
                       </div>
                     </div>

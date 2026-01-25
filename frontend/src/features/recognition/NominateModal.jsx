@@ -114,6 +114,14 @@ export default function NominateModal({ open, onClose, onSubmit, initialCategory
   // E-Card design selection (Classic, Modern, Fun). Default: none (no preview shown)
   const [design, setDesign] = useState('')
 
+   // When E-Card category is selected, default design to Classic so a preview is shown
+   useEffect(() => {
+     if (category === 'E-Card' && !design) {
+       setDesign('Classic')
+     }
+     // do not reset design when leaving E-Card to avoid unexpected UX
+   }, [category])
+
   // Build simple e-card HTML string based on selection + fields
   function buildEcardHtml() {
     const img = attachments.find((a) => (a.type || '').startsWith('image/'))
@@ -202,29 +210,34 @@ export default function NominateModal({ open, onClose, onSubmit, initialCategory
     // clear previous errors
     setValidationError('')
     if (step < 3) {
-      // when advancing from Design (step 2) to Review (step 3), capture a snapshot
-      if (step === 2) {
-        try {
-          const snap = {
-            ecardHtml: buildEcardHtml(),
-            message: message,
-            design,
-            points,
-            nominees: Array.isArray(nominees) ? JSON.parse(JSON.stringify(nominees)) : nominees,
-            areaOfFocus,
-            awardType,
-            scheduledDate,
-            scheduledTime,
-            category,
+      // Use functional update to avoid stale `step` closures.
+      setStep((prev) => {
+        const next = Math.min(3, prev + 1)
+        // when advancing from Design (step 2) to Review (step 3), capture a snapshot
+        if (prev === 2 && next === 3) {
+          try {
+            const snap = {
+              ecardHtml: buildEcardHtml(),
+              message: message,
+              design,
+              points,
+              nominees: Array.isArray(nominees) ? JSON.parse(JSON.stringify(nominees)) : nominees,
+              areaOfFocus,
+              awardType,
+              scheduledDate,
+              scheduledTime,
+              category,
+            }
+            setReviewSnapshot(snap)
+          } catch (err) {
+            setReviewSnapshot(null)
           }
-          setReviewSnapshot(snap)
-        } catch (err) {
-          setReviewSnapshot(null)
         }
-      }
-      setStep(step + 1)
+        return next
+      })
+    } else {
+      handleSubmit()
     }
-    else handleSubmit()
   }
 
   // Schedule
@@ -584,12 +597,12 @@ export default function NominateModal({ open, onClose, onSubmit, initialCategory
 
                     {designOpen && (
                       <ul className="absolute left-0 right-0 mt-2 z-50 rounded-md overflow-hidden shadow-lg bg-black/40 border border-white/10" role="listbox">
-                          {['None', 'Classic', 'Modern', 'Fun'].map((opt) => (
+                          {['Classic', 'Modern', 'Fun'].map((opt) => (
                             <li
                               key={opt}
                               role="option"
                               onClick={() => {
-                                setDesign(opt === 'None' ? '' : opt)
+                                setDesign(opt)
                                 setDesignOpen(false)
                               }}
                               className={`px-4 py-3 text-sm text-white hover:bg-white/5 cursor-pointer ${design === opt ? 'font-bold' : 'font-normal'}`}
@@ -597,6 +610,7 @@ export default function NominateModal({ open, onClose, onSubmit, initialCategory
                               {opt}
                             </li>
                           ))}
+                      <span>{design}</span>
                       </ul>
                     )}
                   </div>
