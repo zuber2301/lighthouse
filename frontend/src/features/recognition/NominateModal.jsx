@@ -18,6 +18,7 @@ export default function NominateModal({ open, onClose, onSubmit, initialCategory
   const awardWrapperRef = useRef(null)
   const [awardOpen, setAwardOpen] = useState(false)
   const areaWrapperRef = useRef(null)
+  const advancingRef = useRef(false)
   
 
   // Category
@@ -208,35 +209,41 @@ export default function NominateModal({ open, onClose, onSubmit, initialCategory
     }
     // clear previous errors
     setValidationError('')
-    if (step < 3) {
-      // Use functional update to avoid stale `step` closures.
-      setStep((prev) => {
-        const next = Math.min(3, prev + 1)
-        // when advancing from Design (step 2) to Review (step 3), capture a snapshot
-        if (prev === 2 && next === 3) {
-          try {
-            const snap = {
-              ecardHtml: buildEcardHtml(),
-              message: message,
-              design,
-              points,
-              nominees: Array.isArray(nominees) ? JSON.parse(JSON.stringify(nominees)) : nominees,
-              areaOfFocus,
-              awardType,
-              scheduledDate,
-              scheduledTime,
-              category,
-            }
-            setReviewSnapshot(snap)
-          } catch (err) {
-            setReviewSnapshot(null)
-          }
-        }
-        return next
-      })
-    } else {
-      handleSubmit()
+    // prevent double advances from rapid clicks
+    if (advancingRef.current) return
+    advancingRef.current = true
+    setTimeout(() => { advancingRef.current = false }, 300)
+
+    if (step === 1) {
+      setStep(2)
+      return
     }
+
+    if (step === 2) {
+      // capture snapshot before moving to review
+      try {
+        const snap = {
+          ecardHtml: buildEcardHtml(),
+          message: message,
+          design,
+          points,
+          nominees: Array.isArray(nominees) ? JSON.parse(JSON.stringify(nominees)) : nominees,
+          areaOfFocus,
+          awardType,
+          scheduledDate,
+          scheduledTime,
+          category,
+        }
+        setReviewSnapshot(snap)
+      } catch (err) {
+        setReviewSnapshot(null)
+      }
+      setStep(3)
+      return
+    }
+
+    // step >= 3: submit
+    handleSubmit()
   }
 
   // Schedule
