@@ -180,6 +180,34 @@ export default function NominateModal({ open, onClose, onSubmit, initialCategory
     return () => window.removeEventListener('keydown', onKey)
   }, [open, onClose])
 
+  // When opening the modal specifically for E-Card, clear any previous E-Card state so each
+  // open starts with a fresh, blank form (per UX request).
+  const prevOpen = useRef(open)
+  useEffect(() => {
+    // Detect transitions from closed -> open
+    if (!prevOpen.current && open) {
+      if (category === 'E-Card') {
+        // Clear fields but keep the category intact
+        setNominees([])
+        setMessage('')
+        setAttachments([])
+        setEcardHtml('')
+        setEcardUrl('')
+        // reset design to the default for E-Card so preview appears fresh
+        setDesign('Classic')
+        setPoints(AWARD_POINTS['Gold - Annual Excellence'])
+        setPointsManual(false)
+        setAreaOfFocus('')
+        setScheduledDate('')
+        setScheduledTime('')
+        setReviewSnapshot(null)
+        setStep(1)
+      }
+    }
+    prevOpen.current = open
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open, category])
+
   // smooth scroll & focus to middle (Design) column when advancing to step 2
   useEffect(() => {
     if (step !== 2) return
@@ -391,7 +419,7 @@ export default function NominateModal({ open, onClose, onSubmit, initialCategory
   `
 
   return (
-    <Modal open={open} onClose={onClose} className={`max-w-6xl transition-all duration-700 
+    <Modal open={open} onClose={onClose} className={`max-w-4xl transition-all duration-700 
       ${isECard 
         ? '!bg-gradient-to-br !from-[#1d6655] !via-[#1d4ed8] !to-[#1d6655]' 
         : '!bg-gradient-to-br !from-[#1d6655] !via-[#1e1b4b] !to-[#1d6655]'}`}>
@@ -405,9 +433,9 @@ export default function NominateModal({ open, onClose, onSubmit, initialCategory
             {validationError && <div className="text-sm text-rose-400 mt-2">{validationError}</div>}
           </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-stretch">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 items-stretch">
           {/* Left column: Entry Form */}
-          <div ref={middleRef} className={`space-y-4 bg-black/30 p-4 rounded-lg backdrop-blur-md shadow-2xl`}>
+          <div ref={middleRef} className={`space-y-4 bg-black/30 p-3 rounded-lg backdrop-blur-md shadow-2xl`}>
             <div className="flex items-center gap-3">
               <div className={`w-8 h-8 rounded-md flex items-center justify-center font-bold ${step===1 ? `bg-${themeColor}-500 text-white shadow-lg shadow-${themeColor}-500/20` : 'bg-white/10 text-white/40'}`}>1</div>
               <div>
@@ -471,7 +499,7 @@ export default function NominateModal({ open, onClose, onSubmit, initialCategory
               </div>
             )}
 
-            <div className="grid grid-cols-1 gap-4">
+            <div className="grid grid-cols-1 gap-3">
               {!openedAsECard && (
                 <>
 
@@ -577,7 +605,7 @@ export default function NominateModal({ open, onClose, onSubmit, initialCategory
           </div>
 
           {/* Middle column: Design chooser + preview */}
-          <div className={`space-y-4 bg-black/30 p-4 rounded-lg backdrop-blur-md shadow-2xl`}>
+          <div className={`space-y-3 bg-black/30 p-3 rounded-lg backdrop-blur-md shadow-2xl`}>
             <div className="flex items-center gap-3">
               <div className={`w-8 h-8 rounded-md flex items-center justify-center font-bold ${step===2 ? `bg-${themeColor}-500 text-white shadow-lg shadow-${themeColor}-500/20` : 'bg-white/10 text-white/40'}`}>2</div>
               <div>
@@ -637,7 +665,7 @@ export default function NominateModal({ open, onClose, onSubmit, initialCategory
                   {/* Review & Send (moved in from column-3) */}
                   {step === 3 && (
                     <div className="mt-4 space-y-4">
-                      <div className={`space-y-4 bg-black/30 p-4 rounded-lg backdrop-blur-md shadow-2xl`}>
+                      <div className={`space-y-3 bg-black/30 p-3 rounded-lg backdrop-blur-md shadow-2xl`}>
                         <div className="flex items-center gap-3">
                           <div className={`w-8 h-8 rounded-md flex items-center justify-center font-bold ${step===3 ? `bg-blue-500 text-white shadow-lg shadow-blue-500/20` : 'bg-white/10 text-white/40'}`}>3</div>
                           <div>
@@ -647,7 +675,7 @@ export default function NominateModal({ open, onClose, onSubmit, initialCategory
 
                         <div className="pt-4 border-t border-white/5 space-y-3">
                           <div className="animate-in fade-in slide-in-from-bottom-4 duration-700">
-                            <div className="grid grid-cols-2 gap-4 text-xs font-bold uppercase tracking-widest text-white/40">
+                            <div className="grid grid-cols-2 gap-3 text-xs font-bold uppercase tracking-widest text-white/40">
                               <div>Category</div>
                               <div className={`${category === 'Individual Award' ? 'text-white text-right' : `text-${themeColor}-400 text-right`}`}>{category}</div>
                             </div>

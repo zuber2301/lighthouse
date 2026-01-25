@@ -116,6 +116,34 @@ describe('Recognition & Award Modals', () => {
         }));
       });
     });
+
+    it('opens a fresh blank form every time it is opened for E-Card', async () => {
+      axiosClient.get.mockResolvedValue({ data: [{ id: 'user-5', name: 'Replay User', email: 'replay@example.com' }] });
+
+      const { rerender } = render(
+        <NominateModal open={true} onClose={mockOnClose} onSubmit={mockOnSubmit} initialCategory="E-Card" />
+      )
+
+      // Fill form
+      fireEvent.change(screen.getByPlaceholderText(/Search by name or email/i), { target: { value: 'Replay' } })
+      await waitFor(() => expect(screen.getByText('Replay User')).toBeInTheDocument())
+      fireEvent.click(screen.getByText('Replay User'))
+      fireEvent.change(screen.getByPlaceholderText(/Why does this person deserve recognition/i), { target: { value: 'First message' } })
+
+      // Close the modal (simulate parent closing)
+      rerender(<NominateModal open={false} onClose={mockOnClose} onSubmit={mockOnSubmit} initialCategory="E-Card" />)
+
+      // Re-open - should be fresh and cleared
+      rerender(<NominateModal open={true} onClose={mockOnClose} onSubmit={mockOnSubmit} initialCategory="E-Card" />)
+
+      // Recipient list should be empty (no selected pills)
+      expect(screen.queryByText('Replay User')).not.toBeInTheDocument()
+      // Message should be cleared
+      const textarea = screen.getByPlaceholderText(/Why does this person deserve recognition/i)
+      expect(textarea.value).toBe('')
+      // Design should be reset to default
+      expect(screen.getByDisplayValue('Classic')).toBeInTheDocument()
+    })
   });
 
   describe('Group Award (GroupAwardModal)', () => {
