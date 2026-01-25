@@ -1,10 +1,10 @@
-import React, { useState } from 'react'
+import React, { useState, useRef, useEffect } from 'react'
 import { Link, NavLink } from 'react-router-dom'
 import { navLinkClass } from '../utils/navLinkClass'
 import { useAuth } from '../lib/AuthContext'
 import { useTenant } from '../lib/TenantContext'
 import { usePlatform } from '../context/PlatformContext'
-import TenantSelector from './TenantSelector'
+// TenantSelector removed — using inline persistent search in sidebar
 import { 
   HomeIcon, 
   RecognitionIcon, 
@@ -56,6 +56,55 @@ export default function Sidebar() {
   const { user: authUser } = useAuth()
   const { tenants, selectedTenant, setSelectedTenantId } = useTenant()
   const { switchTenant } = usePlatform()
+
+  const [tenantQuery, setTenantQuery] = useState('')
+  const [searchOpen, setSearchOpen] = useState(false)
+  const searchRef = useRef(null)
+  const inputRef = useRef(null)
+  const [highlighted, setHighlighted] = useState(-1)
+
+  useEffect(() => {
+    function handleClickOutside(e) {
+      if (searchRef.current && !searchRef.current.contains(e.target)) {
+        setSearchOpen(false)
+        setHighlighted(-1)
+      }
+    }
+    window.addEventListener('mousedown', handleClickOutside)
+    return () => window.removeEventListener('mousedown', handleClickOutside)
+  }, [])
+
+  const filteredTenants = (tenants || []).slice().sort((a, b) => a.name.localeCompare(b.name)).filter(t => tenantQuery.trim() === '' || t.name.toLowerCase().includes(tenantQuery.toLowerCase()))
+
+  function handleKeyDown(e) {
+    if (!searchOpen) return
+    if (e.key === 'ArrowDown') {
+      e.preventDefault()
+      setHighlighted(prev => {
+        const next = prev + 1
+        return next >= filteredTenants.length ? 0 : next
+      })
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault()
+      setHighlighted(prev => {
+        const next = prev - 1
+        return next < 0 ? Math.max(0, filteredTenants.length - 1) : next
+      })
+    } else if (e.key === 'Enter') {
+      e.preventDefault()
+      if (highlighted >= 0 && filteredTenants[highlighted]) {
+        const t = filteredTenants[highlighted]
+        setSelectedTenantId(t.id)
+        switchTenant(t)
+        setTenantQuery('')
+        setSearchOpen(false)
+        setHighlighted(-1)
+      }
+    } else if (e.key === 'Escape') {
+      setSearchOpen(false)
+      setHighlighted(-1)
+    }
+  }
 
   const userRole = authUser?.role || 'CORPORATE_USER'
   const isAdmin = userRole === 'PLATFORM_OWNER' || userRole === 'TENANT_ADMIN'
@@ -109,12 +158,44 @@ export default function Sidebar() {
         {/* Bottom area: tenant selector for PLATFORM_OWNER */}
         {userRole === 'PLATFORM_OWNER' && (
           <div className="mt-auto pt-4 border-t border-indigo-500/5">
-            <div className="flex flex-col items-start">
-              <TenantSelector label={null} direction="up" compact={true} />
+            <div className="flex flex-col items-start w-full">
+              {/* Persistent tenant search (always visible) */}
+              <div ref={searchRef} className="w-full">
+                <input
+                  ref={inputRef}
+                  type="search"
+                  value={tenantQuery}
+                  onChange={(e) => { setTenantQuery(e.target.value); setSearchOpen(true); setHighlighted(0) }}
+                  onFocus={() => { setSearchOpen(true); setHighlighted(0) }}
+                  onKeyDown={handleKeyDown}
+                  placeholder="Search tenants..."
+                  className="w-full bg-indigo-500/5 border border-indigo-500/10 rounded-md px-4 py-3 text-sm text-white placeholder:text-white/50 focus:outline-none focus:ring-2 focus:ring-indigo-500/30"
+                />
 
-              {/* visible sidebar search removed; search is inside TenantSelector dropdown */}
+                {searchOpen && (
+                  <ul className="mt-2 max-h-48 overflow-y-auto rounded-md bg-card/80 border border-indigo-500/10 w-full">
+                    { filteredTenants.map((t, idx) => (
+                      <li
+                        key={t.id}
+                        onMouseEnter={() => setHighlighted(idx)}
+                        onMouseLeave={() => setHighlighted(-1)}
+                        className={`px-3 py-2 text-sm cursor-pointer ${highlighted === idx ? 'bg-indigo-500/10 text-white' : 'text-text-main hover:bg-indigo-500/10'}`}
+                        onClick={() => {
+                          setSelectedTenantId(t.id)
+                          switchTenant(t)
+                          setTenantQuery('')
+                          setSearchOpen(false)
+                          setHighlighted(-1)
+                        }}
+                      >
+                        {t.name}
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
 
-              <div className="mt-2 flex items-center gap-3 p-3 rounded-xl">
+              <div className="mt-3 flex items-center gap-3 p-3 rounded-xl">
                 <div className="p-1.5 rounded-lg bg-white/5">
                   <TenantIcon className="w-5 h-5 text-white" />
                 </div>
