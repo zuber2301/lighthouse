@@ -390,7 +390,7 @@ export default function NominateModal({ open, onClose, onSubmit, initialCategory
         : '!bg-gradient-to-br !from-[#661d66] !via-[#1e1b4b] !to-[#661d66]'}`}>
       <form onSubmit={handleSubmit} className="space-y-6">
         <div>
-          <h2 className={`text-4xl font-normal tracking-tighter ${category === 'Individual Award' ? 'text-white' : `text-${themeColor}-400`} mb-2`}>{openedAsECard ? 'Send a E-Card' : 'Individual Excellence Nomination Form'}</h2>
+          <h2 className={`text-3xl font-normal tracking-tighter ${category === 'Individual Award' ? 'text-white' : `text-${themeColor}-400`} mb-2`}>{openedAsECard ? 'Send a E-Card' : 'Individual Excellence Nomination Form'}</h2>
           {openedAsECard && <div className="text-[13px] font-medium tracking-widest uppercase opacity-40 text-text-main">Personalized Appreciation</div>}
 
             <div className="mt-8 relative">
@@ -470,7 +470,7 @@ export default function NominateModal({ open, onClose, onSubmit, initialCategory
                 <>
 
                   <section>
-                    <div className="text-[15px] font-normal tracking-tight text-white mb-3">Award Type</div>
+                    <div className="text-sm font-normal tracking-tight text-white mb-3">Award Type</div>
                     <div ref={awardWrapperRef} className="relative">
                       <button type="button" onClick={() => setAwardOpen(!awardOpen)} className="w-full text-left bg-black/30 border border-white/10 rounded-md p-3 text-sm focus:outline-none focus:ring-2 focus:ring-white/10 transition-all text-white flex items-center justify-between">
                         <span>{awardType}</span>
@@ -489,7 +489,7 @@ export default function NominateModal({ open, onClose, onSubmit, initialCategory
 
                   <section className="flex items-center gap-3">
                     <div className="flex-1">
-                      <div className="text-[15px] font-normal tracking-tight text-white">Points</div>
+                      <div className="text-sm font-normal tracking-tight text-white">Points</div>
                     </div>
 
                     <button
@@ -506,7 +506,7 @@ export default function NominateModal({ open, onClose, onSubmit, initialCategory
             </div>
 
             <section>
-              <div className="text-[15px] font-normal tracking-tight text-white mb-3">Choose Award Category</div>
+              <div className="text-sm font-normal tracking-tight text-white mb-3">Choose Award Category</div>
             <div className="space-y-2">
               <div className="flex flex-wrap gap-2">
                 {['Collaboration','Innovation','Customer Focus','Execution','Leadership'].map((opt) => {
