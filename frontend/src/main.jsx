@@ -26,6 +26,7 @@ try {
 import { LiveAnnouncerProvider } from './components/LiveAnnouncer'
 import { ToastProvider } from './components/ToastProvider'
 import { TenantProvider } from './lib/TenantContext'
+import { PlatformProvider } from './context/PlatformContext'
 import DevPersonaSwitcher from './components/DevPersonaSwitcher'
 
 const queryClient = new QueryClient()
@@ -41,7 +42,9 @@ root.render(
         <LiveAnnouncerProvider>
           <ToastProvider>
             <TenantProvider>
-              <App />
+              <PlatformProvider>
+                <App />
+              </PlatformProvider>
             </TenantProvider>
           </ToastProvider>
         </LiveAnnouncerProvider>

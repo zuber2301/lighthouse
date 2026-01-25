@@ -1,8 +1,10 @@
 import React, { useRef, useState, useEffect } from 'react'
 import { useTenant } from '../lib/TenantContext'
+import { usePlatform } from '../context/PlatformContext'
 
 export default function TenantSelector() {
   const { tenants, selectedTenantId, setSelectedTenantId, selectedTenant } = useTenant()
+  const { switchTenant } = usePlatform()
 
   const onChange = (e) => {
     const val = e.target.value
@@ -39,9 +41,29 @@ export default function TenantSelector() {
 
         {open && (
           <ul className="absolute left-0 right-0 mt-2 z-50 rounded-md overflow-hidden shadow-lg bg-card/20 border border-indigo-500/10" role="listbox">
-            <li role="option" key="global" onClick={() => { setSelectedTenantId(''); setOpen(false) }} className={`px-4 py-3 text-sm text-text-main hover:bg-indigo-500/10 cursor-pointer ${!selectedTenantId ? 'font-bold' : 'font-normal'}`}>Global Overview</li>
+            <li
+              role="option"
+              key="global"
+              onClick={() => {
+                setSelectedTenantId('')
+                switchTenant(null)
+                setOpen(false)
+              }}
+              className={`px-4 py-3 text-sm text-text-main hover:bg-indigo-500/10 cursor-pointer ${!selectedTenantId ? 'font-bold' : 'font-normal'}`}
+            >
+              Global Overview
+            </li>
             {tenants.map(t => (
-              <li key={t.id} role="option" onClick={() => { setSelectedTenantId(t.id); setOpen(false) }} className={`px-4 py-3 text-sm text-text-main hover:bg-indigo-500/10 cursor-pointer ${String(selectedTenantId) === String(t.id) ? 'font-bold' : 'font-normal'}`}>
+              <li
+                key={t.id}
+                role="option"
+                onClick={() => {
+                  setSelectedTenantId(t.id)
+                  switchTenant(t)
+                  setOpen(false)
+                }}
+                className={`px-4 py-3 text-sm text-text-main hover:bg-indigo-500/10 cursor-pointer ${String(selectedTenantId) === String(t.id) ? 'font-bold' : 'font-normal'}`}
+              >
                 {t.name}
               </li>
             ))}

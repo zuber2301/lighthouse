@@ -106,7 +106,7 @@ export default function LoginPage() {
             value={formData.email}
             onChange={handleInputChange}
             required
-            className="w-full px-4 py-3 bg-surface/50 border border-indigo-500/10 rounded-md text-text-main placeholder:opacity-40 focus:outline-none focus:ring-2 focus:ring-tm-teal/50 focus:border-tm-teal transition-all duration-200"
+            className="w-full px-4 py-3 bg-[#7C3AED] border border-indigo-500/10 rounded-md text-white placeholder:text-white/60 focus:outline-none focus:ring-2 focus:ring-white/60 focus:border-white transition-all duration-200"
             placeholder="Enter your email"
           />
         </div>
@@ -122,7 +122,7 @@ export default function LoginPage() {
             value={formData.password}
             onChange={handleInputChange}
             required
-            className="w-full px-4 py-3 bg-surface/50 border border-indigo-500/10 rounded-md text-text-main placeholder:opacity-40 focus:outline-none focus:ring-2 focus:ring-tm-teal/50 focus:border-tm-teal transition-all duration-200"
+            className="w-full px-4 py-3 bg-[#7C3AED] border border-indigo-500/10 rounded-md text-white placeholder:text-white/60 focus:outline-none focus:ring-2 focus:ring-white/60 focus:border-white transition-all duration-200"
             placeholder="Enter your password"
           />
         </div>
