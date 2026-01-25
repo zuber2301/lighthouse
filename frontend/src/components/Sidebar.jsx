@@ -111,7 +111,7 @@ export default function Sidebar() {
         {userRole === 'PLATFORM_OWNER' && (
           <div className="mt-auto pt-4 border-t border-indigo-500/5">
             <div className="flex flex-col items-start">
-              <TenantSelector label={null} direction="up" />
+              <TenantSelector label={null} direction="up" compact={true} />
 
               {/* visible sidebar search removed; search is inside TenantSelector dropdown */}
 
