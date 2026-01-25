@@ -405,7 +405,7 @@ export default function NominateModal({ open, onClose, onSubmit, initialCategory
             {validationError && <div className="text-sm text-rose-400 mt-2">{validationError}</div>}
           </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-stretch">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-stretch">
           {/* Left column: Entry Form */}
           <div ref={middleRef} className={`space-y-4 bg-black/30 p-4 rounded-lg backdrop-blur-md shadow-2xl`}>
             <div className="flex items-center gap-3">
@@ -627,12 +627,49 @@ export default function NominateModal({ open, onClose, onSubmit, initialCategory
                   </div>
 
                   {(!designOpen && design !== 'Classic') && (
-                    <div className="mt-4 flex items-center justify-end gap-3">
-                      <button type="button" onClick={() => setStep(Math.max(1, step - 1))} className={`px-4 py-2 rounded-md ${step===1 ? 'opacity-50 cursor-not-allowed bg-white/5 text-white/50' : `bg-${themeColor}-500/10 text-white hover:bg-${themeColor}-500/20 border border-${themeColor}-500/20 font-bold`}`}>
-                        Back
-                      </button>
+                    <div className="mt-4 flex items-center justify-end">
                       <button type="button" onClick={handleTopNext} className={`px-6 py-2 rounded-md text-white font-black ${isECard ? `bg-${themeColor}-600 shadow-${themeColor}-600/20` : 'bg-indigo-600 shadow-indigo-600/20'}`}>
                         Next
+                      </button>
+                    </div>
+                  )}
+
+                  {/* Review & Send (moved in from column-3) */}
+                  {step === 3 && (
+                    <div className="mt-4 space-y-4">
+                      <div className={`space-y-4 bg-black/30 p-4 rounded-lg backdrop-blur-md shadow-2xl`}>
+                        <div className="flex items-center gap-3">
+                          <div className={`w-8 h-8 rounded-md flex items-center justify-center font-bold ${step===3 ? `bg-blue-500 text-white shadow-lg shadow-blue-500/20` : 'bg-white/10 text-white/40'}`}>3</div>
+                          <div>
+                            <div className="text-sm font-bold uppercase tracking-widest text-white/70">Review & Send</div>
+                          </div>
+                        </div>
+
+                        <div className="pt-4 border-t border-white/5 space-y-3">
+                          <div className="animate-in fade-in slide-in-from-bottom-4 duration-700">
+                            <div className="grid grid-cols-2 gap-4 text-xs font-bold uppercase tracking-widest text-white/40">
+                              <div>Category</div>
+                              <div className={`${category === 'Individual Award' ? 'text-white text-right' : `text-${themeColor}-400 text-right`}`}>{category}</div>
+                            </div>
+
+                            <div className={`mt-4 p-3 bg-${themeColor}-500/5 rounded-md border border-${themeColor}-500/10`}>
+                              <div className="text-[10px] font-black uppercase tracking-tighter opacity-30 mb-2">Final Message</div>
+                              <div className="text-sm italic text-white/90 leading-relaxed">"{message || 'No message provided'}"</div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Moved final action buttons from column-3 to column-2 (show only on review step) */}
+                  {step === 3 && (
+                    <div className="mt-4 flex items-center justify-end gap-3">
+                      <button type="button" onClick={() => setStep(Math.max(1, step - 1))} disabled={step === 1} className={`px-4 py-2 rounded-md ${step===1 ? 'opacity-50 cursor-not-allowed bg-white/5 text-white/50' : `bg-${themeColor}-500/10 text-white hover:bg-${themeColor}-500/20 border border-${themeColor}-500/20 font-bold`}`}>
+                        Back
+                      </button>
+                      <button type="submit" className={`px-6 py-2 rounded-md text-white font-black ${isECard ? `bg-${themeColor}-600 shadow-${themeColor}-600/20` : 'bg-indigo-600 shadow-indigo-600/20'}`}>
+                        Submit
                       </button>
                     </div>
                   )}
@@ -646,46 +683,7 @@ export default function NominateModal({ open, onClose, onSubmit, initialCategory
 
           </div>
 
-          {/* Right column: Summary, steps and review */}
-          <div className="flex flex-col gap-4">
-            {/* Stepper + Review area */}
-            <div className={`space-y-4 bg-black/30 p-4 rounded-lg backdrop-blur-md shadow-2xl`}>
-              <div className="flex items-center gap-3">
-                <div className={`w-8 h-8 rounded-md flex items-center justify-center font-bold ${step===3 ? `bg-blue-500 text-white shadow-lg shadow-blue-500/20` : 'bg-white/10 text-white/40'}`}>3</div>
-                <div>
-                  <div className="text-sm font-bold uppercase tracking-widest text-white/70">Review & Send</div>
-                </div>
-              </div>
 
-              <div className="pt-4 border-t border-white/5 space-y-3">
-                {/* Active Design preview moved to column-2; column-3 will show only on step === 3 */}
-
-                {step === 3 && (
-                  <div className="animate-in fade-in slide-in-from-bottom-4 duration-700">
-                    <div className="grid grid-cols-2 gap-4 text-xs font-bold uppercase tracking-widest text-white/40">
-                      <div>Category</div>
-                      <div className={`${category === 'Individual Award' ? 'text-white text-right' : `text-${themeColor}-400 text-right`}`}>{category}</div>
-                    </div>
-
-                    <div className={`mt-4 p-3 bg-${themeColor}-500/5 rounded-md border border-${themeColor}-500/10`}>
-                      <div className="text-[10px] font-black uppercase tracking-tighter opacity-30 mb-2">Final Message</div>
-                      <div className="text-sm italic text-white/90 leading-relaxed">"{message || 'No message provided'}"</div>
-                    </div>
-                  </div>
-                )}
-              </div>
-            </div>
-
-            {/* bottom area: Back + Submit for final column */}
-            <div className="mt-4 flex items-center justify-end gap-3">
-              <button type="button" onClick={() => setStep(Math.max(1, step - 1))} disabled={step === 1} className={`px-4 py-2 rounded-md ${step===1 ? 'opacity-50 cursor-not-allowed bg-white/5 text-white/50' : `bg-${themeColor}-500/10 text-white hover:bg-${themeColor}-500/20 border border-${themeColor}-500/20 font-bold`}`}>
-                Back
-              </button>
-              <button type="submit" className={`px-6 py-2 rounded-md text-white font-black ${isECard ? `bg-${themeColor}-600 shadow-${themeColor}-600/20` : 'bg-indigo-600 shadow-indigo-600/20'}`}>
-                Submit
-              </button>
-            </div>
-          </div>
         </div>
       </form>
     </Modal>
