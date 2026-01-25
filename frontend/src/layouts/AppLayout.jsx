@@ -11,7 +11,7 @@ export default function AppLayout() {
   const isAdmin = user?.role === 'PLATFORM_OWNER' || user?.role === 'TENANT_ADMIN'
   
   return (
-    <div className="min-h-screen grid grid-cols-[260px_1fr] bg-surface text-text-main transition-colors duration-300 relative overflow-hidden">
+    <div className="min-h-screen grid grid-cols-[16rem_1fr] bg-surface text-text-main transition-colors duration-300 relative overflow-hidden">
       {theme === 'graph' && (
         <div className="absolute inset-0 pointer-events-none overflow-hidden">
           <div className="tm-shape w-64 h-64 top-[10%] -left-32 rotate-45 animate-tm-float border-tm-teal/20" />
