@@ -60,15 +60,6 @@ export default function TenantSelector({ label = null, direction = 'down' }) {
               >
                 Global Overview
               </li>
-              <li className="px-3 py-2">
-                <input
-                  type="search"
-                  value={query}
-                  onChange={(e) => setQuery(e.target.value)}
-                  placeholder="Search tenants..."
-                  className="w-full bg-transparent border border-indigo-500/10 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/30"
-                />
-              </li>
               {filtered.map(t => (
                 <li
                   key={t.id}
@@ -84,6 +75,16 @@ export default function TenantSelector({ label = null, direction = 'down' }) {
                   {t.name}
                 </li>
               ))}
+
+              <li className="px-3 py-2 border-t border-indigo-500/5">
+                <input
+                  type="search"
+                  value={query}
+                  onChange={(e) => setQuery(e.target.value)}
+                  placeholder="Search tenants..."
+                  className="w-full bg-transparent border border-indigo-500/10 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/30"
+                />
+              </li>
             </ul>
           </div>
         )}
