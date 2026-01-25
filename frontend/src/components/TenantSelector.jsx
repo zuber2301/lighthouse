@@ -18,6 +18,7 @@ export default function TenantSelector({ label = null, direction = 'down' }) {
   const wrapperRef = useRef(null)
   const [open, setOpen] = useState(false)
   const [query, setQuery] = useState('')
+  const inputRef = useRef(null)
 
   useEffect(() => {
     function handleClickOutside(e) {
@@ -26,6 +27,18 @@ export default function TenantSelector({ label = null, direction = 'down' }) {
     window.addEventListener('mousedown', handleClickOutside)
     return () => window.removeEventListener('mousedown', handleClickOutside)
   }, [])
+
+  useEffect(() => {
+    if (open) {
+      // focus the search input and ensure it's visible when dropdown opens
+      requestAnimationFrame(() => {
+        if (inputRef.current) {
+          inputRef.current.focus()
+          inputRef.current.scrollIntoView({ block: 'nearest' })
+        }
+      })
+    }
+  }, [open])
 
   const filtered = tenants?.filter(t => t.name.toLowerCase().includes(query.toLowerCase())) || []
 
@@ -78,6 +91,7 @@ export default function TenantSelector({ label = null, direction = 'down' }) {
 
               <li className="px-3 py-2 border-t border-indigo-500/5">
                 <input
+                  ref={inputRef}
                   type="search"
                   value={query}
                   onChange={(e) => setQuery(e.target.value)}
