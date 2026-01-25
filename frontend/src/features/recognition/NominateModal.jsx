@@ -127,12 +127,12 @@ export default function NominateModal({ open, onClose, onSubmit, initialCategory
     const imgSrc = img?.url || img?.preview || ''
 
     // Keep the same overall card dimensions/box but vary visual style strongly per design
-    if (design === 'Classic') {
+      if (design === 'Classic') {
       return `
-        <div style="width:100%;box-sizing:border-box;padding:28px;border-radius:14px;background:linear-gradient(135deg,#f8fbff,#eef6ff);color:#661d66;font-family:Georgia,'Times New Roman',serif;">
+        <div style="width:100%;box-sizing:border-box;padding:28px;border-radius:14px;background:linear-gradient(135deg,#f8fbff,#eef6ff);color:#1d6655;font-family:Georgia,'Times New Roman',serif;">
           <div style="font-size:22px;font-weight:700;margin-bottom:8px;">${message ? 'Well done!' : 'Congratulations!'}</div>
           ${imgSrc ? `<div style=\"text-align:center;margin:10px 0\"><img src=\"${imgSrc}\" style=\"max-width:100%;border-radius:10px;\"/></div>` : ''}
-          <div style="font-size:16px;line-height:1.6;margin-bottom:10px;color:#661d66">${message || ''}</div>
+          <div style="font-size:16px;line-height:1.6;margin-bottom:10px;color:#1d6655">${message || ''}</div>
           <div style="font-size:14px;opacity:0.9">— From your team</div>
         </div>
       `
@@ -386,8 +386,8 @@ export default function NominateModal({ open, onClose, onSubmit, initialCategory
   return (
     <Modal open={open} onClose={onClose} className={`max-w-6xl transition-all duration-700 
       ${isECard 
-        ? '!bg-gradient-to-br !from-[#661d66] !via-[#1d4ed8] !to-[#661d66]' 
-        : '!bg-gradient-to-br !from-[#661d66] !via-[#1e1b4b] !to-[#661d66]'}`}>
+        ? '!bg-gradient-to-br !from-[#1d6655] !via-[#1d4ed8] !to-[#1d6655]' 
+        : '!bg-gradient-to-br !from-[#1d6655] !via-[#1e1b4b] !to-[#1d6655]'}`}>
       <form onSubmit={handleSubmit} className="space-y-3">
         <div>
           <h2 className={`text-3xl font-normal tracking-tighter ${category === 'Individual Award' ? 'text-white' : `text-${themeColor}-400`} mb-2`}>{openedAsECard ? 'Send a E-Card' : 'Individual Excellence Nomination Form'}</h2>
@@ -581,7 +581,7 @@ export default function NominateModal({ open, onClose, onSubmit, initialCategory
               { (category === 'E-Card' || openedAsECard) ? (
                 <>
                   {design ? (
-                    <div className={`mt-4 p-3 rounded-md min-h-[80px] ${isECard ? `bg-${themeColor}-500/5 border border-${themeColor}-500/10 shadow-[inset_0_0_30px_rgba(29,78,216,0.04)]` : 'bg-surface border border-border-soft'}`}>
+                    <div className={`mt-4 p-3 rounded-md min-h-[80px] ${isECard ? `bg-${themeColor}-500/5 shadow-[inset_0_0_30px_rgba(29,78,216,0.04)]` : 'bg-surface border border-border-soft'}`}>
                       <div id="ecard-preview" dangerouslySetInnerHTML={{ __html: (isECard ? (ecardHtml || liveEcardHtml) : ecardHtml) }} />
                     </div>
                   ) : (
@@ -655,7 +655,7 @@ export default function NominateModal({ open, onClose, onSubmit, initialCategory
                   <div className="animate-in fade-in slide-in-from-bottom-2 duration-500">
                     <div className="text-[10px] font-black uppercase tracking-tighter text-white/30 mb-2">Active Design</div>
                     <div className="text-sm font-bold text-blue-400 mb-4">{design} Edition</div>
-                    <div className={`p-3 rounded-md ${isECard ? `bg-${themeColor}-500/5 border border-${themeColor}-500/10` : 'bg-surface/80 border border-border-soft'}`}>
+                    <div className={`p-3 rounded-md ${isECard ? `bg-${themeColor}-500/5` : 'bg-surface/80 border border-border-soft'}`}>
                       <div dangerouslySetInnerHTML={{ __html: (isECard ? (ecardHtml || liveEcardHtml) : ecardHtml) }} />
                     </div>
                   </div>
