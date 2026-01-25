@@ -18,7 +18,7 @@ export default function NominateModal({ open, onClose, onSubmit, initialCategory
   const awardWrapperRef = useRef(null)
   const [awardOpen, setAwardOpen] = useState(false)
   const areaWrapperRef = useRef(null)
-  const [areaOpen, setAreaOpen] = useState(false)
+  
 
   // Category
   const [category, setCategory] = useState(initialCategory || CATEGORIES[0])
@@ -67,7 +67,6 @@ export default function NominateModal({ open, onClose, onSubmit, initialCategory
     function handleClickOutside(e) {
       if (designWrapperRef.current && !designWrapperRef.current.contains(e.target)) setDesignOpen(false)
       if (awardWrapperRef.current && !awardWrapperRef.current.contains(e.target)) setAwardOpen(false)
-      if (areaWrapperRef.current && !areaWrapperRef.current.contains(e.target)) setAreaOpen(false)
     }
     window.addEventListener('mousedown', handleClickOutside)
     return () => window.removeEventListener('mousedown', handleClickOutside)
@@ -143,7 +142,7 @@ export default function NominateModal({ open, onClose, onSubmit, initialCategory
       return `
         <div style="width:100%;box-sizing:border-box;padding:30px;border-radius:14px;background:linear-gradient(90deg,#071021 0%,#0b1a2b 100%);color:#e6eef8;font-family:Inter,system-ui,Arial;">
           <div style="display:flex;align-items:center;gap:12px;margin-bottom:10px">
-            <div style="width:56px;height:56px;border-radius:10px;background:linear-gradient(135deg,#7c3aed,#06b6d4);display:flex;align-items:center;justify-content:center;font-weight:700;color:white;font-size:18px">★</div>
+            <div style="width:35px;height:35px;border-radius:10px;background:linear-gradient(135deg,#7c3aed,#06b6d4);display:flex;align-items:center;justify-content:center;font-weight:700;color:white;font-size:18px">★</div>
             <div style="font-size:22px;font-weight:700">Nice work</div>
           </div>
           ${imgSrc ? `<div style=\"margin:14px 0;text-align:center\"><img src=\"${imgSrc}\" style=\"max-width:100%;border-radius:12px;\"/></div>` : ''}
@@ -376,7 +375,7 @@ export default function NominateModal({ open, onClose, onSubmit, initialCategory
   const liveEcardHtml = `
     <div style="width:100%;box-sizing:border-box;padding:30px;border-radius:14px;background:linear-gradient(90deg,#071021 0%,#0b1a2b 100%);color:#e6eef8;font-family:Inter,system-ui,Arial;">
       <div style="display:flex;align-items:center;gap:12px;margin-bottom:10px">
-        <div style="width:56px;height:56px;border-radius:10px;background:linear-gradient(135deg,#7c3aed,#06b6d4);display:flex;align-items:center;justify-content:center;font-weight:700;color:white;font-size:18px">★</div>
+            <div style="width:35px;height:35px;border-radius:10px;background:linear-gradient(135deg,#7c3aed,#06b6d4);display:flex;align-items:center;justify-content:center;font-weight:700;color:white;font-size:18px">★</div>
         <div style="font-size:22px;font-weight:700">Nice work</div>
       </div>
       <div style="font-size:15px;line-height:1.5;color:#cfe8ff">${_safe(message || 'I especially noticed when you [describe a specific example], which helped because [describe impact].')}</div>
@@ -507,20 +506,27 @@ export default function NominateModal({ open, onClose, onSubmit, initialCategory
             </div>
 
             <section>
-              <div className="text-[15px] font-normal tracking-tight text-white mb-3">Area of Focus</div>
-            <div ref={areaWrapperRef} className="relative">
-              <button type="button" onClick={() => setAreaOpen(!areaOpen)} className="w-full text-left bg-black/30 border border-white/10 rounded-md p-3 text-sm focus:outline-none focus:ring-2 focus:ring-white/10 transition-all text-white flex items-center justify-between">
-                <span>{areaOfFocus || '-- Select area --'}</span>
-                <span className="ml-3 text-white/70">▾</span>
-              </button>
-
-              {areaOpen && (
-                <ul className="absolute left-0 right-0 mt-2 z-50 rounded-md overflow-hidden shadow-lg bg-black/40 border border-white/10" role="listbox">
-                  {['','Collaboration','Innovation','Customer Focus','Execution','Leadership'].map((opt) => (
-                    <li key={opt || 'blank'} role="option" onClick={() => { setAreaOfFocus(opt); setAreaOpen(false) }} className={`px-4 py-3 text-sm text-white hover:bg-white/5 cursor-pointer ${areaOfFocus === opt ? 'font-bold' : 'font-normal'}`}>{opt || '-- Select area --'}</li>
-                  ))}
-                </ul>
-              )}
+              <div className="text-[15px] font-normal tracking-tight text-white mb-3">Choose Award Category</div>
+            <div className="space-y-2">
+              <div className="flex flex-wrap gap-2">
+                {['Collaboration','Innovation','Customer Focus','Execution','Leadership'].map((opt) => {
+                  const id = `area-${(opt || 'none').replace(/\s+/g, '-').toLowerCase()}`
+                  return (
+                    <label key={id} htmlFor={id} className={`inline-flex items-center gap-2 px-3 py-2 rounded-md text-sm ${areaOfFocus === opt ? 'bg-white/10 text-white font-semibold' : 'bg-black/30 text-white/70'} cursor-pointer`}>
+                      <input
+                        id={id}
+                        type="radio"
+                        name="areaOfFocus"
+                        value={opt}
+                        checked={areaOfFocus === opt}
+                        onChange={() => setAreaOfFocus(opt)}
+                        className="accent-indigo-500 w-4 h-4"
+                      />
+                      <span className="truncate">{opt}</span>
+                    </label>
+                  )
+                })}
+              </div>
             </div>
             </section>
 
@@ -610,19 +616,20 @@ export default function NominateModal({ open, onClose, onSubmit, initialCategory
                               {opt}
                             </li>
                           ))}
-                      <span>{design}</span>
                       </ul>
                     )}
                   </div>
 
-                  <div className="mt-4 flex items-center justify-end gap-3">
-                    <button type="button" onClick={() => setStep(Math.max(1, step - 1))} className={`px-4 py-2 rounded-md ${step===1 ? 'opacity-50 cursor-not-allowed bg-white/5 text-white/50' : `bg-${themeColor}-500/10 text-white hover:bg-${themeColor}-500/20 border border-${themeColor}-500/20 font-bold`}`}>
-                      Back
-                    </button>
-                    <button type="button" onClick={handleTopNext} className={`px-6 py-2 rounded-md text-white font-black ${isECard ? `bg-${themeColor}-600 shadow-${themeColor}-600/20` : 'bg-indigo-600 shadow-indigo-600/20'}`}>
-                      Next
-                    </button>
-                  </div>
+                  {design !== 'Classic' && (
+                    <div className="mt-4 flex items-center justify-end gap-3">
+                      <button type="button" onClick={() => setStep(Math.max(1, step - 1))} className={`px-4 py-2 rounded-md ${step===1 ? 'opacity-50 cursor-not-allowed bg-white/5 text-white/50' : `bg-${themeColor}-500/10 text-white hover:bg-${themeColor}-500/20 border border-${themeColor}-500/20 font-bold`}`}>
+                        Back
+                      </button>
+                      <button type="button" onClick={handleTopNext} className={`px-6 py-2 rounded-md text-white font-black ${isECard ? `bg-${themeColor}-600 shadow-${themeColor}-600/20` : 'bg-indigo-600 shadow-indigo-600/20'}`}>
+                        Next
+                      </button>
+                    </div>
+                  )}
                 </>
               ) : (
                 <div className="text-sm opacity-50 flex items-center justify-center h-40 border-2 border-dashed border-white/5 rounded-lg italic">
