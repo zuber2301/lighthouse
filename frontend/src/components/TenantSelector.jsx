@@ -51,23 +51,23 @@ export default function TenantSelector({ label = null, direction = 'down', compa
           onClick={() => setOpen((s) => !s)}
           className={`text-[16px] font-bold bg-indigo-500/5 border border-indigo-500/20 text-text-main ${compact ? 'px-3 py-2 w-full text-left' : 'px-4 py-1.5 min-w-[180px]'} rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all hover:bg-indigo-500/10 active:scale-95 cursor-pointer pr-8 flex items-center justify-between`}
         >
-          <span className="truncate">{selectedTenant?.name || 'Global Overview'}</span>
+          <span className="truncate">{selectedTenant?.name || 'All Tenants'}</span>
           <span className="ml-3 text-text-main/60">▾</span>
         </button>
 
         {open && (
           <div
-            className={`absolute z-50 rounded-md overflow-hidden shadow-lg bg-card/20 border border-indigo-500/10 ${direction === 'up' ? 'bottom-full mb-2' : 'mt-2'} left-9 w-[calc(100%-2.25rem)]`}
+            className={`absolute z-50 rounded-md overflow-hidden shadow-lg bg-card/20 border border-indigo-500/10 ${direction === 'up' ? 'bottom-full mb-2' : 'mt-2'} -left-4 right-4 min-w-[12rem]`}
             role="listbox"
           >
-            <div className="px-3 py-2 border-b border-indigo-500/5">
+            <div className="px-4 py-3 border-b border-indigo-500/5 bg-card/10">
               <input
                 ref={inputRef}
                 type="search"
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 placeholder="Search tenants..."
-                className="w-full bg-transparent border border-indigo-500/10 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/30"
+                className="w-full bg-indigo-500/5 border border-indigo-500/10 rounded-md px-4 py-3 text-sm text-white placeholder:text-white/50 focus:outline-none focus:ring-2 focus:ring-indigo-500/30 text-left"
               />
             </div>
 
@@ -84,7 +84,7 @@ export default function TenantSelector({ label = null, direction = 'down', compa
                   }}
                   className={`px-4 py-3 text-sm text-text-main hover:bg-indigo-500/10 cursor-pointer ${!selectedTenantId ? 'font-bold' : 'font-normal'}`}
                 >
-                  Global Overview
+                  All Tenants
                 </li>
                 {filtered.map(t => (
                   <li
