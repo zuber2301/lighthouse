@@ -626,7 +626,7 @@ export default function NominateModal({ open, onClose, onSubmit, initialCategory
                     )}
                   </div>
 
-                  {design !== 'Classic' && (
+                  {(!designOpen && design !== 'Classic') && (
                     <div className="mt-4 flex items-center justify-end gap-3">
                       <button type="button" onClick={() => setStep(Math.max(1, step - 1))} className={`px-4 py-2 rounded-md ${step===1 ? 'opacity-50 cursor-not-allowed bg-white/5 text-white/50' : `bg-${themeColor}-500/10 text-white hover:bg-${themeColor}-500/20 border border-${themeColor}-500/20 font-bold`}`}>
                         Back
@@ -658,15 +658,7 @@ export default function NominateModal({ open, onClose, onSubmit, initialCategory
               </div>
 
               <div className="pt-4 border-t border-white/5 space-y-3">
-                {step === 2 && (
-                  <div className="animate-in fade-in slide-in-from-bottom-2 duration-500">
-                    <div className="text-[10px] font-black uppercase tracking-tighter text-white/30 mb-2">Active Design</div>
-                    <div className="text-sm font-bold text-blue-400 mb-4">{design} Edition</div>
-                    <div className={`p-3 rounded-md ${isECard ? `bg-${themeColor}-500/5` : 'bg-surface/80 border border-border-soft'}`}>
-                      <div dangerouslySetInnerHTML={{ __html: (isECard ? (ecardHtml || liveEcardHtml) : ecardHtml) }} />
-                    </div>
-                  </div>
-                )}
+                {/* Active Design preview moved to column-2; column-3 will show only on step === 3 */}
 
                 {step === 3 && (
                   <div className="animate-in fade-in slide-in-from-bottom-4 duration-700">
