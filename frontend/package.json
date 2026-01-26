@@ -17,6 +17,7 @@
     "@tanstack/react-query-devtools": "^5.0.0",
     "axios": "^1.4.0",
     "canvas-confetti": "^1.9.4",
+    "date-fns": "^4.1.0",
     "framer-motion": "^12.27.1",
     "html2canvas": "^1.4.1",
     "lucide-react": "^0.563.0",

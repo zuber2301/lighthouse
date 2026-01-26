@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Optional
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, HTTPException, status, Request, Query, UploadFile, File, BackgroundTasks
@@ -94,17 +94,26 @@ async def list_recognitions(
     request: Request,
     offset: int = Query(0, ge=0),
     limit: int = Query(20, ge=1, le=100),
+    status_filter: Optional[str] = Query(None, alias="status"),
     db: AsyncSession = Depends(get_db),
     user: CurrentUser = Depends(get_current_user),
 ):
     tenant = getattr(request.state, "tenant_id", None) or user.tenant_id
+    
     stmt = (
         select(Recognition)
         .where(Recognition.tenant_id == tenant)
-        .order_by(Recognition.created_at.desc())
-        .offset(offset)
-        .limit(limit)
-        .options(selectinload(Recognition.nominee))
+    )
+    
+    if status_filter:
+        stmt = stmt.where(Recognition.status == status_filter)
+    elif user.role not in ["PLATFORM_OWNER", "TENANT_ADMIN"]:
+        # Default to showing only approved on the public wall for Corporate Users
+        stmt = stmt.where(Recognition.status == RecognitionStatus.APPROVED)
+
+    stmt = stmt.order_by(Recognition.created_at.desc()).offset(offset).limit(limit).options(
+        selectinload(Recognition.nominee),
+        selectinload(Recognition.nominator)
     )
     res = await db.execute(stmt)
     recs = res.scalars().all()
@@ -115,8 +124,16 @@ async def list_recognitions(
             {
                 "id": r.id,
                 "nominee_id": r.nominee_id,
+                "nominee_name": r.nominee.full_name if r.nominee else "Unknown",
+                "nominee_avatar": getattr(r.nominee, "avatar_url", None) if r.nominee else None,
+                "nominee_department": getattr(r.nominee, "department", None) if r.nominee else None,
+                "nominator_id": r.nominator_id,
+                "nominator_name": r.nominator.full_name if r.nominator else "Unknown",
+                "nominator_avatar": getattr(r.nominator, "avatar_url", None) if r.nominator else None,
                 "points": r.points,
                 "status": r.status.value if isinstance(r.status, RecognitionStatus) else str(r.status),
+                "award_category": r.award_category.value if hasattr(r.award_category, "value") else str(r.award_category) if r.award_category else None,
+                "high_five_count": r.high_five_count or 0,
                 "badge_id": getattr(r, "badge_id", None),
                 "value_tag": getattr(r, "value_tag", None),
                 "ecard_url": getattr(r, "ecard_url", None),
@@ -170,8 +187,11 @@ async def create_recognition_endpoint(
     out = {
         "id": rec.id,
         "nominee_id": rec.nominee_id,
+        "nominator_id": rec.nominator_id,
         "points": rec.points,
         "status": rec.status.value if isinstance(rec.status, RecognitionStatus) else str(rec.status),
+        "award_category": rec.award_category.value if hasattr(rec.award_category, "value") else str(rec.award_category) if rec.award_category else None,
+        "high_five_count": rec.high_five_count or 0,
         "badge_id": getattr(rec, "badge_id", None),
         "message": rec.message,
         "ecard_url": getattr(rec, "ecard_url", None),
@@ -210,7 +230,14 @@ async def give_check(
     if not nominator:
         raise HTTPException(status_code=400, detail="Nominator not found")
 
-    points = int(payload.points)
+    # Business Rule: Points based on Category
+    points_map = {"GOLD": 500, "SILVER": 250, "BRONZE": 100, "ECARD": 0}
+    award_category = getattr(payload, "award_category", "ECARD")
+    if hasattr(award_category, "value"):
+        award_category = award_category.value
+    
+    points = points_map.get(award_category, 0)
+
     if user.role == "TENANT_LEAD":
         if (nominator.lead_budget_balance or 0) < points:
             raise HTTPException(status_code=400, detail="Insufficient lead budget")
@@ -282,6 +309,8 @@ async def give_check(
         "nominee_id": rec.nominee_id,
         "points": rec.points,
         "status": rec.status.value if hasattr(rec.status, "value") else str(rec.status),
+        "award_category": rec.award_category.value if hasattr(rec.award_category, "value") else str(rec.award_category) if rec.award_category else None,
+        "high_five_count": rec.high_five_count or 0,
         "badge_id": getattr(rec, "badge_id", None),
         "message": rec.message,
         "is_public": getattr(rec, "is_public", True),
@@ -342,3 +371,29 @@ async def approve_recognition_endpoint(
         raise HTTPException(status_code=400, detail=str(exc)) from exc
 
     return {"id": rec.id, "status": rec.status.value}
+
+
+@router.post("/{recognition_id}/high-five", status_code=200)
+async def high_five_recognition(
+    recognition_id: UUID,
+    request: Request,
+    db: AsyncSession = Depends(get_db),
+    user: CurrentUser = Depends(get_current_user),
+):
+    tenant = getattr(request.state, "tenant_id", None) or user.tenant_id
+    
+    stmt = select(Recognition).where(
+        Recognition.id == str(recognition_id),
+        Recognition.tenant_id == str(tenant)
+    )
+    res = await db.execute(stmt)
+    rec = res.scalar_one_or_none()
+    
+    if not rec:
+        raise HTTPException(status_code=404, detail="Recognition not found")
+    
+    rec.high_five_count = (rec.high_five_count or 0) + 1
+    await db.commit()
+    await db.refresh(rec)
+    
+    return {"id": rec.id, "high_five_count": rec.high_five_count}

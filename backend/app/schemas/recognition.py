@@ -1,14 +1,23 @@
 from pydantic import BaseModel
 from uuid import UUID
 from typing import Optional
+from enum import Enum
+
+
+class AwardCategory(str, Enum):
+    GOLD = "GOLD"
+    SILVER = "SILVER"
+    BRONZE = "BRONZE"
+    ECARD = "ECARD"
 
 
 class RecognitionCreate(BaseModel):
     nominee_id: UUID
-    points: int
+    points: int = 0
+    award_category: Optional[AwardCategory] = AwardCategory.ECARD
     badge_id: Optional[UUID] = None
     value_tag: Optional[str] = None
-    message: Optional[str] = None
+    message: str
     # Optional HTML payload for e-card (backend will persist to uploads and return a URL)
     ecard_html: Optional[str] = None
     # If client already uploaded an image/PDF, provide the returned upload URL
@@ -23,8 +32,16 @@ class RecognitionCreate(BaseModel):
 class RecognitionOut(BaseModel):
     id: UUID
     nominee_id: UUID
+    nominee_name: Optional[str] = None
+    nominee_avatar: Optional[str] = None
+    nominee_department: Optional[str] = None
+    nominator_id: UUID
+    nominator_name: Optional[str] = None
+    nominator_avatar: Optional[str] = None
     points: int
     status: str
+    award_category: Optional[AwardCategory] = None
+    high_five_count: int = 0
     badge_id: Optional[UUID] = None
     value_tag: Optional[str] = None
     message: Optional[str] = None

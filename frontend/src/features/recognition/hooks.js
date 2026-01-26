@@ -1,5 +1,5 @@
 import { useInfiniteQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { fetchRecognitions, createRecognition, approveRecognition } from './api'
+import { fetchRecognitions, createRecognition, approveRecognition, highFiveRecognition } from './api'
 
 export function useRecognitions(tenantId) {
   return useInfiniteQuery({
@@ -31,4 +31,12 @@ export function useApproveRecognition() {
     mutationFn: (id) => approveRecognition(id),
     onSuccess: () => qc.invalidateQueries({ queryKey: ['recognitions'] }),
   })
-} 
+}
+
+export function useHighFive() {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: (id) => highFiveRecognition(id),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['recognitions'] }),
+  })
+}

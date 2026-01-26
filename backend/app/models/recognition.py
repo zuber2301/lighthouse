@@ -12,6 +12,13 @@ class RecognitionStatus(PyEnum):
     APPROVED = "APPROVED"
 
 
+class AwardCategory(PyEnum):
+    GOLD = "GOLD"
+    SILVER = "SILVER"
+    BRONZE = "BRONZE"
+    ECARD = "ECARD"
+
+
 class Recognition(Base, TenantMixin, TimestampMixin):
     __tablename__ = "recognitions"
     id = Column(String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
@@ -25,6 +32,8 @@ class Recognition(Base, TenantMixin, TimestampMixin):
     points_awarded = Column(Integer, nullable=False, default=0)
     is_public = Column(Boolean, nullable=False, server_default='true')
     status = Column(SAEnum(RecognitionStatus, name="recognitionstatus"), nullable=False, default=RecognitionStatus.PENDING)
+    award_category = Column(SAEnum(AwardCategory, name="awardcategory"), nullable=True)
+    high_five_count = Column(Integer, nullable=False, server_default='0')
     ecard_url = Column(String(255), nullable=True)
     area_of_focus = Column(String(100), nullable=True)
     media_url = Column(String(255), nullable=True)

@@ -34,4 +34,3 @@ class TestAdminDashboardAPI:
         assert "leaderboard" in data
         assert "milestone_alerts" in data
         assert "lead_allocations" in data
-*** End Patch

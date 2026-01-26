@@ -20,16 +20,29 @@ async def create_recognition(db: AsyncSession, tenant_id: str, nominator_id: str
     if not nominee or str(nominee.tenant_id) != str(tenant_id):
         raise ValueError("Nominee not found or tenant mismatch")
 
+    # Business Rule: Points based on Category
+    points_map = {"GOLD": 500, "SILVER": 250, "BRONZE": 100, "ECARD": 0}
+    award_category = getattr(payload, "award_category", "ECARD")
+    if hasattr(award_category, "value"):
+        award_category = award_category.value
+    
+    # Enforce points for premium categories; otherwise use provided points (e.g. for ECARD or custom)
+    if award_category in ["GOLD", "SILVER", "BRONZE"]:
+        calculated_points = points_map[award_category]
+    else:
+        calculated_points = getattr(payload, "points", 0)
+
     # business rule: auto-approve roles handled at API layer if desired
     rec = Recognition(
         tenant_id=tenant_id,
         nominator_id=nominator_id,
         nominee_id=str(payload.nominee_id),
         value_tag=payload.value_tag,
-        points=payload.points,
+        award_category=award_category,
+        points=calculated_points,
         message=payload.message,
         is_public=bool(getattr(payload, "is_public", True)),
-        points_awarded=payload.points,
+        points_awarded=calculated_points,
         status=RecognitionStatus.PENDING,
     )
 

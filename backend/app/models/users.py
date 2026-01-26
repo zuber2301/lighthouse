@@ -27,6 +27,7 @@ class User(Base, TimestampMixin):
     job_title = Column(String(100), nullable=True)
     date_of_birth = Column(Date, nullable=True)
     hire_date = Column(Date, nullable=True)
+    avatar_url = Column(String(255), nullable=True)
     points_balance = Column(Integer, nullable=False, default=0)  # For Corporate Users to redeem
     lead_budget_balance = Column(BigInteger, nullable=False, default=0)  # For Tenant Leads to distribute
     is_active = Column(Boolean, nullable=False, default=True)

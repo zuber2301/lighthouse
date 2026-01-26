@@ -12,7 +12,7 @@ export default function GroupAwardWizard({ open = true, onClose = () => {}, onSu
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-6">
-      <div className="w-full max-w-4xl bg-[#1d6655] border border-blue-500/30 rounded-lg overflow-hidden shadow-2xl shadow-blue-500/20 transition-colors duration-500">
+      <div className="w-full max-w-4xl bg-[#241E4C] border border-blue-500/30 rounded-lg overflow-hidden shadow-2xl shadow-blue-500/20 transition-colors duration-500">
         <div className="p-8 relative overflow-hidden">
           {/* Subtle Background Glow */}
           <div className="absolute top-0 right-0 w-64 h-64 bg-violet-600/10 blur-[100px] pointer-events-none" />

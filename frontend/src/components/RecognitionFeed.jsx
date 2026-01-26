@@ -1,18 +1,5 @@
 import React from 'react'
-import { IndividualAwardCard, GroupAwardCard, ECard } from '../features/recognition/components'
-
-const RecognitionCard = ({ data }) => {
-  const tag = (data.value_tag || data.tag || '').toLowerCase()
-
-  if (tag.includes('group')) {
-    return <GroupAwardCard data={data} />
-  }
-  if (tag.includes('e-card') || tag.includes('ecard')) {
-    return <ECard data={data} />
-  }
-  // Default to Individual Award
-  return <IndividualAwardCard data={data} />
-}
+import AchievementCard from '../features/recognition/components/AchievementCard'
 
 export const RecognitionFeed = ({ items = [] }) => {
   if (!items.length) {
@@ -29,7 +16,7 @@ export const RecognitionFeed = ({ items = [] }) => {
     <div className="w-full">
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 items-start">
         {items.map((it) => (
-          <RecognitionCard key={it.id} data={it} />
+          <AchievementCard key={it.id} data={it} />
         ))}
       </div>
     </div>

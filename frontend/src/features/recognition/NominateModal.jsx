@@ -130,10 +130,10 @@ export default function NominateModal({ open, onClose, onSubmit, initialCategory
     // Keep the same overall card dimensions/box but vary visual style strongly per design
       if (design === 'Classic') {
       return `
-        <div style="width:100%;box-sizing:border-box;padding:28px;border-radius:14px;background:linear-gradient(135deg,#f8fbff,#eef6ff);color:#1d6655;font-family:Georgia,'Times New Roman',serif;">
+        <div style="width:100%;box-sizing:border-box;padding:28px;border-radius:14px;background:linear-gradient(135deg,#f8fbff,#eef6ff);color:#241E4C;font-family:Georgia,'Times New Roman',serif;">
           <div style="font-size:22px;font-weight:700;margin-bottom:8px;">${message ? 'Well done!' : 'Congratulations!'}</div>
           ${imgSrc ? `<div style=\"text-align:center;margin:10px 0\"><img src=\"${imgSrc}\" style=\"max-width:100%;border-radius:10px;\"/></div>` : ''}
-          <div style="font-size:16px;line-height:1.6;margin-bottom:10px;color:#1d6655">${message || ''}</div>
+          <div style="font-size:16px;line-height:1.6;margin-bottom:10px;color:#241E4C">${message || ''}</div>
           <div style="font-size:14px;opacity:0.9">— From your team</div>
         </div>
       `
@@ -421,8 +421,8 @@ export default function NominateModal({ open, onClose, onSubmit, initialCategory
   return (
     <Modal open={open} onClose={onClose} className={`max-w-4xl transition-all duration-700 
       ${isECard 
-        ? '!bg-gradient-to-br !from-[#1d6655] !via-[#1d4ed8] !to-[#1d6655]' 
-        : '!bg-gradient-to-br !from-[#1d6655] !via-[#1e1b4b] !to-[#1d6655]'}`}>
+        ? '!bg-gradient-to-br !from-[#241E4C] !via-[#1d4ed8] !to-[#241E4C]' 
+        : '!bg-gradient-to-br !from-[#241E4C] !via-[#1e1b4b] !to-[#241E4C]'}`}>
       <form onSubmit={handleSubmit} className="space-y-3">
         <div>
           <h2 className={`text-3xl font-normal tracking-tighter ${category === 'Individual Award' ? 'text-white' : `text-${themeColor}-400`} mb-2`}>{openedAsECard ? 'Send a E-Card' : 'Individual Excellence Nomination Form'}</h2>
