@@ -444,7 +444,7 @@ export default function NominateModal({ open, onClose, onSubmit, initialCategory
                   value={search} 
                   onChange={(e) => setSearch(e.target.value)} 
                   placeholder="Find teammate..." 
-                  className={`w-full bg-white/5 border border-white/10 rounded-md p-4 text-sm focus:outline-none focus:ring-2 focus:ring-${themeColor}-500/30 transition-all font-medium placeholder:text-white/20`} 
+                  className={`w-full ${isECard ? `bg-${themeColor}-500/5 shadow-[inset_0_0_30px_rgba(29,78,216,0.04)]` : 'bg-white/5'} border border-white/10 rounded-md p-4 text-sm focus:outline-none focus:ring-2 focus:ring-${themeColor}-500/30 transition-all font-medium placeholder:text-white/20`} 
                 />
                 <svg className="w-4 h-4 absolute right-4 top-4.5 opacity-20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" strokeWidth={3} strokeLinecap="round" strokeLinejoin="round"/></svg>
               </div>
@@ -465,7 +465,7 @@ export default function NominateModal({ open, onClose, onSubmit, initialCategory
                           })
                           setSearch('')
                         }}
-                        className={`w-full text-left px-4 py-2.5 rounded-md text-sm transition-all flex items-center gap-3 ${selected ? `bg-${themeColor}-500 text-white font-bold` : `bg-surface hover:bg-${themeColor}-500/10 border border-${themeColor}-500/10`}`}
+                        className={`w-full text-left px-4 py-2.5 rounded-md text-sm transition-all flex items-center gap-3 ${selected ? `bg-${themeColor}-500 text-white font-bold` : `${isECard ? `bg-${themeColor}-500/5` : 'bg-surface'} hover:bg-${themeColor}-500/10 border border-${themeColor}-500/10`}`}
                       >
                         <div className={`w-6 h-6 rounded-md flex items-center justify-center text-[10px] ${selected ? 'bg-white/20' : `bg-${themeColor}-500/20 ${category === 'Individual Award' ? 'text-white' : `text-${themeColor}-500`}`}`}>
                           {u.name.charAt(0)}
@@ -541,8 +541,12 @@ export default function NominateModal({ open, onClose, onSubmit, initialCategory
               <div className="flex flex-wrap gap-2">
                 {['Collaboration','Innovation','Customer Focus','Execution','Leadership'].map((opt) => {
                   const id = `area-${(opt || 'none').replace(/\s+/g, '-').toLowerCase()}`
+                  const active = areaOfFocus === opt;
                   return (
-                    <label key={id} htmlFor={id} className={`inline-flex items-center gap-2 px-3 py-2 rounded-md text-sm ${areaOfFocus === opt ? 'bg-white/10 text-white font-semibold' : 'bg-black/30 text-white/70'} cursor-pointer`}>
+                    <label key={id} htmlFor={id} className={`inline-flex items-center gap-2 px-3 py-2 rounded-md text-sm transition-all cursor-pointer 
+                      ${active 
+                        ? (isECard ? 'bg-blue-500/20 text-white ring-1 ring-blue-400/30' : 'bg-indigo-500/20 text-white ring-1 ring-indigo-400/30') 
+                        : (isECard ? 'bg-blue-500/5 text-white/50 border border-white/5' : 'bg-black/30 text-white/70 border border-white/5')}`}>
                       <input
                         id={id}
                         type="radio"
@@ -550,7 +554,7 @@ export default function NominateModal({ open, onClose, onSubmit, initialCategory
                         value={opt}
                         checked={areaOfFocus === opt}
                         onChange={() => setAreaOfFocus(opt)}
-                        className="accent-indigo-500 w-4 h-4"
+                        className="hidden"
                       />
                       <span className="truncate">{opt}</span>
                     </label>
@@ -565,7 +569,7 @@ export default function NominateModal({ open, onClose, onSubmit, initialCategory
               <textarea 
                 value={message} 
                 onChange={(e) => setMessage(e.target.value)} 
-                className={`w-full bg-surface border border-${themeColor}-500/20 rounded-md p-3 text-sm focus:outline-none focus:ring-2 focus:ring-${themeColor}-500/30 min-h-[80px] font-normal placeholder:opacity-30`} 
+                className={`w-full ${isECard ? `bg-${themeColor}-500/5 shadow-[inset_0_0_30px_rgba(29,78,216,0.04)]` : 'bg-surface'} border border-${themeColor}-500/20 rounded-md p-3 text-sm focus:outline-none focus:ring-2 focus:ring-${themeColor}-500/30 min-h-[80px] font-normal placeholder:opacity-30`} 
                 placeholder="Why does this person deserve recognition?" 
               />
               <div className="mt-2 flex items-center gap-2">
@@ -624,7 +628,7 @@ export default function NominateModal({ open, onClose, onSubmit, initialCategory
                       <button
                         type="button"
                         onClick={() => setDesignOpen(!designOpen)}
-                        className="w-full text-left bg-black/30 border border-white/10 rounded-md p-3 text-sm focus:outline-none focus:ring-2 focus:ring-white/10 transition-all text-white flex items-center justify-between"
+                        className={`w-full text-left ${isECard ? `bg-${themeColor}-500/5 shadow-[inset_0_0_30px_rgba(29,78,216,0.04)]` : 'bg-black/30'} border border-white/10 rounded-md p-3 text-sm focus:outline-none focus:ring-2 focus:ring-white/10 transition-all text-white flex items-center justify-between`}
                         aria-haspopup="listbox"
                         aria-expanded={designOpen}
                       >
