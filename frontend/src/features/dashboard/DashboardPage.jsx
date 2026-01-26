@@ -1,12 +1,14 @@
 import React, { useState } from 'react'
 import { useAuth } from '../../lib/AuthContext'
 import CorporateUserDashboard from '../admin/CorporateUserDashboard'
+import TenantDashboard from '../tenant/TenantDashboard'
+import TenantLeadDashboard from '../admin/TenantLeadDashboard'
 import Card from '../../components/Card'
 import PageHeader from '../../components/PageHeader'
 import LeadBudgetTable from '../../components/LeadBudgetTable'
 import RecognitionChart from '../../components/RecognitionChart'
 import RecognitionFeed from './RecognitionFeed'
-import NominateModal from '../recognition/NominateModal.jsx'
+import NominateModal from '../recognition/NominateModal'
 import { useRecognitions } from '../../hooks/useRecognitions'
 import { useDashboard } from '../../hooks/useDashboard'
 import { usePlatform } from '../../context/PlatformContext'
@@ -17,22 +19,48 @@ import useTemplatemoTheme from '../../themes/templatemo_602_graph_page/useTempla
 
 export default function DashboardPage() {
   const [open, setOpen] = useState(false)
-  const { user } = useAuth()
-  const { selectedTenant } = usePlatform()
+  const { user, isLoading: isAuthLoading } = useAuth()
+  const { selectedTenant: platformSelectedTenant } = usePlatform()
+
+  useTemplatemoTheme()
+
+  const isTenantAdmin = user?.role === 'TENANT_ADMIN' || user?.role === 'TENANT_LEAD'
+  const selectedTenant = isTenantAdmin && user?.tenant_id
+    ? { id: user.tenant_id, name: user.tenant_name || 'My Tenant' }
+    : platformSelectedTenant
 
   const isTenantMode = Boolean(selectedTenant)
+  const isPlatformAdmin = user?.role === 'PLATFORM_OWNER' || user?.role === 'SUPER_ADMIN'
+
   const { create } = useRecognitions()
   const { data: globalData, isLoading: isGlobalLoading } = useDashboard()
-  const { data: tenantStats, isLoading: isTenantLoading } = useTenantMicroStats(selectedTenant?.id)
-  useTemplatemoTheme()
+  const { data: tenantStats, isLoading: isTenantLoading } = useTenantMicroStats(
+    (isPlatformAdmin && selectedTenant?.id) ? selectedTenant.id : null
+  )
 
   const handleSubmit = (item) => {
     // Use the shared recognitions mutation so Dashboard nominations appear in Recognition list
     create(item)
   }
 
+  if (isAuthLoading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-tm-teal"></div>
+      </div>
+    )
+  }
+
   if (user?.role === 'CORPORATE_USER') {
     return <CorporateUserDashboard />
+  }
+
+  if (user?.role === 'TENANT_ADMIN') {
+    return <TenantDashboard />
+  }
+
+  if (user?.role === 'TENANT_LEAD') {
+    return <TenantLeadDashboard />
   }
 
   const subtitle = isTenantMode

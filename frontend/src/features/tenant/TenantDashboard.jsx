@@ -11,6 +11,8 @@ export default function TenantDashboard() {
   const [loading, setLoading] = useState(true)
   const [data, setData] = useState(null)
 
+  const tenantName = selectedTenant?.name || 'Tenant Dashboard'
+
   useEffect(() => {
     let mounted = true
 
@@ -38,7 +40,7 @@ export default function TenantDashboard() {
 
   return (
     <div className="space-y-6 p-6">
-      <PageHeader title="Tenant Dashboard" subtitle={selectedTenant ? `${selectedTenant.name}` : ''} />
+      <PageHeader title={tenantName} subtitle="Overview & Analytics" />
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <Card>

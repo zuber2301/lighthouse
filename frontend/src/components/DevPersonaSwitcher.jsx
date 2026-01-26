@@ -33,17 +33,18 @@ export default function DevPersonaSwitcher({ onSwitch } = {}) {
       const data = res.data
       // store token under multiple keys for compatibility
       try { localStorage.setItem('auth_token', data.token) } catch (e) {}
-      try { localStorage.setItem('lighthouse_token', data.token) } catch (e) {}
+      try { localStorage.setItem(' lighthouse_token', data.token) } catch (e) {}
       try { localStorage.setItem('VITE_DEV_TOKEN', data.token) } catch (e) {}
       try { localStorage.setItem('user', JSON.stringify(data.user)) } catch (e) {}
-      try { if (data.user && data.user.tenant_id) localStorage.setItem('tenant_id', data.user.tenant_id) } catch (e) {}
+      if (data.user && data.user.tenant_id) {
+        try { localStorage.setItem('tenant_id', data.user.tenant_id) } catch (e) {}
+        try { localStorage.setItem('selected_tenant_id', data.user.tenant_id) } catch (e) {}
+      }
       if (onSwitch) onSwitch(data.user)
       
       // Role-based redirection instead of simple reload
       let dest = '/dashboard'
       if (data.user.role === 'PLATFORM_OWNER') dest = '/platform-admin'
-      else if (data.user.role === 'TENANT_ADMIN') dest = '/tenant-admin'
-      else if (data.user.role === 'TENANT_LEAD') dest = '/tenant-lead'
       
       window.location.href = dest
     } catch (err) {
