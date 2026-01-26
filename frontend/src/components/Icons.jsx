@@ -72,3 +72,9 @@ export const SettingsIcon = ({ className = "w-5 h-5" }) => (
     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
   </svg>
 )
+
+export const MaskIcon = ({ className = "w-5 h-5" }) => (
+  <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M9 11a2 2 0 1 0 0-4 2 2 0 0 0 0 4Z"/><path d="M15 11a2 2 0 1 0 0-4 2 2 0 0 0 0 4Z"/><path d="M3 11c0 4.418 4.03 8 9 8s9-3.582 9-8c0-2-1.25-3.5-3-4a11.96 11.96 0 0 0-6-1.5c-2.181 0-4.22.512-6 1.5-1.75.5-3 2-3 4Z"/>
+  </svg>
+)

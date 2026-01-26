@@ -2,6 +2,7 @@ import React from 'react'
 import Card from '../../components/Card'
 import DepartmentHeatmap from '../../components/DepartmentHeatmap'
 import BudgetBurnChart from '../../components/BudgetBurnChart'
+import LeadAllocationTable from '../../components/LeadAllocationTable'
 
 const formatCurrency = (paise) => {
   if (paise == null) return '—'
@@ -107,6 +108,16 @@ export default function TenantMicroView({ tenant, stats, loading }) {
               </li>
             ))}
           </ul>
+        </Card>
+      </div>
+
+      <div className="grid gap-6">
+        <Card className="space-y-4">
+          <div>
+            <div className="text-lg font-semibold text-text-main">Department Leads & Personnel</div>
+            <p className="text-sm text-text-main/60">Management and impersonation portal for department leads in {tenant?.name}.</p>
+          </div>
+          <LeadAllocationTable tenantId={tenant?.id} onAllocated={() => {}} />
         </Card>
       </div>
     </div>

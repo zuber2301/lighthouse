@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import api from '../api/axiosClient'
+import { MaskIcon } from './Icons'
+import { useAuth } from '../lib/AuthContext'
 
 const Currency = ({ paise }) => {
   const rupees = (paise || 0) / 100
@@ -7,6 +9,7 @@ const Currency = ({ paise }) => {
 }
 
 export default function LeadAllocationTable({ tenantId, onAllocated }) {
+  const { user: currentUser } = useAuth()
   const [leads, setLeads] = useState([])
   const [masterBalance, setMasterBalance] = useState(0)
   const [loading, setLoading] = useState(true)
@@ -15,6 +18,8 @@ export default function LeadAllocationTable({ tenantId, onAllocated }) {
   const [amount, setAmount] = useState('')
   const [error, setError] = useState(null)
   const [submitting, setSubmitting] = useState(false)
+
+  const isPlatformOwner = currentUser?.role === 'PLATFORM_OWNER' || currentUser?.role === 'SUPER_ADMIN'
 
   useEffect(() => { fetchData() }, [tenantId])
 
@@ -30,6 +35,25 @@ export default function LeadAllocationTable({ tenantId, onAllocated }) {
       console.error('fetch leads failed', e)
     } finally {
       setLoading(false)
+    }
+  }
+
+  const handleLoginAs = async (lead) => {
+    if (!window.confirm(`Login as ${lead.full_name}?`)) return
+    try {
+      const resp = await api.post(`/auth/impersonate/${lead.id}`)
+      const { token, user } = resp.data
+      
+      // Store token and user data for impersonation
+      localStorage.setItem('auth_token', token)
+      localStorage.setItem('user', JSON.stringify(user))
+      if (user.tenant_id) localStorage.setItem('tenant_id', user.tenant_id)
+      
+      // Reload to apply new session
+      window.location.href = '/dashboard'
+    } catch (e) {
+      console.error('Impersonation failed', e)
+      alert('Impersonation failed: ' + (e.response?.data?.detail || e.message))
     }
   }
 
@@ -108,9 +132,20 @@ export default function LeadAllocationTable({ tenantId, onAllocated }) {
                   <span className="text-lg font-mono font-bold text-text-main">₹{((lead.lead_budget_balance||0)/100).toLocaleString(undefined,{minimumFractionDigits:2})}</span>
                 </td>
                 <td className="px-8 py-6 text-right">
-                  <button onClick={() => openModal(lead)} className="inline-flex items-center gap-2 px-5 py-2.5 btn-accent rounded-md text-sm font-bold hover:brightness-95 transition shadow-md shadow-indigo-600/10">
-                    Allocate Funds
-                  </button>
+                  <div className="flex items-center justify-end gap-3">
+                    {isPlatformOwner && (
+                      <button 
+                        onClick={() => handleLoginAs(lead)}
+                        title="Login As This User"
+                        className="p-2.5 rounded-md hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-400 hover:text-indigo-500 transition-all"
+                      >
+                        <MaskIcon className="w-5 h-5" />
+                      </button>
+                    )}
+                    <button onClick={() => openModal(lead)} className="inline-flex items-center gap-2 px-5 py-2.5 btn-accent rounded-md text-sm font-bold hover:brightness-95 transition shadow-md shadow-indigo-600/10">
+                      Allocate Funds
+                    </button>
+                  </div>
                 </td>
               </tr>
             ))}

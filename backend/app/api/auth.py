@@ -4,12 +4,14 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 from pydantic import BaseModel
 from datetime import timedelta
+from uuid import UUID
 from jose import jwt
 from authlib.integrations.httpx_client import AsyncOAuth2Client
 from app.db.session import get_db
 from app.models.users import User, UserRole
 from app.core.security import verify_password
 from app.core.config import settings
+from app.core.auth import get_current_user, User as CurrentUser
 import json
 import urllib.parse
 
@@ -198,6 +200,46 @@ async def google_callback(code: str, state: str, db: AsyncSession = Depends(get_
 @router.get("/health")
 async def health():
     return {"status": "auth ok"}
+
+
+@router.post("/impersonate/{user_id}")
+async def impersonate_user(
+    user_id: UUID,
+    db: AsyncSession = Depends(get_db),
+    current_user: CurrentUser = Depends(get_current_user)
+):
+    """Platform Owner can impersonate any user to debug the platform."""
+    if current_user.role != UserRole.PLATFORM_OWNER.value:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Only Platform Owners can impersonate users"
+        )
+    
+    # Find the user to impersonate
+    user_q = await db.execute(select(User).where(User.id == str(user_id)))
+    user = user_q.scalar_one_or_none()
+    
+    if not user:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
+        
+    # Generate a new token for this user
+    token_data = {
+        "sub": str(user.id),
+        "tenant_id": str(user.tenant_id) if user.tenant_id else None,
+        "role": user.role.value if hasattr(user.role, 'value') else user.role
+    }
+    access_token = jwt.encode(token_data, settings.JWT_SECRET, algorithm=settings.JWT_ALGORITHM)
+    
+    return {
+        "token": access_token,
+        "user": {
+            "id": str(user.id),
+            "email": user.email,
+            "full_name": user.full_name,
+            "role": user.role.value if hasattr(user.role, 'value') else user.role,
+            "tenant_id": str(user.tenant_id) if user.tenant_id else None
+        }
+    }
 
 
 @router.get("/dev-token")

@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import Card from '../../components/Card'
 import PageHeader from '../../components/PageHeader'
 import TenantManager from '../../components/TenantManager'
+import TenantActivityDashboard from '../../components/TenantActivityDashboard'
 import usePlatformPulse from '../../hooks/usePlatformPulse'
 import api from '../../api/axiosClient'
 
@@ -18,6 +19,12 @@ export default function PlatformAdminPage() {
     const h = Math.floor((secs % 86400) / 3600)
     const m = Math.floor((secs % 3600) / 60)
     return `${d}d ${h}h ${m}m`
+  }
+
+  const formatMoney = (v) => {
+    if (v == null) return '—'
+    if (typeof v === 'number') return `₹${(v / 100).toLocaleString()}`
+    return v
   }
 
   useEffect(() => {
@@ -48,7 +55,7 @@ export default function PlatformAdminPage() {
   }
 
   return (
-    <div className="space-y-8 max-w-7xl mx-auto styled-scrollbar">
+    <div className="space-y-8 w-full px-6 py-6 styled-scrollbar">
       <div className="flex justify-between items-end">
         <PageHeader title="Super User View" subtitle="Global SaaS control plane" />
         <div className="flex gap-3 mb-8">
@@ -97,17 +104,24 @@ export default function PlatformAdminPage() {
         </Card>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
-        <div className="lg:col-span-3">
+      <div className="space-y-8">
+        <div className="w-full">
           <TenantManager 
             tenants={tenants} 
             onRefresh={fetchTenants}
             onAddTenant={handleAddTenant}
           />
         </div>
+
+        <div className="w-full">
+          <TenantActivityDashboard 
+            tenants={tenants} 
+            stats={stats}
+          />
+        </div>
         
-        <div className="lg:col-span-1">
-          <Card className="h-full border border-indigo-500/10 bg-card/60 backdrop-blur-md">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          <Card className="lg:col-span-1 border border-indigo-500/10 bg-card/60 backdrop-blur-md">
             <div className="flex items-center justify-between mb-6">
               <h3 className="text-[12px] font-normal opacity-60 text-text-main uppercase tracking-widest">Platform Pulse</h3>
               <div className="text-[10px] font-bold text-teal-500 flex items-center gap-2">
@@ -116,7 +130,7 @@ export default function PlatformAdminPage() {
               </div>
             </div>
             
-            <div className="space-y-6 max-h-[600px] overflow-y-auto pr-2 custom-scrollbar styled-scrollbar">
+            <div className="space-y-6 max-h-[400px] overflow-y-auto pr-2 custom-scrollbar styled-scrollbar">
               {events.length === 0 ? (
                 <div className="py-12 text-center">
                   <p className="text-[13px] text-text-main opacity-40 italic">Waiting for signals...</p>
@@ -132,9 +146,9 @@ export default function PlatformAdminPage() {
                       </div>
                     </div>
                     <div>
-                      <p className="text-[13px] text-text-main font-bold truncate max-w-[120px]">{event.name || event.tenant_name}</p>
+                      <p className="text-[13px] text-text-main font-bold truncate">{event.name || event.tenant_name}</p>
                       <p className="text-[11px] text-text-main opacity-60">
-                        {event.type === 'provision' ? 'Provisioned' : `Loaded ₹${event.amount}`}
+                        {event.type === 'provision' ? 'Provisioned' : `Loaded ${formatMoney(event.amount)}`}
                       </p>
                       <p className="text-[9px] text-text-main opacity-30 uppercase mt-1">
                         {new Date(event.timestamp).toLocaleTimeString()}
@@ -144,6 +158,14 @@ export default function PlatformAdminPage() {
                 ))
               )}
             </div>
+          </Card>
+          
+          <Card className="lg:col-span-2 border border-indigo-500/10 bg-card/60 backdrop-blur-md">
+             <h3 className="text-[12px] font-normal opacity-60 text-text-main uppercase tracking-widest mb-6">System Health & Latency</h3>
+             {/* Placeholder for future health charts */}
+             <div className="flex items-center justify-center h-full min-h-[200px] text-text-main opacity-20 italic text-sm">
+               Detailed Infrastructure Monitoring coming soon...
+             </div>
           </Card>
         </div>
       </div>

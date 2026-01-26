@@ -24,7 +24,7 @@ import datetime
 import uuid
 from pydantic import BaseModel
 from decimal import Decimal, ROUND_HALF_UP
-from sqlalchemy import desc
+from sqlalchemy import desc, and_, or_
 
 
 class OnboardTenantRequest(BaseModel):
@@ -847,4 +847,202 @@ async def get_platform_log(log_id: int, db: AsyncSession = Depends(get_db), user
         "target_tenant_id": r.target_tenant_id,
         "details": r.details,
         "created_at": r.created_at.isoformat() if r.created_at else None
+    }
+
+
+@router.get("/tenant-insights/{tenant_id}")
+async def get_tenant_insights(tenant_id: str, db: AsyncSession = Depends(get_db), user: CurrentUser = Depends(require_role("PLATFORM_OWNER", "SUPER_ADMIN"))):
+    """
+    Comprehensive analytics endpoint for a single tenant.
+    Returns: recognition velocity, dark zone users, budget burn, cross-dept collaboration, top recognizers.
+    """
+    
+    # 1. RECOGNITION VELOCITY (current 7 days vs previous 7 days)
+    today = datetime.datetime.utcnow().date()
+    current_week_start = today - datetime.timedelta(days=7)
+    previous_week_start = today - datetime.timedelta(days=14)
+    previous_week_end = today - datetime.timedelta(days=7)
+    
+    current_q = await db.execute(
+        select(func.count(Recognition.id))
+        .where(Recognition.tenant_id == tenant_id, Recognition.created_at >= current_week_start)
+    )
+    current_count = current_q.scalar() or 0
+    
+    previous_q = await db.execute(
+        select(func.count(Recognition.id))
+        .where(Recognition.tenant_id == tenant_id, Recognition.created_at >= previous_week_start, Recognition.created_at < previous_week_end)
+    )
+    previous_count = previous_q.scalar() or 0
+    
+    if previous_count == 0:
+        growth_pct = 100.0 if current_count > 0 else 0.0
+    else:
+        growth_pct = round(((current_count - previous_count) / previous_count) * 100, 2)
+    
+    # 2. THE "DARK ZONE" (Users with no recognition in last 30 days)
+    dark_zone_start = today - datetime.timedelta(days=30)
+    dark_zone_q = await db.execute(
+        select(User.id, User.full_name, User.job_title, User.department)
+        .join(Recognition, User.id == Recognition.nominee_id, isouter=True)
+        .where(
+            User.tenant_id == tenant_id,
+            User.role == UserRole.CORPORATE_USER,
+            or_(Recognition.id.is_(None), Recognition.created_at < dark_zone_start)
+        )
+        .distinct()
+    )
+    dark_zone_users = []
+    for row in dark_zone_q.fetchall():
+        # Calculate days since last recognition
+        last_rec_q = await db.execute(
+            select(func.max(Recognition.created_at))
+            .where(Recognition.nominee_id == row[0], Recognition.tenant_id == tenant_id)
+        )
+        last_rec_date = last_rec_q.scalar()
+        if last_rec_date:
+            days_since = (today - last_rec_date.date()).days
+        else:
+            days_since = 999  # Never recognized
+        
+        dark_zone_users.append({
+            "id": str(row[0]),
+            "full_name": row[1],
+            "job_title": row[2],
+            "department": row[3],
+            "days_since_recognition": days_since
+        })
+    
+    dark_zone_count = len(dark_zone_users)
+    
+    # 3. BUDGET BURN RATE (tenant master budget utilization)
+    tenant_q = await db.execute(select(Tenant).where(Tenant.id == tenant_id))
+    tenant = tenant_q.scalar_one_or_none()
+    
+    if tenant:
+        current_balance = int(tenant.master_budget_balance or 0)
+        # Total points distributed
+        total_points_q = await db.execute(
+            select(func.coalesce(func.sum(Recognition.points), 0))
+            .where(Recognition.tenant_id == tenant_id)
+        )
+        total_distributed = int(total_points_q.scalar() or 0)
+        
+        total_capacity = current_balance + total_distributed
+        if total_capacity > 0:
+            burn_rate_pct = round((total_distributed / total_capacity) * 100, 2)
+        else:
+            burn_rate_pct = 0.0
+    else:
+        current_balance = 0
+        total_distributed = 0
+        burn_rate_pct = 0.0
+    
+    # 4. CROSS-DEPARTMENT COLLABORATION (awards where sender and receiver are in different departments)
+    from sqlalchemy import alias
+    sender_alias = alias(User)
+    receiver_alias = alias(User)
+    
+    total_recs_q = await db.execute(
+        select(func.count(Recognition.id))
+        .where(Recognition.tenant_id == tenant_id)
+    )
+    total_recs = total_recs_q.scalar() or 0
+    
+    if total_recs > 0:
+        # Awards where sender and receiver have different departments
+        cross_dept_recs_q = await db.execute(
+            select(func.count(Recognition.id))
+            .select_from(Recognition)
+            .join(sender_alias, Recognition.nominator_id == sender_alias.c.id)
+            .join(receiver_alias, Recognition.nominee_id == receiver_alias.c.id)
+            .where(
+                Recognition.tenant_id == tenant_id,
+                sender_alias.c.department != receiver_alias.c.department,
+                sender_alias.c.department.isnot(None),
+                receiver_alias.c.department.isnot(None)
+            )
+        )
+        cross_dept_count = cross_dept_recs_q.scalar() or 0
+        cross_dept_pct = round((cross_dept_count / total_recs) * 100, 2)
+    else:
+        cross_dept_count = 0
+        cross_dept_pct = 0.0
+    
+    # 5. TOP 5 RECOGNITION CHAMPIONS (users who sent the most awards this month)
+    month_ago = today - datetime.timedelta(days=30)
+    champions_q = await db.execute(
+        select(User.id, User.full_name, User.job_title, func.count(Recognition.id).label('awards_sent'))
+        .join(Recognition, User.id == Recognition.nominator_id)
+        .where(Recognition.tenant_id == tenant_id, Recognition.created_at >= month_ago)
+        .group_by(User.id)
+        .order_by(desc('awards_sent'))
+        .limit(5)
+    )
+    champions = []
+    for row in champions_q.fetchall():
+        champions.append({
+            "id": str(row[0]),
+            "full_name": row[1],
+            "job_title": row[2],
+            "awards_sent": int(row[3])
+        })
+    
+    # 6. PARTICIPATION RATE (% of active users who sent or received at least one recognition)
+    total_users_q = await db.execute(
+        select(func.count(User.id))
+        .where(User.tenant_id == tenant_id, User.role == UserRole.CORPORATE_USER, User.is_active == True)
+    )
+    total_active_users = total_users_q.scalar() or 0
+    
+    if total_active_users > 0:
+        engaged_q = await db.execute(
+            select(func.count(func.distinct(User.id)))
+            .select_from(User)
+            .join(Recognition, or_(User.id == Recognition.nominator_id, User.id == Recognition.nominee_id))
+            .where(Recognition.tenant_id == tenant_id, User.tenant_id == tenant_id, User.role == UserRole.CORPORATE_USER)
+        )
+        engaged_users = engaged_q.scalar() or 0
+        participation_rate = round((engaged_users / total_active_users) * 100, 2)
+    else:
+        participation_rate = 0.0
+    
+    # Sort dark zone users by days_since_recognition (highest first) for visibility
+    dark_zone_users_sorted = sorted(dark_zone_users, key=lambda x: x['days_since_recognition'], reverse=True)
+    
+    return {
+        "tenant_id": tenant_id,
+        "timestamp": datetime.datetime.utcnow().isoformat(),
+        "recognition_velocity": {
+            "current_week": int(current_count),
+            "previous_week": int(previous_count),
+            "growth_percentage": growth_pct,
+            "trend": "UP" if growth_pct > 0 else ("DOWN" if growth_pct < 0 else "FLAT"),
+            "interpretation": "Culture is accelerating" if growth_pct > 20 else ("Culture is declining" if growth_pct < -20 else "Culture is stable")
+        },
+        "participation_rate": participation_rate,
+        "dark_zone": {
+            "count": dark_zone_count,
+            "users": dark_zone_users_sorted[:10],
+            "severity": "CRITICAL" if dark_zone_count > 10 else ("HIGH" if dark_zone_count > 5 else "NORMAL")
+        },
+        "budget_metrics": {
+            "current_balance_paise": current_balance,
+            "total_distributed_paise": total_distributed,
+            "burn_rate_percentage": burn_rate_pct,
+            "capacity": total_capacity,
+            "monthly_run_rate": int(total_distributed / 30) if total_distributed > 0 else 0,
+            "health": "SUSTAINABLE" if burn_rate_pct < 70 else ("WARNING" if burn_rate_pct < 90 else "CRITICAL")
+        },
+        "cross_dept_collaboration": {
+            "percentage": cross_dept_pct,
+            "total_cross_dept_awards": int(cross_dept_count),
+            "interpretation": "Silos being broken down" if cross_dept_pct > 50 else ("Silos present" if cross_dept_pct > 25 else "Heavy silos detected")
+        },
+        "top_champions": champions,
+        "metrics_summary": {
+            "total_recognitions_tracked": int(total_recs),
+            "active_user_count": int(total_active_users),
+            "period": "Last 30 days"
+        }
     }

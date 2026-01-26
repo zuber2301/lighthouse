@@ -23,7 +23,7 @@ export default function AppLayout() {
       <div className="flex-1 flex flex-col h-screen overflow-hidden relative z-10">
         <Header />
         <main className="flex-1 overflow-y-auto styled-scrollbar px-6 py-6">
-          <div className="max-w-[1260px] w-full space-y-6">
+          <div className={`${user?.role === 'PLATFORM_OWNER' ? 'max-w-full' : 'max-w-[1260px]'} w-full space-y-6`}>
             <Outlet />
           </div>
         </main>

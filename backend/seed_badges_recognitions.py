@@ -92,7 +92,22 @@ async def seed():
                 status='APPROVED'
             )
             session.add(r2)
-            print('Created sample recognitions')
+
+            # create an e-card recognition
+            r3 = Recognition(
+                tenant_id=tenant.id,
+                nominator_id=u1.id,
+                nominee_id=u2.id,
+                message='Happy Birthday! Hope you have a great one.',
+                points_awarded=0,
+                is_public=True,
+                points=0,
+                status='APPROVED',
+                award_category='ECARD',
+                ecard_design='Modern'
+            )
+            session.add(r3)
+            print('Created sample recognitions and e-card')
 
         await session.commit()
 
