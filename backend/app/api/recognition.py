@@ -113,7 +113,8 @@ async def list_recognitions(
 
     stmt = stmt.order_by(Recognition.created_at.desc()).offset(offset).limit(limit).options(
         selectinload(Recognition.nominee),
-        selectinload(Recognition.nominator)
+        selectinload(Recognition.nominator),
+        selectinload(Recognition.badge)
     )
     res = await db.execute(stmt)
     recs = res.scalars().all()
@@ -135,8 +136,10 @@ async def list_recognitions(
                 "award_category": r.award_category.value if hasattr(r.award_category, "value") else str(r.award_category) if r.award_category else None,
                 "high_five_count": r.high_five_count or 0,
                 "badge_id": getattr(r, "badge_id", None),
+                "badge_name": r.badge.name if r.badge else (r.value_tag or "Award"),
                 "value_tag": getattr(r, "value_tag", None),
                 "ecard_url": getattr(r, "ecard_url", None),
+                "ecard_design": getattr(r, "ecard_design", None),
                 "area_of_focus": getattr(r, "area_of_focus", None),
                 "media_url": getattr(r, "media_url", None),
                 "message": r.message,
@@ -195,6 +198,7 @@ async def create_recognition_endpoint(
         "badge_id": getattr(rec, "badge_id", None),
         "message": rec.message,
         "ecard_url": getattr(rec, "ecard_url", None),
+        "ecard_design": getattr(rec, "ecard_design", None),
         "area_of_focus": getattr(rec, "area_of_focus", None),
         "media_url": getattr(rec, "media_url", None),
         "is_public": getattr(rec, "is_public", True),
@@ -313,6 +317,8 @@ async def give_check(
         "high_five_count": rec.high_five_count or 0,
         "badge_id": getattr(rec, "badge_id", None),
         "message": rec.message,
+        "ecard_url": getattr(rec, "ecard_url", None),
+        "ecard_design": getattr(rec, "ecard_design", None),
         "is_public": getattr(rec, "is_public", True),
         "created_at": rec.created_at.isoformat() if getattr(rec, "created_at", None) else None,
     }

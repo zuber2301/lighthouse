@@ -34,6 +34,7 @@ class Recognition(Base, TenantMixin, TimestampMixin):
     status = Column(SAEnum(RecognitionStatus, name="recognitionstatus"), nullable=False, default=RecognitionStatus.PENDING)
     award_category = Column(SAEnum(AwardCategory, name="awardcategory"), nullable=True)
     high_five_count = Column(Integer, nullable=False, server_default='0')
+    ecard_design = Column(String(50), nullable=True)
     ecard_url = Column(String(255), nullable=True)
     area_of_focus = Column(String(100), nullable=True)
     media_url = Column(String(255), nullable=True)

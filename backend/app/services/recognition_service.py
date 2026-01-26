@@ -44,6 +44,7 @@ async def create_recognition(db: AsyncSession, tenant_id: str, nominator_id: str
         is_public=bool(getattr(payload, "is_public", True)),
         points_awarded=calculated_points,
         status=RecognitionStatus.PENDING,
+        ecard_design=getattr(payload, "ecard_design", None)
     )
 
     # If an ecard_html payload is provided, persist it as an HTML file under uploads and

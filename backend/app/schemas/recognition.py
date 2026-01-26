@@ -20,6 +20,8 @@ class RecognitionCreate(BaseModel):
     message: str
     # Optional HTML payload for e-card (backend will persist to uploads and return a URL)
     ecard_html: Optional[str] = None
+    # Design selection (Classic, Modern, Fun)
+    ecard_design: Optional[str] = "Classic"
     # If client already uploaded an image/PDF, provide the returned upload URL
     ecard_url: Optional[str] = None
     # Optional area of focus to align recognition with org goals
@@ -42,7 +44,9 @@ class RecognitionOut(BaseModel):
     status: str
     award_category: Optional[AwardCategory] = None
     high_five_count: int = 0
+    ecard_design: Optional[str] = None
     badge_id: Optional[UUID] = None
+    badge_name: Optional[str] = None
     value_tag: Optional[str] = None
     message: Optional[str] = None
     ecard_url: Optional[str] = None
