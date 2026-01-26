@@ -126,40 +126,50 @@ export default function NominateModal({ open, onClose, onSubmit, initialCategory
   function buildEcardHtml() {
     const img = attachments.find((a) => (a.type || '').startsWith('image/'))
     const imgSrc = img?.url || img?.preview || ''
+    const displayDate = scheduledDate || new Date().toLocaleDateString('en-US')
 
     // Keep the same overall card dimensions/box but vary visual style strongly per design
       if (design === 'Classic') {
       return `
-        <div style="width:100%;box-sizing:border-box;padding:28px;border-radius:14px;background:linear-gradient(135deg,#f8fbff,#eef6ff);color:#241E4C;font-family:Georgia,'Times New Roman',serif;">
-          <div style="font-size:22px;font-weight:700;margin-bottom:8px;">${message ? 'Well done!' : 'Congratulations!'}</div>
-          ${imgSrc ? `<div style=\"text-align:center;margin:10px 0\"><img src=\"${imgSrc}\" style=\"max-width:100%;border-radius:10px;\"/></div>` : ''}
-          <div style="font-size:16px;line-height:1.6;margin-bottom:10px;color:#241E4C">${message || ''}</div>
-          <div style="font-size:14px;opacity:0.9">— From your team</div>
+        <div style="width:100%;box-sizing:border-box;padding:28px;border-radius:14px;background:linear-gradient(135deg,#f8fbff,#eef6ff);color:#241E4C;font-family:Georgia,'Times New Roman',serif;border:1px solid rgba(0,0,0,0.05);">
+          <div style="font-size:22px;font-weight:700;margin-bottom:8px;color:#1e1b4b">Congratulations!</div>
+          ${imgSrc ? `<div style=\"text-align:center;margin:10px 0\"><img src=\"${imgSrc}\" style=\"max-width:100%;border-radius:10px;box-shadow:0 4px 12px rgba(0,0,0,0.1);\"/></div>` : ''}
+          <div style="font-size:16px;line-height:1.6;margin-bottom:12px;color:#241E4C;min-height:60px;">${message || '<i>No message provided</i>'}</div>
+          <div style="display:flex;justify-content:between;align-items:center;border-top:1px solid rgba(0,0,0,0.05);padding-top:10px;">
+            <div style="font-size:13px;opacity:0.8;color:#241E4C">Kind Regards</div>
+            <div style="font-size:12px;opacity:0.6;margin-left:auto">${displayDate}</div>
+          </div>
         </div>
       `
     }
 
     if (design === 'Modern') {
       return `
-        <div style="width:100%;box-sizing:border-box;padding:30px;border-radius:14px;background:linear-gradient(90deg,#071021 0%,#0b1a2b 100%);color:#e6eef8;font-family:Inter,system-ui,Arial;">
-          <div style="display:flex;align-items:center;gap:12px;margin-bottom:10px">
+        <div style="width:100%;box-sizing:border-box;padding:30px;border-radius:14px;background:linear-gradient(90deg,#071021 0%,#0b1a2b 100%);color:#e6eef8;font-family:Inter,system-ui,Arial;border:1px solid rgba(255,255,255,0.05);">
+          <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px">
             <div style="width:35px;height:35px;border-radius:10px;background:linear-gradient(135deg,#7c3aed,#06b6d4);display:flex;align-items:center;justify-content:center;font-weight:700;color:white;font-size:18px">★</div>
-            <div style="font-size:22px;font-weight:700">Nice work</div>
+            <div style="font-size:22px;font-weight:700;letter-spacing:-0.02em">Great Work</div>
           </div>
-          ${imgSrc ? `<div style=\"margin:14px 0;text-align:center\"><img src=\"${imgSrc}\" style=\"max-width:100%;border-radius:12px;\"/></div>` : ''}
-          <div style="font-size:15px;line-height:1.5;color:#cfe8ff">${message || ''}</div>
-          <div style="margin-top:12px;font-size:13px;opacity:0.85;color:#9fb8d9">Shared on ${new Date().toLocaleDateString()}</div>
+          ${imgSrc ? `<div style=\"margin:14px 0;text-align:center\"><img src=\"${imgSrc}\" style=\"max-width:100%;border-radius:12px;border:1px solid rgba(255,255,255,0.1);\"/></div>` : ''}
+          <div style="font-size:15px;line-height:1.6;color:#cfe8ff;margin-bottom:14px">${message || '<i>No message provided</i>'}</div>
+          <div style="display:flex;align-items:center;justify-content:space-between;font-size:12px;color:#9fb8d9;opacity:0.8">
+            <div style="text-transform:uppercase;tracking:0.1em;font-weight:600">Lighthouse Recognition</div>
+            <div>${displayDate}</div>
+          </div>
         </div>
       `
     }
 
     // Fun
     return `
-      <div style="width:100%;box-sizing:border-box;padding:22px;border-radius:14px;background:linear-gradient(135deg,#ffecd2 0%,#fcb69f 100%);color:#2b2b2b;font-family:Comic Sans MS,'Comic Neue','Segoe UI',sans-serif;">
-        <div style="font-size:22px;font-weight:800;margin-bottom:6px">Woohoo!</div>
-        ${imgSrc ? `<div style=\"text-align:center;margin:10px 0\"><img src=\"${imgSrc}\" style=\"max-width:100%;border-radius:10px;\"/></div>` : ''}
-        <div style="font-size:16px;line-height:1.5">${message || ''}</div>
-        <div style="margin-top:12px;font-size:13px;opacity:0.9">🎉</div>
+      <div style="width:100%;box-sizing:border-box;padding:24px;border-radius:14px;background:linear-gradient(135deg,#ffecd2 0%,#fcb69f 100%);color:#2b2b2b;font-family:'Comic Sans MS', cursive, sans-serif;border:3px solid #fff;box-shadow:0 8px 0 rgba(0,0,0,0.05);">
+        <div style="font-size:26px;font-weight:900;margin-bottom:10px;transform:rotate(-1deg);display:inline-block;background:#fff;padding:2px 10px;border-radius:6px;">Woohoo! 🎉</div>
+        ${imgSrc ? `<div style=\"text-align:center;margin:15px 0\"><img src=\"${imgSrc}\" style=\"max-width:100%;border-radius:10px;transform:rotate(1deg);border:3px solid white;\"/></div>` : ''}
+        <div style="font-size:17px;line-height:1.5;margin:10px 0;font-weight:600">${message || 'You rock!'}</div>
+        <div style="margin-top:15px;display:flex;justify-content:space-between;align-items:center;font-size:13px;font-weight:700;opacity:0.8;">
+          <div>High five! 🖐️</div>
+          <div>${displayDate}</div>
+        </div>
       </div>
     `
   }
@@ -404,20 +414,6 @@ export default function NominateModal({ open, onClose, onSubmit, initialCategory
   const themeColor = isECard ? 'blue' : 'indigo';
   const themeHex = isECard ? '#1d4ed8' : '#6366f1';
 
-  // Live ecard preview HTML (used only for live preview, does not replace backend ecard_html)
-  const _safe = (str = '') => String(str).replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/\n/g, '<br/>')
-  const previewDate = scheduledDate || new Date().toLocaleDateString('en-US')
-  const liveEcardHtml = `
-    <div style="width:100%;box-sizing:border-box;padding:30px;border-radius:14px;background:linear-gradient(90deg,#071021 0%,#0b1a2b 100%);color:#e6eef8;font-family:Inter,system-ui,Arial;">
-      <div style="display:flex;align-items:center;gap:12px;margin-bottom:10px">
-            <div style="width:35px;height:35px;border-radius:10px;background:linear-gradient(135deg,#7c3aed,#06b6d4);display:flex;align-items:center;justify-content:center;font-weight:700;color:white;font-size:18px">★</div>
-        <div style="font-size:22px;font-weight:700">Nice work</div>
-      </div>
-      <div style="font-size:15px;line-height:1.5;color:#cfe8ff">${_safe(message || 'I especially noticed when you [describe a specific example], which helped because [describe impact].')}</div>
-      <div style="margin-top:12px;font-size:13px;opacity:0.85;color:#9fb8d9">Shared on ${previewDate}</div>
-    </div>
-  `
-
   return (
     <Modal open={open} onClose={onClose} className={`max-w-4xl transition-all duration-700 
       ${isECard 
@@ -607,98 +603,91 @@ export default function NominateModal({ open, onClose, onSubmit, initialCategory
           {/* Middle column: Design chooser + preview */}
           <div className={`space-y-3 bg-black/30 p-3 rounded-lg backdrop-blur-md shadow-2xl`}>
             <div className="flex items-center gap-3">
-              <div className={`w-8 h-8 rounded-md flex items-center justify-center font-bold ${step===2 ? `bg-${themeColor}-500 text-white shadow-lg shadow-${themeColor}-500/20` : 'bg-white/10 text-white/40'}`}>2</div>
+              <div className={`w-8 h-8 rounded-md flex items-center justify-center font-bold ${(step===2 || step===3) ? `bg-${themeColor}-500 text-white shadow-lg shadow-${themeColor}-500/20` : 'bg-white/10 text-white/40'}`}>2</div>
               <div>
-                <div className="text-sm font-bold uppercase tracking-widest text-white/70">Design E-Card</div>
+                <div className="text-sm font-bold uppercase tracking-widest text-white/70">{step === 3 ? 'Review & Send' : 'Design E-Card'}</div>
               </div>
             </div>
             <div>
               { (category === 'E-Card' || openedAsECard) ? (
                 <>
                   {design ? (
-                    <div className={`mt-4 p-3 rounded-md min-h-[80px] ${isECard ? `bg-${themeColor}-500/5 shadow-[inset_0_0_30px_rgba(29,78,216,0.04)]` : 'bg-surface border border-border-soft'}`}>
-                      <div id="ecard-preview" dangerouslySetInnerHTML={{ __html: (isECard ? (ecardHtml || liveEcardHtml) : ecardHtml) }} />
+                    <div className={`mt-4 p-3 rounded-md min-h-[80px] ${isECard ? `bg-${themeColor}-500/5 shadow-[inset_0_0_30px_rgba(29,78,216,0.04)]` : 'bg-surface border border-border-soft'} ${step === 3 ? 'ring-2 ring-blue-500/50' : ''}`}>
+                      <div id="ecard-preview" dangerouslySetInnerHTML={{ __html: ecardHtml }} />
                     </div>
                   ) : (
                     <div className="mt-4 p-3 rounded-md bg-black/10 border border-white/5 text-sm text-white/60 text-center">No design selected — preview will appear once you choose a design.</div>
                   )}
 
-                  <div ref={designWrapperRef} className="relative mt-4">
-                    <button
-                      type="button"
-                      onClick={() => setDesignOpen(!designOpen)}
-                      className="w-full text-left bg-black/30 border border-white/10 rounded-md p-3 text-sm focus:outline-none focus:ring-2 focus:ring-white/10 transition-all text-white flex items-center justify-between"
-                      aria-haspopup="listbox"
-                      aria-expanded={designOpen}
-                    >
-                      <span>{design || 'None'}</span>
-                      <span className="ml-3 text-white/70">▾</span>
-                    </button>
+                  {step < 3 && (
+                    <div ref={designWrapperRef} className="relative mt-4">
+                      <button
+                        type="button"
+                        onClick={() => setDesignOpen(!designOpen)}
+                        className="w-full text-left bg-black/30 border border-white/10 rounded-md p-3 text-sm focus:outline-none focus:ring-2 focus:ring-white/10 transition-all text-white flex items-center justify-between"
+                        aria-haspopup="listbox"
+                        aria-expanded={designOpen}
+                      >
+                        <span>{design || 'None'}</span>
+                        <span className="ml-3 text-white/70">▾</span>
+                      </button>
 
-                    {designOpen && (
-                      <ul className="absolute left-0 right-0 mt-2 z-50 rounded-md overflow-hidden shadow-lg bg-black/40 border border-white/10" role="listbox">
-                          {['Classic', 'Modern', 'Fun'].map((opt) => (
-                            <li
-                              key={opt}
-                              role="option"
-                              onClick={() => {
-                                setDesign(opt)
-                                setDesignOpen(false)
-                              }}
-                              className={`px-4 py-3 text-sm text-white hover:bg-white/5 cursor-pointer ${design === opt ? 'font-bold' : 'font-normal'}`}
-                            >
-                              {opt}
-                            </li>
-                          ))}
-                      </ul>
-                    )}
-                  </div>
+                      {designOpen && (
+                        <ul className="absolute left-0 right-0 mt-2 z-50 rounded-md overflow-hidden shadow-lg bg-black/40 border border-white/10" role="listbox">
+                            {['Classic', 'Modern', 'Fun'].map((opt) => (
+                              <li
+                                key={opt}
+                                role="option"
+                                onClick={() => {
+                                  setDesign(opt)
+                                  setDesignOpen(false)
+                                }}
+                                className={`px-4 py-3 text-sm text-white hover:bg-white/5 cursor-pointer ${design === opt ? 'font-bold' : 'font-normal'}`}
+                              >
+                                {opt}
+                              </li>
+                            ))}
+                        </ul>
+                      )}
+                    </div>
+                  )}
 
-                  {(!designOpen && design !== 'Classic') && (
+                  {(!designOpen && step === 2) && (
                     <div className="mt-4 flex items-center justify-end">
                       <button type="button" onClick={handleTopNext} className={`px-6 py-2 rounded-md text-white font-black ${isECard ? `bg-${themeColor}-600 shadow-${themeColor}-600/20` : 'bg-indigo-600 shadow-indigo-600/20'}`}>
-                        Next
+                        Review Order
                       </button>
                     </div>
                   )}
 
                   {/* Review & Send (moved in from column-3) */}
                   {step === 3 && (
-                    <div className="mt-4 space-y-4">
-                      <div className={`space-y-3 bg-black/30 p-3 rounded-lg backdrop-blur-md shadow-2xl`}>
-                        <div className="flex items-center gap-3">
-                          <div className={`w-8 h-8 rounded-md flex items-center justify-center font-bold ${step===3 ? `bg-blue-500 text-white shadow-lg shadow-blue-500/20` : 'bg-white/10 text-white/40'}`}>3</div>
-                          <div>
-                            <div className="text-sm font-bold uppercase tracking-widest text-white/70">Review & Send</div>
-                          </div>
+                    <div className="mt-6 space-y-4 animate-in fade-in slide-in-from-bottom-4 duration-500">
+                      <div className="pt-4 border-t border-white/10 space-y-4">
+                        <div className="flex items-center justify-between text-xs font-bold uppercase tracking-widest text-white/40">
+                          <div>Category</div>
+                          <div className={`${category === 'Individual Award' ? 'text-white' : `text-${themeColor}-400`}`}>{category}</div>
                         </div>
 
-                        <div className="pt-4 border-t border-white/5 space-y-3">
-                          <div className="animate-in fade-in slide-in-from-bottom-4 duration-700">
-                            <div className="grid grid-cols-2 gap-3 text-xs font-bold uppercase tracking-widest text-white/40">
-                              <div>Category</div>
-                              <div className={`${category === 'Individual Award' ? 'text-white text-right' : `text-${themeColor}-400 text-right`}`}>{category}</div>
-                            </div>
+                        <div className="flex items-center justify-between text-xs font-bold uppercase tracking-widest text-white/40">
+                          <div>Design Style</div>
+                          <div className="text-white">{design}</div>
+                        </div>
 
-                            <div className={`mt-4 p-3 bg-${themeColor}-500/5 rounded-md border border-${themeColor}-500/10`}>
-                              <div className="text-[10px] font-black uppercase tracking-tighter opacity-30 mb-2">Final Message</div>
-                              <div className="text-sm italic text-white/90 leading-relaxed">"{message || 'No message provided'}"</div>
-                            </div>
-                          </div>
+                        <div className="flex items-center justify-between text-xs font-bold uppercase tracking-widest text-white/40">
+                          <div>Recipients</div>
+                          <div className="text-white text-right">{nominees.map(n => n.name).join(', ')}</div>
                         </div>
                       </div>
-                    </div>
-                  )}
 
-                  {/* Moved final action buttons from column-3 to column-2 (show only on review step) */}
-                  {step === 3 && (
-                    <div className="mt-4 flex items-center justify-end gap-3">
-                      <button type="button" onClick={() => setStep(Math.max(1, step - 1))} disabled={step === 1} className={`px-4 py-2 rounded-md ${step===1 ? 'opacity-50 cursor-not-allowed bg-white/5 text-white/50' : `bg-${themeColor}-500/10 text-white hover:bg-${themeColor}-500/20 border border-${themeColor}-500/20 font-bold`}`}>
-                        Back
-                      </button>
-                      <button type="submit" className={`px-6 py-2 rounded-md text-white font-black ${isECard ? `bg-${themeColor}-600 shadow-${themeColor}-600/20` : 'bg-indigo-600 shadow-indigo-600/20'}`}>
-                        Submit
-                      </button>
+                      <div className="mt-6 flex items-center justify-end gap-3">
+                        <button type="button" onClick={() => setStep(2)} className={`px-4 py-2 rounded-md bg-${themeColor}-500/10 text-white hover:bg-${themeColor}-500/20 border border-${themeColor}-500/20 font-bold transition-all`}>
+                          Back to Design
+                        </button>
+                        <button type="submit" className={`px-8 py-2.5 rounded-md text-white font-black text-lg ${isECard ? `bg-${themeColor}-600 shadow-xl shadow-${themeColor}-600/30` : 'bg-indigo-600 shadow-xl shadow-indigo-600/30'} hover:scale-105 transition-transform active:scale-95`}>
+                          Send Now
+                        </button>
+                      </div>
                     </div>
                   )}
                 </>
