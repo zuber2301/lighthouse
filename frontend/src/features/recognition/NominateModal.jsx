@@ -450,7 +450,7 @@ export default function NominateModal({ open, onClose, onSubmit, initialCategory
               </div>
 
               {search.trim() ? (
-                <div className="mt-3 max-h-40 overflow-y-auto space-y-1 pr-1 custom-scrollbar styled-scrollbar">
+                <div className={`mt-3 max-h-40 overflow-y-auto space-y-1 pr-1 custom-scrollbar styled-scrollbar rounded-md ${isECard ? `bg-${themeColor}-500/5 shadow-[inset_0_0_30px_rgba(29,78,216,0.04)]` : ''}`}>
                   {users.map((u) => {
                     const selected = nominees.some((n) => (typeof n === 'string' ? n === u.id : n.id === u.id))
                     return (
@@ -481,7 +481,7 @@ export default function NominateModal({ open, onClose, onSubmit, initialCategory
 
             {/* Selected recipients */}
             {nominees.length > 0 && (
-              <div className="mt-3 flex flex-wrap gap-2">
+              <div className={`mt-3 flex flex-wrap gap-2 p-2 rounded-md ${isECard ? `bg-${themeColor}-500/5 shadow-[inset_0_0_30px_rgba(29,78,216,0.04)]` : ''}`}>
                 {nominees.map((n) => {
                   const id = typeof n === 'string' ? n : n.id
                   const name = typeof n === 'string' ? (users.find((x) => x.id === n)?.name || n) : n.name
@@ -569,17 +569,17 @@ export default function NominateModal({ open, onClose, onSubmit, initialCategory
               <textarea 
                 value={message} 
                 onChange={(e) => setMessage(e.target.value)} 
-                className={`w-full ${isECard ? `bg-${themeColor}-500/5 shadow-[inset_0_0_30px_rgba(29,78,216,0.04)]` : 'bg-surface'} border border-${themeColor}-500/20 rounded-md p-3 text-sm focus:outline-none focus:ring-2 focus:ring-${themeColor}-500/30 min-h-[80px] font-normal placeholder:opacity-30`} 
+                className={`w-full ${isECard ? `bg-${themeColor}-500/5 shadow-[inset_0_0_30px_rgba(29,78,216,0.04)]` : 'bg-surface'} border border-${themeColor}-500/20 rounded-md p-3 text-sm focus:outline-none focus:ring-2 focus:ring-${themeColor}-500/30 min-h-[80px] font-normal placeholder:text-white placeholder:opacity-40`} 
                 placeholder="Why does this person deserve recognition?" 
               />
               <div className="mt-2 flex items-center gap-2">
                   <button type="button" onClick={handleCoach} disabled={coachLoading || !message} className={`px-3 py-2 rounded-md bg-${themeColor}-500/10 text-sm hover:bg-${themeColor}-500/15 text-white font-bold`}>{coachLoading ? 'Improving…' : 'Improve your message'}</button> 
                 {coachTips?.improved_message && (
-                  <button type="button" onClick={() => setMessage(coachTips.improved_message)} className="text-sm text-blue-400">Apply suggestion</button>
+                  <button type="button" onClick={() => setMessage(coachTips.improved_message)} className="text-sm text-white">Apply suggestion</button>
                 )}
               </div>
               {coachTips && (
-                <div className="mt-3 p-3 bg-surface border border-border-soft rounded-lg text-sm">
+                <div className={`mt-3 p-3 rounded-lg text-sm border border-white/5 ${isECard ? `bg-${themeColor}-500/5 shadow-[inset_0_0_30px_rgba(29,78,216,0.04)]` : 'bg-surface'}`}>
                   <div className="font-semibold text-white mb-1">Recognition Coach</div>
                   <div className="text-text-main/80 text-sm">Example: Give one specific action the person took.</div>
                   <div className="text-text-main/80 text-sm">Impact: State the outcome and who benefited.</div>
@@ -592,7 +592,7 @@ export default function NominateModal({ open, onClose, onSubmit, initialCategory
                   type="button"
                   onClick={handleTopNext}
                   disabled={step === 1 && nominees.length === 0}
-                  className={`w-full px-4 py-2 rounded-md text-white font-bold ${step===1 && nominees.length === 0 ? 'opacity-60 cursor-not-allowed bg-${themeColor}-500/10' : `bg-${themeColor}-600 hover:brightness-105`}`}
+                  className={`w-full px-4 py-2 rounded-md text-white font-normal ${step===1 && nominees.length === 0 ? 'opacity-60 cursor-not-allowed bg-${themeColor}-500/10' : `bg-${themeColor}-600 hover:brightness-105`}`}
                 >
                   Next Step
                 </button>
@@ -658,7 +658,7 @@ export default function NominateModal({ open, onClose, onSubmit, initialCategory
 
                   {(!designOpen && step === 2) && (
                     <div className="mt-4 flex items-center justify-end">
-                      <button type="button" onClick={handleTopNext} className={`px-6 py-2 rounded-md text-white font-black ${isECard ? `bg-${themeColor}-600 shadow-${themeColor}-600/20` : 'bg-indigo-600 shadow-indigo-600/20'}`}>
+                      <button type="button" onClick={handleTopNext} className={`px-6 py-2 rounded-md text-white font-normal ${isECard ? `bg-${themeColor}-600 shadow-${themeColor}-600/20` : 'bg-indigo-600 shadow-indigo-600/20'}`}>
                         Review Order
                       </button>
                     </div>
@@ -685,7 +685,7 @@ export default function NominateModal({ open, onClose, onSubmit, initialCategory
                       </div>
 
                       <div className="mt-6 flex items-center justify-end gap-3">
-                        <button type="button" onClick={() => setStep(2)} className={`px-4 py-2 rounded-md bg-${themeColor}-500/10 text-white hover:bg-${themeColor}-500/20 border border-${themeColor}-500/20 font-bold transition-all`}>
+                        <button type="button" onClick={() => setStep(2)} className={`px-4 py-2 rounded-md bg-${themeColor}-500/10 text-white hover:bg-${themeColor}-500/20 border border-${themeColor}-500/20 font-normal transition-all`}>
                           Back to Design
                         </button>
                         <button type="submit" className={`px-8 py-2.5 rounded-md text-white font-black text-lg ${isECard ? `bg-${themeColor}-600 shadow-xl shadow-${themeColor}-600/30` : 'bg-indigo-600 shadow-xl shadow-indigo-600/30'} hover:scale-105 transition-transform active:scale-95`}>
