@@ -680,7 +680,7 @@ export default function NominateModal({ open, onClose, onSubmit, initialCategory
                         <button type="button" onClick={() => setStep(2)} className={`px-4 py-2 rounded-md bg-${themeColor}-500/10 text-white hover:bg-${themeColor}-500/20 border border-${themeColor}-500/20 font-normal transition-all`}>
                           Back to Design
                         </button>
-                        <button type="submit" className={`px-8 py-2.5 rounded-md text-white font-black text-lg ${isECard ? `bg-${themeColor}-600 shadow-xl shadow-${themeColor}-600/30` : 'bg-indigo-600 shadow-xl shadow-indigo-600/30'} hover:scale-105 transition-transform active:scale-95`}>
+                        <button type="submit" className={`px-4 py-2 rounded-md bg-${themeColor}-500/10 text-white hover:bg-${themeColor}-500/20 border border-${themeColor}-500/20 font-normal transition-all`}>
                           Submit Award
                         </button>
                       </div>
