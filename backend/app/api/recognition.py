@@ -159,9 +159,17 @@ async def create_recognition_endpoint(
     background_tasks: BackgroundTasks = None,
     user: CurrentUser = Depends(get_current_user),
 ):
+    # Get tenant from request state (set by middleware) or fall back to user's tenant
     tenant = getattr(request.state, "tenant_id", None) or user.tenant_id
-    if str(user.tenant_id) != str(tenant):
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Tenant mismatch")
+    
+    # For PLATFORM_OWNER users without a tenant, use the request tenant
+    if user.role == "PLATFORM_OWNER" and not user.tenant_id:
+        if not tenant:
+            raise HTTPException(status_code=400, detail="No tenant specified")
+    else:
+        # For regular users, ensure tenant matches
+        if str(user.tenant_id) != str(tenant):
+            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Tenant mismatch")
 
     try:
         rec = await create_recognition(db=db, tenant_id=tenant, nominator_id=user.id, payload=payload)

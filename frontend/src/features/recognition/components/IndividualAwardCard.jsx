@@ -1,6 +1,6 @@
 import React from 'react'
 
-const IndividualAwardCard = ({ data }) => {
+const IndividualAwardCard = ({ data, onNominateSimilar }) => {
   return (
     <article role="article" className="w-full max-w-xs transition-all hover:scale-[1.02] hover:-translate-y-1">
       <div className="rounded-lg bg-gradient-to-r from-indigo-700 via-indigo-600 to-indigo-800 p-[1px] h-full shadow-lg shadow-indigo-900/40">
@@ -40,12 +40,23 @@ const IndividualAwardCard = ({ data }) => {
             <span className="absolute -bottom-4 -right-2 text-3xl text-white/10 italic">"</span>
           </div>
 
-          <div className="mt-auto pt-6 flex justify-between items-center border-t border-white/5">
-            <div className="flex -space-x-2">
-               <div className="w-6 h-6 rounded-full border border-indigo-900/30 bg-white/10 flex items-center justify-center text-[10px] shadow-sm-sm ring-1 ring-white/5">👍</div>
-               <div className="w-6 h-6 rounded-full border border-indigo-900/30 bg-white/10 flex items-center justify-center text-[10px] shadow-sm-sm ring-1 ring-white/5">❤️</div>
+          <div className="mt-auto pt-4 space-y-3 border-t border-white/5">
+            <div className="flex justify-between items-center">
+              <div className="flex -space-x-2">
+                 <div className="w-6 h-6 rounded-full border border-indigo-900/30 bg-white/10 flex items-center justify-center text-[10px] shadow-sm-sm ring-1 ring-white/5">👍</div>
+                 <div className="w-6 h-6 rounded-full border border-indigo-900/30 bg-white/10 flex items-center justify-center text-[10px] shadow-sm-sm ring-1 ring-white/5">❤️</div>
+              </div>
+              <span className="text-[10px] opacity-40 text-white font-bold uppercase tracking-widest">{data.time_ago || 'pinned'}</span>
             </div>
-            <span className="text-[10px] opacity-40 text-white font-bold uppercase tracking-widest">{data.time_ago || 'pinned'}</span>
+            
+            {onNominateSimilar && (
+              <button
+                onClick={onNominateSimilar}
+                className="w-full py-2 px-3 bg-gradient-to-r from-indigo-500 to-indigo-600 hover:from-indigo-600 hover:to-indigo-700 text-white text-xs font-bold rounded-md transition-all shadow-md hover:shadow-lg active:scale-95 uppercase tracking-wide"
+              >
+                Nominate Similar
+              </button>
+            )}
           </div>
         </div>
       </div>

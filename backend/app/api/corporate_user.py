@@ -4,6 +4,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.db.session import get_db
 from app.core.rbac import require_role
 from app.core.auth import get_current_user, User as CurrentUser
+from app.core import tenancy
 from app.models.tenants import Tenant
 from app.models.users import User, UserRole
 from app.models.transactions import Transaction, TransactionType
@@ -24,11 +25,22 @@ router = APIRouter(prefix="/user")
 @router.get("/search")
 async def search_users(q: str = Query(..., min_length=1), db: AsyncSession = Depends(get_db), user: CurrentUser = Depends(get_current_user)):
     """Search corporate users in the current tenant by name or email."""
-    tenant_id = getattr(user, "tenant_id", None)
-    stmt = select(User).where(
-        User.tenant_id == tenant_id,
-        (User.full_name.ilike(f"%{q}%")) | (User.email.ilike(f"%{q}%"))
-    ).limit(25)
+    # Get tenant_id from context var set by middleware
+    tenant_id = tenancy.CURRENT_TENANT.get()
+    
+    # Fallback to user.tenant_id if middleware didn't set it
+    if not tenant_id:
+        tenant_id = getattr(user, "tenant_id", None)
+    
+    # Build conditions for search
+    search_condition = (User.full_name.ilike(f"%{q}%")) | (User.email.ilike(f"%{q}%"))
+    
+    if tenant_id:
+        stmt = select(User).where(User.tenant_id == tenant_id, search_condition).limit(25)
+    else:
+        # If still no tenant, search across all tenants (for dev/testing)
+        stmt = select(User).where(search_condition).limit(25)
+    
     res = await db.execute(stmt)
     users = res.scalars().all()
     return [

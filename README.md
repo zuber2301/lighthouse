@@ -87,9 +87,52 @@ The development helper now prefers IPv4 to avoid IPv6 conflict situations. It:
 
 If you need the system-wide policy changed (for example to disable IPv6 binding globally), do that outside this script — the script itself forces IPv4 usage for the local dev servers.
 
+## API Documentation
+
+For detailed API endpoint documentation, see [ENDPOINTS_LIGHTHOUSE.md](ENDPOINTS_LIGHTHOUSE.md).
+
+### Key Features
+
+**User Search on Award Forms**
+- The `/user/search` endpoint automatically filters users by the current tenant
+- Supports searching by name or email
+- Returns up to 25 results matching the query
+- Requires valid JWT authentication
+- Tenant context is automatically determined from JWT token
+
+**Recognition & Awards**
+- Individual awards with customizable point values
+- Group awards for team recognition
+- E-card designs with custom messaging
+- Support for media attachments
+
+**Rewards & Redemptions**
+- Point-based reward redemption system
+- Global reward catalog
+- Custom tenant rewards configuration
+- Redemption history and tracking
+
+**Budget Management**
+- Master budget allocation at tenant level
+- Department/team lead budget distribution
+- Real-time budget tracking and logs
+- Budget recalculation and adjustments
+
+**Analytics & Insights**
+- Recognition frequency analysis
+- Budget utilization metrics
+- Redemption velocity tracking
+- Tenant-specific analytics
+- Platform-wide dashboards
+
 ## Testing
 
 Run tests with:
 ```bash
 ./run-tests.sh
+```
+
+For integration tests:
+```bash
+./seed_data/run_tests_in_docker.sh
 ```

@@ -114,12 +114,12 @@ export default function NominateModal({ open, onClose, onSubmit, initialCategory
   // E-Card design selection (Classic, Modern, Fun). Default: none (no preview shown)
   const [design, setDesign] = useState('')
 
-   // When E-Card category is selected, default design to Classic so a preview is shown
+   // When E-Card or Individual Award category is selected, default design to Classic so a preview is shown
    useEffect(() => {
-     if (category === 'E-Card' && !design) {
+     if ((category === 'E-Card' || category === 'Individual Award') && !design) {
        setDesign('Classic')
      }
-     // do not reset design when leaving E-Card to avoid unexpected UX
+     // do not reset design when leaving the category to avoid unexpected UX
    }, [category])
 
   // Build simple e-card HTML string based on selection + fields
@@ -374,9 +374,9 @@ export default function NominateModal({ open, onClose, onSubmit, initialCategory
       value_tag: category,
       // Provide ecard_html (so backend can persist) and/or ecard_url (uploaded image)
       message: fullMessage || undefined,
-      ecard_html: category === 'E-Card' ? (ecardHtml || undefined) : undefined,
+      ecard_html: (category === 'E-Card' || category === 'Individual Award') ? (ecardHtml || undefined) : undefined,
       ecard_url: category === 'E-Card' ? (ecardUrl || undefined) : undefined,
-      ecard_design: category === 'E-Card' ? design : undefined,
+      ecard_design: (category === 'E-Card' || category === 'Individual Award') ? design : undefined,
       is_public: true,
     }
 
@@ -609,57 +609,49 @@ export default function NominateModal({ open, onClose, onSubmit, initialCategory
             <div className="flex items-center gap-3">
               <div className={`w-8 h-8 rounded-md flex items-center justify-center font-bold ${(step===2 || step===3) ? `bg-${themeColor}-500 text-white shadow-lg shadow-${themeColor}-500/20` : 'bg-white/10 text-white/40'}`}>2</div>
               <div>
-                <div className="text-sm font-bold uppercase tracking-widest text-white/70">{step === 3 ? 'Review & Send' : 'Design E-Card'}</div>
+                <div className="text-sm font-bold uppercase tracking-widest text-white/70">{step === 3 ? 'Review & Send' : category === 'E-Card' ? 'Design E-Card' : 'Select Card Style'}</div>
               </div>
             </div>
             <div>
-              { (category === 'E-Card' || openedAsECard) ? (
+              { (category === 'E-Card' || category === 'Individual Award' || openedAsECard) ? (
                 <>
                   {design ? (
                     <div className={`mt-4 p-3 rounded-md min-h-[80px] ${isECard ? `bg-${themeColor}-500/5 shadow-[inset_0_0_30px_rgba(29,78,216,0.04)]` : 'bg-surface border border-border-soft'} ${step === 3 ? 'ring-2 ring-blue-500/50' : ''}`}>
                       <div id="ecard-preview" dangerouslySetInnerHTML={{ __html: ecardHtml }} />
                     </div>
                   ) : (
-                    <div className="mt-4 p-3 rounded-md bg-black/10 border border-white/5 text-sm text-white/60 text-center">No design selected — preview will appear once you choose a design.</div>
+                    <div className="mt-4 p-3 rounded-md bg-black/10 border border-white/5 text-sm text-white/60 text-center">Select a card style to see the preview</div>
                   )}
 
                   {step < 3 && (
                     <div ref={designWrapperRef} className="relative mt-4">
-                      <button
-                        type="button"
-                        onClick={() => setDesignOpen(!designOpen)}
-                        className={`w-full text-left ${isECard ? `bg-${themeColor}-500/5 shadow-[inset_0_0_30px_rgba(29,78,216,0.04)]` : 'bg-black/30'} border border-white/10 rounded-md p-3 text-sm focus:outline-none focus:ring-2 focus:ring-white/10 transition-all text-white flex items-center justify-between`}
-                        aria-haspopup="listbox"
-                        aria-expanded={designOpen}
-                      >
-                        <span>{design || 'None'}</span>
-                        <span className="ml-3 text-white/70">▾</span>
-                      </button>
-
-                      {designOpen && (
-                        <ul className="absolute left-0 right-0 mt-2 z-50 rounded-md overflow-hidden shadow-lg bg-black/40 border border-white/10" role="listbox">
-                            {['Classic', 'Modern', 'Fun'].map((opt) => (
-                              <li
-                                key={opt}
-                                role="option"
-                                onClick={() => {
-                                  setDesign(opt)
-                                  setDesignOpen(false)
-                                }}
-                                className={`px-4 py-3 text-sm text-white hover:bg-white/5 cursor-pointer ${design === opt ? 'font-bold' : 'font-normal'}`}
-                              >
-                                {opt}
-                              </li>
-                            ))}
-                        </ul>
-                      )}
+                      <div className="text-sm font-normal tracking-tight text-white mb-3">Choose Card Style</div>
+                      <div className="space-y-2">
+                        {['Classic', 'Modern', 'Fun'].map((opt) => (
+                          <button
+                            key={opt}
+                            type="button"
+                            onClick={() => {
+                              setDesign(opt)
+                            }}
+                            className={`w-full text-left px-4 py-3 rounded-md text-sm transition-all flex items-center justify-between ${
+                              design === opt 
+                                ? `bg-${themeColor}-500 text-white font-bold shadow-lg shadow-${themeColor}-500/20` 
+                                : `bg-black/30 border border-white/10 text-white hover:bg-white/5`
+                            }`}
+                          >
+                            <span>{opt}</span>
+                            {design === opt && <span className="text-lg">✓</span>}
+                          </button>
+                        ))}
+                      </div>
                     </div>
                   )}
 
                   {(!designOpen && step === 2) && (
                     <div className="mt-4 flex items-center justify-end">
                       <button type="button" onClick={handleTopNext} className={`px-6 py-2 rounded-md text-white font-normal ${isECard ? `bg-${themeColor}-600 shadow-${themeColor}-600/20` : 'bg-indigo-600 shadow-indigo-600/20'}`}>
-                        Review Order
+                        Review & Send
                       </button>
                     </div>
                   )}
@@ -674,7 +666,7 @@ export default function NominateModal({ open, onClose, onSubmit, initialCategory
                         </div>
 
                         <div className="flex items-center justify-between text-xs font-bold uppercase tracking-widest text-white/40">
-                          <div>Design Style</div>
+                          <div>Card Style</div>
                           <div className="text-white">{design}</div>
                         </div>
 
@@ -689,7 +681,7 @@ export default function NominateModal({ open, onClose, onSubmit, initialCategory
                           Back to Design
                         </button>
                         <button type="submit" className={`px-8 py-2.5 rounded-md text-white font-black text-lg ${isECard ? `bg-${themeColor}-600 shadow-xl shadow-${themeColor}-600/30` : 'bg-indigo-600 shadow-xl shadow-indigo-600/30'} hover:scale-105 transition-transform active:scale-95`}>
-                          Send Now
+                          Submit Award
                         </button>
                       </div>
                     </div>
@@ -697,7 +689,7 @@ export default function NominateModal({ open, onClose, onSubmit, initialCategory
                 </>
               ) : (
                 <div className="text-sm opacity-50 flex items-center justify-center h-40 border-2 border-dashed border-white/5 rounded-lg italic">
-                  Select E-Card category to unlock designs
+                  Card styles available for Individual Award and E-Card
                 </div>
               ) }
             </div>

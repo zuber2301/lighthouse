@@ -24,7 +24,7 @@ export function useRecognitions() {
       const optimistic = { ...newRec, when: 'just now', status: 'Pending' }
       queryClient.setQueryData(['recognitions'], (old = []) => [optimistic, ...old])
       try {
-        const msg = `Recognition queued for ${newRec.nominee} (${newRec.points} points).`
+        const msg = `Recognition queued (${newRec.points} points).`
         announce?.(msg)
         showToast?.('Recognition queued', 'info')
       } catch {}
@@ -33,14 +33,14 @@ export function useRecognitions() {
     onError: (err, newRec, context) => {
       if (context?.previous) queryClient.setQueryData(['recognitions'], context.previous)
       try {
-        const errmsg = `Failed to submit recognition for ${newRec.nominee}: ${err?.message ?? 'unknown error'}`
+        const errmsg = `Failed to submit recognition: ${err?.message ?? 'unknown error'}`
         announce?.(errmsg)
         showToast?.(errmsg, 'error')
       } catch {}
     },
     onSuccess: (data) => {
       try {
-        const msg = `Recognition submitted for ${data.nominee} (${data.points ?? '–'} pts).`
+        const msg = `Recognition submitted for ${data.nominee_name} (${data.points ?? '–'} pts).`
         announce?.(msg)
         showToast?.('Recognition submitted', 'success')
         

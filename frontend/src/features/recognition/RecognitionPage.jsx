@@ -3,6 +3,7 @@ import Card from '../../components/Card'
 import PageHeader from '../../components/PageHeader'
 import NominateModal from './NominateModal'
 import RecognitionList from './RecognitionList'
+import { IndividualAwardCard } from './components'
 import { useRecognitions } from '../../hooks/useRecognitions'
 import { useAuth } from '../../lib/AuthContext'
 import { useSearchParams } from 'react-router-dom'
@@ -39,6 +40,11 @@ export default function RecognitionPage() {
 
   function handleSubmit(payload) {
     return createAsync(payload)
+  }
+
+  const handleNominateSimilar = (award) => {
+    // This would pass the award data to prefill the form if needed
+    setOpen(true)
   }
 
   const tabs = ['All', 'Individual Award', 'Group Award', 'E-Card']
@@ -81,7 +87,33 @@ export default function RecognitionPage() {
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-8 mt-4">
           <div className="lg:col-span-3">
             <Card>
-              <RecognitionList items={filteredItems} />
+              {activeTab === 'Individual Award' ? (
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {filteredItems.length > 0 ? (
+                    filteredItems.map((item, idx) => (
+                      <IndividualAwardCard
+                        key={idx}
+                        data={item}
+                        onNominateSimilar={() => handleNominateSimilar(item)}
+                      />
+                    ))
+                  ) : (
+                    <div className="col-span-full text-center py-12 text-text-main/50">
+                      <p className="text-lg font-medium">No Individual Awards yet</p>
+                      {isAllowedPersona && (
+                        <button
+                          onClick={() => setOpen(true)}
+                          className="mt-4 px-6 py-2 rounded-full btn-recognition text-sm font-bold transition-all shadow-lg active:scale-95"
+                        >
+                          Give your first award
+                        </button>
+                      )}
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <RecognitionList items={filteredItems} />
+              )}
             </Card>
           </div>
           

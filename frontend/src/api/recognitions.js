@@ -18,7 +18,8 @@ export async function createRecognition(payload) {
     return res.data
   } catch (e) {
     if (e.response && e.response.status === 401) throw new Error('Unauthorized')
-    const msg = e.response?.data || e.message
-    throw new Error(msg)
+    const msg = e.response?.data?.detail || e.response?.data?.message || e.response?.data || e.message
+    const errMsg = typeof msg === 'string' ? msg : JSON.stringify(msg)
+    throw new Error(errMsg)
   }
 }
