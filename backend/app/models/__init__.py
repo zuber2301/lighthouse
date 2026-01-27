@@ -14,6 +14,8 @@ from .global_providers import GlobalProvider
 from .budget_load_logs import BudgetLoadLog
 from .audit_logs import PlatformAuditLog
 from .transactions import Transaction, TransactionType
+from .events import Event, EventOption, EventRegistration, EventPickupLocation, EventTimeSlot, EventType, RegistrationStatus
+from .approvals import ApprovalRequest, ApprovalStatus
 
 __all__ = [
     "Tenant",
@@ -39,4 +41,13 @@ __all__ = [
     "PlatformAuditLog",
     "Transaction",
     "TransactionType",
+    "Event",
+    "EventOption",
+    "EventRegistration",
+    "EventPickupLocation",
+    "EventTimeSlot",
+    "EventType",
+    "RegistrationStatus",
+    "ApprovalRequest",
+    "ApprovalStatus",
 ]
