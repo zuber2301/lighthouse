@@ -20,7 +20,7 @@ export default function GroupAwardWizard({ open = true, onClose = () => {}, onSu
 
           <div className="flex items-start justify-between mb-6 relative z-10">
             <div>
-              <h1 className="text-2xl font-black tracking-tight text-white">Group Excellence Award</h1>
+              <h1 className="text-2xl font-normal tracking-tight text-white">Group Excellence Award</h1>
               <p className="text-slate-400 mt-1">Recognizing collective impact across the team.</p>
             </div>
 
@@ -39,7 +39,7 @@ export default function GroupAwardWizard({ open = true, onClose = () => {}, onSu
           {/* Step content */}
           {step === 1 && (
             <div className="p-6 relative z-10">
-              <h2 className="text-xl font-bold mb-6 flex items-center gap-3 text-white"><Users className="text-blue-400" /> Select Team Members</h2>
+              <h2 className="text-xl font-normal mb-6 flex items-center gap-3 text-white"><Users className="text-blue-400" /> Select Team Members</h2>
 
               <div className="relative mb-8">
                 <Search className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-500" />
@@ -56,7 +56,7 @@ export default function GroupAwardWizard({ open = true, onClose = () => {}, onSu
                 <button className="px-4 py-2 rounded-md bg-slate-800 text-slate-400 text-sm font-bold hover:bg-slate-700 transition">+ Add All Engineering</button>
               </div>
 
-              <button onClick={() => setStep(2)} className="w-full py-5 bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 rounded-md font-black text-lg transition-all flex items-center justify-center gap-3 shadow-lg shadow-violet-500/20">Set Award Details <ArrowRight /></button>
+              <button onClick={() => setStep(2)} className="w-full py-5 bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 rounded-md font-normal text-lg transition-all flex items-center justify-center gap-3 shadow-lg shadow-violet-500/20">Set Award Details <ArrowRight /></button>
             </div>
           )}
 
@@ -94,7 +94,7 @@ export default function GroupAwardWizard({ open = true, onClose = () => {}, onSu
                   <ArrowRight size={18} className="rotate-180 transition-transform group-hover:-translate-x-1" />
                   Back
                 </button>
-                <button onClick={() => setStep(3)} className="flex-[2] py-5 bg-gradient-to-r from-indigo-600 to-violet-600 hover:scale-[1.01] transition-all rounded-md font-black shadow-lg shadow-violet-500/20">Write Team Message</button>
+                <button onClick={() => setStep(3)} className="flex-[2] py-5 bg-gradient-to-r from-indigo-600 to-violet-600 hover:scale-[1.01] transition-all rounded-md font-normal shadow-lg shadow-violet-500/20">Write Team Message</button>
               </div>
             </div>
           )}
@@ -119,7 +119,7 @@ export default function GroupAwardWizard({ open = true, onClose = () => {}, onSu
                   <ArrowRight size={18} className="rotate-180 transition-transform group-hover:-translate-x-1" />
                   Back
                 </button>
-                <button onClick={async () => { await onSubmit({ type: 'group', recipients, award_level: 'Custom', message: 'Team win' }); }} className="flex-[2] py-4 bg-gradient-to-r from-indigo-600 to-violet-600 rounded-md font-black text-xl flex items-center justify-center gap-3 shadow-[0_0_20px_rgba(139,92,246,0.4)] hover:scale-[1.02] transition-transform"><Send size={20} /> Blast Award to Team</button>
+                <button onClick={async () => { await onSubmit({ type: 'group', recipients, award_level: 'Custom', message: 'Team win' }); }} className="flex-[2] py-4 bg-gradient-to-r from-indigo-600 to-violet-600 rounded-md font-normal text-xl flex items-center justify-center gap-3 shadow-[0_0_20px_rgba(139,92,246,0.4)] hover:scale-[1.02] transition-transform"><Send size={20} /> Blast Award to Team</button>
               </div>
             </div>
           )}

@@ -411,17 +411,20 @@ export default function NominateModal({ open, onClose, onSubmit, initialCategory
 
   // Determine theme colors based on category
   const isECard = category === 'E-Card' || openedAsECard;
-  const themeColor = isECard ? 'blue' : 'indigo';
-  const themeHex = isECard ? '#1d4ed8' : '#6366f1';
+  const isGroupAward = category === 'Group Award';
+  const themeColor = isECard ? 'blue' : isGroupAward ? 'purple' : 'indigo';
+  const themeHex = isECard ? '#1d4ed8' : isGroupAward ? '#a855f7' : '#6366f1';
 
   return (
     <Modal open={open} onClose={onClose} className={`max-w-4xl transition-all duration-700 
       ${isECard 
         ? '!bg-gradient-to-br !from-[#241E4C] !via-[#1d4ed8] !to-[#241E4C]' 
+        : isGroupAward
+        ? '!bg-gradient-to-br !from-[#241E4C] !via-[#5b21b6] !to-[#241E4C]'
         : '!bg-gradient-to-br !from-[#241E4C] !via-[#1e1b4b] !to-[#241E4C]'}`}>
       <form onSubmit={handleSubmit} className="space-y-3">
         <div>
-          <h2 className={`text-3xl font-normal tracking-tighter ${category === 'Individual Award' ? 'text-white' : `text-${themeColor}-400`} mb-2`}>{openedAsECard ? 'Send a E-Card' : 'Individual Excellence Nomination Form'}</h2>
+          <h2 className={`text-3xl font-normal tracking-tighter ${category === 'Individual Award' ? 'text-white' : `text-${themeColor}-400`} mb-2`}>{openedAsECard ? 'Send a E-Card' : category === 'Group Award' ? 'Group Recognition Form' : 'Individual Excellence Nomination Form'}</h2>
 
             <div className="mt-4 relative">
               <button type="button" onClick={onClose} aria-label="Close" className="absolute top-0 right-0 text-white/80 hover:text-white p-2 rounded-md">✕</button>
