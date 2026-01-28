@@ -114,17 +114,17 @@ const TenantManager = ({ tenants, onRefresh, onAddTenant }) => {
         <div className="overflow-x-auto overflow-y-auto max-h-[72vh] styled-scrollbar">
           <table className="w-full text-left table-auto border-separate border-spacing-0">
             <thead className="bg-indigo-500/8 backdrop-blur-md sticky top-0 z-20 border-b border-indigo-500/20">
-              <tr className="text-[11px] text-text-main font-semibold uppercase tracking-wider">
-                <th className="px-4 py-4 whitespace-nowrap text-left text-indigo-300">Company</th>
-                <th className="px-4 py-4 text-center hidden sm:table-cell text-indigo-300">Subdomain</th>
-                <th className="px-4 py-4 text-center hidden md:table-cell text-indigo-300">Plan</th>
-                <th className="px-4 py-4 text-center hidden lg:table-cell text-indigo-300">Users</th>
-                <th className="px-4 py-4 text-center hidden xl:table-cell text-indigo-300">Allocated</th>
-                <th className="px-4 py-4 text-center hidden 2xl:table-cell text-indigo-300">Consumed</th>
-                <th className="px-4 py-4 text-center hidden lg:table-cell text-indigo-300">Left %</th>
-                <th className="px-4 py-4 text-center text-indigo-300">Status</th>
-                <th className="px-4 py-4 text-center hidden 2xl:table-cell text-indigo-300">Created</th>
-                <th className="px-4 py-4 text-right text-indigo-300">Action</th>
+              <tr className="text-[13px] text-text-main font-semibold tracking-wider">
+                <th className="px-4 py-4 whitespace-nowrap text-left text-black">Company</th>
+                <th className="px-4 py-4 text-center hidden sm:table-cell text-black">Subdomain</th>
+                <th className="px-4 py-4 text-center hidden md:table-cell text-black">Plan</th>
+                <th className="px-4 py-4 text-center hidden lg:table-cell text-black">Users</th>
+                <th className="px-4 py-4 text-center hidden xl:table-cell text-black">Allocated</th>
+                <th className="px-4 py-4 text-center hidden 2xl:table-cell text-black">Consumed</th>
+                <th className="px-4 py-4 text-center hidden lg:table-cell text-black">Left %</th>
+                <th className="px-4 py-4 text-center text-black">Status</th>
+                <th className="px-4 py-4 text-center hidden 2xl:table-cell text-black">Created</th>
+                <th className="px-4 py-4 text-right text-black">Action</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-indigo-500/5">
