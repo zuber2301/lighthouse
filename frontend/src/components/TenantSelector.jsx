@@ -67,7 +67,7 @@ export default function TenantSelector({ label = null, direction = 'down', compa
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 placeholder="Search tenants..."
-                className="w-full bg-indigo-500/5 border border-indigo-500/10 rounded-md px-4 py-3 text-sm text-white placeholder:text-white/50 focus:outline-none focus:ring-2 focus:ring-indigo-500/30 text-left"
+                className="w-full bg-indigo-500/5 border border-indigo-500/10 rounded-md px-4 py-3 text-sm text-text-main placeholder:text-text-secondary focus:outline-none focus:ring-2 focus:ring-indigo-500/30 text-left"
               />
             </div>
 

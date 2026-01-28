@@ -1,0 +1,267 @@
+
+╔════════════════════════════════════════════════════════════════════════════╗
+║                                                                            ║
+║               ✅ LIGHTHOUSE BOOTSTRAP SCRIPT CREATED                       ║
+║                                                                            ║
+║   Complete One-Command Environment Setup                                  ║
+║   All Docker Services • Database • Migrations • Seed Data                 ║
+║                                                                            ║
+╚════════════════════════════════════════════════════════════════════════════╝
+
+
+📦 FILES CREATED
+═══════════════════════════════════════════════════════════════════════════════
+
+✅ bootstrap_lighthouse.sh (11 KB)
+   - Complete bootstrap automation script
+   - Executable permissions set (755)
+   - Color-coded output with progress indicators
+   - Comprehensive error handling
+
+✅ BOOTSTRAP_README.md
+   - Full documentation with all options
+   - Troubleshooting guide
+   - Examples and common tasks
+   - Security notes for production
+
+✅ BOOTSTRAP_QUICK_REF.md
+   - Quick reference guide
+   - Common scenarios table
+   - Docker command reference
+   - Cheat sheet for developers
+
+
+🚀 QUICK START
+═══════════════════════════════════════════════════════════════════════════════
+
+cd /root/uniplane-repos/lighthouse
+./bootstrap_lighthouse.sh
+
+That's it! One command sets up everything.
+
+
+📋 WHAT THE SCRIPT DOES
+═══════════════════════════════════════════════════════════════════════════════
+
+1. ✅ Check Prerequisites
+   - Docker installation
+   - Docker Compose installation
+   - Configuration files present
+
+2. ✅ Build & Start Containers
+   - PostgreSQL database
+   - Redis cache
+   - Backend API (FastAPI)
+   - Frontend dev server (Vite)
+
+3. ✅ Run Database Migrations
+   - Create all tables
+   - Set up foreign keys
+   - Create indexes
+
+4. ✅ Seed Initial Data
+   - Subscription plans
+   - Global rewards and badges
+   - Platform settings
+   - Test tenants and users
+   - Sample recognitions
+
+5. ✅ Verify & Display Info
+   - Show container status
+   - Display connection URLs
+   - Ready for use
+
+
+🎯 AVAILABLE OPTIONS
+═══════════════════════════════════════════════════════════════════════════════
+
+Default (Full Bootstrap):
+  ./bootstrap_lighthouse.sh
+
+Fresh Start (Complete Reset):
+  ./bootstrap_lighthouse.sh --fresh
+  - Removes volumes
+  - Rebuilds images
+  - Full migration + seeding
+
+Quick Start (Containers Only):
+  ./bootstrap_lighthouse.sh --quick
+  - Assumes already configured
+  - Just starts containers
+
+Seed Data Only:
+  ./bootstrap_lighthouse.sh --seed-only
+  - Reload data without reset
+  - Use existing database
+
+Skip Seeding:
+  ./bootstrap_lighthouse.sh --no-seed
+  - Run migrations only
+  - Preserve existing data
+
+Show Logs:
+  ./bootstrap_lighthouse.sh --logs
+  - Display container logs
+  - Monitor startup process
+
+Combine Options:
+  ./bootstrap_lighthouse.sh --fresh --logs
+
+
+🌐 AFTER BOOTSTRAP
+═══════════════════════════════════════════════════════════════════════════════
+
+Frontend:
+  URL: http://localhost:5173
+
+Backend API:
+  URL: http://localhost:18000
+  Docs: http://localhost:18000/docs
+
+PostgreSQL Database:
+  Host: localhost
+  Port: 5432
+  User: lighthouse
+  Password: lighthouse
+  Database: lighthouse
+
+Redis Cache:
+  Host: localhost
+  Port: 6379
+
+
+✅ DEFAULT DATA CREATED
+═══════════════════════════════════════════════════════════════════════════════
+
+Users:
+  ✅ Platform owner account
+  ✅ 105+ test user accounts
+  ✅ Various roles (admin, manager, user)
+
+Tenants:
+  ✅ ACME Corp (sample tenant)
+  ✅ Multiple test tenants
+
+Plans:
+  ✅ Basic (free)
+  ✅ Starter ($29/mo)
+  ✅ Professional ($79/mo)
+  ✅ Enterprise ($199/mo)
+
+Recognition System:
+  ✅ Sample badges
+  ✅ Global rewards
+  ✅ Test recognitions
+  ✅ User personas
+
+
+🔍 VERIFY INSTALLATION
+═══════════════════════════════════════════════════════════════════════════════
+
+Check Services Running:
+  docker-compose ps
+
+View Backend Logs:
+  docker-compose logs -f backend
+
+Test Backend:
+  curl http://localhost:18000/health
+
+Access Frontend:
+  Open http://localhost:5173 in browser
+
+Check Database:
+  docker-compose exec postgres psql -U lighthouse -d lighthouse
+  Then: SELECT count(*) FROM users;
+
+
+🛠️ COMMON OPERATIONS
+═══════════════════════════════════════════════════════════════════════════════
+
+Start Services:
+  docker-compose up -d
+
+Stop Services:
+  docker-compose down
+
+Full Reset:
+  docker-compose down -v
+  ./bootstrap_lighthouse.sh --fresh
+
+View Logs:
+  docker-compose logs -f
+  docker-compose logs -f backend
+  docker-compose logs -f postgres
+
+Restart All:
+  docker-compose restart
+
+Database Access:
+  docker-compose exec postgres psql -U lighthouse -d lighthouse
+
+Backend Shell:
+  docker-compose exec backend bash
+
+
+🚨 TROUBLESHOOTING
+═══════════════════════════════════════════════════════════════════════════════
+
+Docker Not Installed:
+  → Install Docker Desktop or Docker CLI
+
+Port Already in Use:
+  → Docker automatically uses next available port
+  → Check actual ports: docker-compose ps
+
+Backend Not Responding:
+  → Wait 10-15 seconds for startup
+  → Check logs: docker-compose logs backend
+
+Database Connection Fails:
+  → Reset: docker-compose down -v
+  → Restart: ./bootstrap_lighthouse.sh --fresh
+
+Seed Data Fails:
+  → Retry with: ./bootstrap_lighthouse.sh --seed-only
+  → Check logs: docker-compose logs backend
+
+
+📚 DOCUMENTATION
+═══════════════════════════════════════════════════════════════════════════════
+
+Full Guide: BOOTSTRAP_README.md
+Quick Ref:  BOOTSTRAP_QUICK_REF.md
+Script:     bootstrap_lighthouse.sh
+
+
+🎓 NEXT STEPS
+═══════════════════════════════════════════════════════════════════════════════
+
+1. Run bootstrap:
+   ./bootstrap_lighthouse.sh
+
+2. Wait for completion (5-10 minutes first time)
+
+3. Open frontend:
+   http://localhost:5173
+
+4. Explore API docs:
+   http://localhost:18000/docs
+
+5. Check database:
+   docker-compose exec postgres psql -U lighthouse -d lighthouse
+
+6. Review seed data:
+   SELECT * FROM tenants;
+   SELECT COUNT(*) FROM users;
+
+7. Start development!
+
+
+════════════════════════════════════════════════════════════════════════════════
+Status: ✅ READY TO USE
+Location: /root/uniplane-repos/lighthouse/bootstrap_lighthouse.sh
+Permissions: Executable (755)
+Documentation: Complete
+════════════════════════════════════════════════════════════════════════════════
+

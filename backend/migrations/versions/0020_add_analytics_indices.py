@@ -1,7 +1,7 @@
 """Phase 6: Post-Event Analytics indices for performance
 
 Revision ID: 0020_add_analytics_indices
-Revises: 0019_initial_schema
+Revises: 0018_add_collection_tracking
 Create Date: 2026-01-29
 
 This migration adds performance indices for analytics queries.
@@ -14,7 +14,7 @@ import sqlalchemy as sa
 
 # revision identifiers, used by Alembic.
 revision = "0020_add_analytics_indices"
-down_revision = "0019_initial_schema"
+down_revision = "0018_add_collection_tracking"
 branch_labels = None
 depends_on = None
 

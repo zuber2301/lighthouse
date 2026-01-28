@@ -27,7 +27,7 @@ def get_config():
     db_url = os.environ.get("DATABASE_URL") or "sqlite:///./test.db"
     cfg.set_main_option("sqlalchemy.url", db_url)
     # Ensure alembic knows where the migration scripts live (absolute path)
-    cfg.set_main_option("script_location", os.path.join(BASE_DIR, "migrations"))
+    cfg.set_main_option("script_location", os.path.join(BASE_DIR, "app/db/migrations"))
     # Attempt to stamp the alembic_version table if it's missing or empty.
     # This helps when the DB schema was created outside alembic (dev/test scenarios).
     try:

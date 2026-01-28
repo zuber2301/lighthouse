@@ -3,8 +3,8 @@ import api from '../../../api/axiosClient'
 
 export default function ECardDesigner({ onChange, onExport, initial = {} }) {
   const [template, setTemplate] = useState(initial.template || 'classic')
-  const [bgColor, setBgColor] = useState(initial.bgColor || '#ffffff')
-  const [textColor, setTextColor] = useState(initial.textColor || '#241E4C')
+  const [bgColor, setBgColor] = useState(initial.bgColor || '#ffffff') // Falls back to #ffffff for eCard designer
+  const [textColor, setTextColor] = useState(initial.textColor || '#333333') // Neutral dark color for eCard text
   const [title, setTitle] = useState(initial.title || 'Congrats!')
   const [message, setMessage] = useState(initial.message || '')
   const [sender, setSender] = useState(initial.sender || '')

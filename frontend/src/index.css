@@ -26,6 +26,66 @@
   --tab-selected-text-alt: #ffffff;
 }
 
+[data-theme='light'] {
+  /* Primary Colors - PDF Design */
+  --bg-color: #ffffff;           /* Bright white main background */
+  --bg-secondary: #f8f8f8;       /* Off-white secondary areas */
+  --bg-divider: #f0f0f0;         /* Light grey dividers */
+  --text-main: #2C2C2C;          /* Dark grey primary text */
+  --text-secondary: #555555;     /* Medium grey secondary text - improved contrast */
+  --text-tertiary: #777777;      /* Light grey tertiary text - improved contrast */
+  
+  /* Component Backgrounds */
+  --card-bg: #ffffff;            /* White cards */
+  --sidebar-bg: #ffffff;
+  --header-bg: #ffffff;
+  
+  /* Borders & Dividers - Subtle */
+  --border-color: #e0e0e0;       /* Light grey borders */
+  --border-light: #f0f0f0;       /* Very light borders */
+  --border-soft: rgba(224, 224, 224, 0.5);
+  
+  /* Input/Form Styling */
+  --input-bg: #ffffff;           /* White input backgrounds */
+  --input-border: #e0e0e0;       /* Light grey input borders */
+  --input-focus: rgba(99, 102, 241, 0.08);
+  --input-text: #2C2C2C;
+  --input-placeholder: #777777;
+  
+  /* Accents & Interactive - PDF: Purple, Teal, Orange */
+  --accent: #6366F1;             /* Purple - primary accent */
+  --accent-teal: #14b8a6;        /* Teal - secondary accent */
+  --accent-orange: #f97316;      /* Orange - tertiary accent */
+  --accent-contrast: #ffffff;
+  --accent-light: #f3f0ff;       /* Very light purple background */
+  --btn-primary: #6366F1;
+  --btn-hover: #4f46e5;
+  --btn-secondary: #e8e8e8;      /* Light grey secondary buttons */
+  --btn-secondary-hover: #d5d5d5;
+  
+  /* Status Colors */
+  --success: #16a34a;            /* Green success */
+  --warning: #f59e0b;            /* Amber warning */
+  --error: #dc2626;              /* Red error */
+  --info: #0284c7;               /* Blue info */
+  
+  /* Visual Effects - Subtle shadows for modern look */
+  --card-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  --card-shadow-hover: 0 4px 12px rgba(0, 0, 0, 0.08);
+  
+  /* Spacing & Sizing */
+  --radius: 6px;                 /* Subtle rounded corners */
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  
+  /* Tab Styling */
+  --tab-unselected: #999999;
+  --tab-selected-from: rgba(99, 102, 241, 0.08);
+  --tab-selected-to: rgba(99, 102, 241, 0.04);
+  --tab-selected-text: #6366F1;
+  --tab-selected-text-alt: #ffffff;
+}
+
 [data-theme='dim'] {
   --bg-color: #1E1E2F;
   --text-main: #FFFFFF;
@@ -114,7 +174,7 @@ body {
 
 /* Standardize global font stack for consistent UI rendering */
 body, input, button, textarea, select {
-  font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+  font-family: "Helvetica Neue", Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   font-weight: 400;
@@ -132,11 +192,11 @@ body, input, button, textarea, select {
 
 html { font-size: var(--font-size-base); }
 
-/* Headings: use normal weight to avoid bold text across the portal */
-h1 { font-size: var(--h1-size); font-weight: 400; line-height: 1.1; margin: 0; }
-h2 { font-size: var(--h2-size); font-weight: 400; line-height: 1.15; margin: 0; }
-h3 { font-size: var(--h3-size); font-weight: 400; line-height: 1.2; margin: 0; }
-h4 { font-size: var(--h4-size); font-weight: 400; line-height: 1.25; margin: 0; }
+/* Headings: use bold weight for visual hierarchy */
+h1 { font-size: var(--h1-size); font-weight: 700; line-height: 1.1; margin: 0; }
+h2 { font-size: var(--h2-size); font-weight: 700; line-height: 1.15; margin: 0; }
+h3 { font-size: var(--h3-size); font-weight: 700; line-height: 1.2; margin: 0; }
+h4 { font-size: var(--h4-size); font-weight: 700; line-height: 1.25; margin: 0; }
 
 /* Ensure body text and small UI labels use normal weight */
 p, label, span, a, li, button, input, textarea, select {
@@ -148,11 +208,12 @@ p, label, span, a, li, button, input, textarea, select {
     --tab-selected-text-alt: #F4C95D; /* sunset gold (alternate) */
 
 /* Reduce visual heaviness of Tailwind utility classes used across app */
-.font-bold, .font-black, .font-extrabold, .font-semibold { font-weight: 400 !important; }
-.font-medium, .font-normal { font-weight: 400 !important; }
-
-/* Buttons: use normal weight to avoid bold buttons across portal */
-.btn-accent, .btn-recognition, .btn-danger, .btn-success { font-weight: 400 !important; }
+.font-bold { font-weight: 700 !important; }
+.font-black { font-weight: 900 !important; }
+.font-extrabold { font-weight: 800 !important; }
+.font-semibold { font-weight: 600 !important; }
+.font-medium { font-weight: 500 !important; }
+.font-normal { font-weight: 400 !important; }
 
 /* Utility to remove uppercase where used accidentally */
 .no-uppercase { text-transform: none !important; }
@@ -161,10 +222,16 @@ p, label, span, a, li, button, input, textarea, select {
   .card-base {
     background-color: var(--card-bg);
     border: 1px solid var(--border-color);
-    border-radius: var(--radius);
+    border-radius: var(--radius-md);
     box-shadow: var(--card-shadow);
     transition: all 0.3s ease;
   }
+  
+  .card-base:hover {
+    box-shadow: var(--card-shadow-hover);
+    border-color: var(--border-light);
+  }
+  
   /* Dashboard graph stat cards use a deeper indigo background */
   .card-base[data-theme="graph-stat-card"] {
     background-color: #211478;
@@ -175,8 +242,8 @@ p, label, span, a, li, button, input, textarea, select {
     --tab-selected-text-alt: #F4C95D;
 
   .btn-accent {
-    @apply inline-flex items-center justify-center font-normal text-accent-contrast;
-    font-weight: 400 !important;
+    @apply inline-flex items-center justify-center font-semibold text-accent-contrast;
+    font-weight: 600;
     background-color: var(--accent);
     box-shadow: var(--card-shadow);
     border-radius: var(--radius);
@@ -368,4 +435,105 @@ p, label, span, a, li, button, input, textarea, select {
 .overflow-x-auto::-webkit-scrollbar-corner,
 .overflow-auto::-webkit-scrollbar-corner {
   background: transparent;
+}
+/* ============================================
+   LIGHT THEME FORM & INPUT STYLING
+   ============================================ */
+
+[data-theme='light'] input[type="text"],
+[data-theme='light'] input[type="email"],
+[data-theme='light'] input[type="password"],
+[data-theme='light'] input[type="number"],
+[data-theme='light'] textarea,
+[data-theme='light'] select {
+  background-color: var(--input-bg);
+  color: var(--input-text);
+  border-color: var(--input-border);
+  transition: all 0.2s ease;
+}
+
+[data-theme='light'] input[type="text"]::placeholder,
+[data-theme='light'] input[type="email"]::placeholder,
+[data-theme='light'] input[type="password"]::placeholder,
+[data-theme='light'] input[type="number"]::placeholder,
+[data-theme='light'] textarea::placeholder {
+  color: var(--input-placeholder);
+  opacity: 0.7;
+}
+
+[data-theme='light'] input[type="text"]:focus,
+[data-theme='light'] input[type="email"]:focus,
+[data-theme='light'] input[type="password"]:focus,
+[data-theme='light'] input[type="number"]:focus,
+[data-theme='light'] textarea:focus,
+[data-theme='light'] select:focus {
+  background-color: #ffffff;
+  border-color: var(--accent);
+  outline: none;
+  box-shadow: 0 0 0 3px var(--input-focus);
+}
+
+[data-theme='light'] input[type="checkbox"],
+[data-theme='light'] input[type="radio"] {
+  background-color: var(--input-bg);
+  border-color: var(--input-border);
+  accent-color: var(--accent);
+}
+
+/* ============================================
+   LIGHT THEME BUTTON STYLING
+   ============================================ */
+
+[data-theme='light'] button {
+  transition: all 0.2s ease;
+}
+
+[data-theme='light'] button:not([class*="bg-"]) {
+  background-color: var(--btn-secondary);
+  color: var(--text-main);
+  border: 1px solid var(--border-color);
+}
+
+[data-theme='light'] button:not([class*="bg-"]):hover {
+  background-color: var(--btn-secondary-hover);
+  border-color: var(--border-light);
+}
+
+/* ============================================
+   LIGHT THEME CARD & CONTAINER STYLING
+   ============================================ */
+
+[data-theme='light'] .card-base {
+  background-color: var(--card-bg);
+  border-color: var(--border-color);
+  box-shadow: var(--card-shadow);
+}
+
+[data-theme='light'] .card-base:hover {
+  box-shadow: var(--card-shadow-hover);
+  border-color: var(--border-light);
+}
+
+/* ============================================
+   LIGHT THEME TEXT STYLING
+   ============================================ */
+
+[data-theme='light'] h1,
+[data-theme='light'] h2,
+[data-theme='light'] h3,
+[data-theme='light'] h4 {
+  color: var(--text-main);
+}
+
+[data-theme='light'] p,
+[data-theme='light'] span {
+  color: var(--text-main);
+}
+
+[data-theme='light'] .text-secondary {
+  color: var(--text-secondary);
+}
+
+[data-theme='light'] .text-tertiary {
+  color: var(--text-tertiary);
 }

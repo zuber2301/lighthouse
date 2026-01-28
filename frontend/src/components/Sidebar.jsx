@@ -122,7 +122,7 @@ export default function Sidebar() {
           <div className="w-9 h-9 rounded-lg bg-accent flex items-center justify-center shadow-accent-neon active:scale-95 transition-transform">
             <span className="text-white text-[16px]">LH</span>
           </div>
-          <div className="text-2xl font-normal tracking-tight text-white">LightHouse</div>
+          <div className="text-2xl font-bold tracking-tight text-text-main">LightHouse</div>
         </Link>
         {/* Tenant selector moved to bottom */}
         <nav className="flex flex-col gap-2" role="navigation" aria-label="Main navigation">
@@ -135,9 +135,9 @@ export default function Sidebar() {
               {({ isActive }) => (
                 <>
                   <div className={`p-1.5 rounded-lg ${isActive ? 'bg-accent/20' : 'bg-white/5'}`}>
-                    <it.icon className="w-5 h-5 text-white" />
+                    <it.icon className="w-5 h-5 text-text-main" />
                   </div>
-                  <span className="font-normal text-[18px] text-white">{it.label}</span>
+                  <span className="font-normal text-[18px] text-text-main">{it.label}</span>
                 </>
               )}
             </NavLink>
@@ -147,9 +147,9 @@ export default function Sidebar() {
             <NavLink to={`/tenants/${selectedTenant.id}`} className={({ isActive }) => `flex items-center gap-3 p-3 rounded-xl transition-all duration-200 ${isActive ? activeLinkClass : inactiveLinkClass}`}>
               <>
                 <div className="p-1.5 rounded-lg bg-white/5">
-                  <TenantIcon className="w-5 h-5 text-white" />
+                  <TenantIcon className="w-5 h-5 text-text-main" />
                 </div>
-                <span className="font-normal text-[18px] text-white">Manage {selectedTenant.name}</span>
+                <span className="font-normal text-[18px] text-text-main">Manage {selectedTenant.name}</span>
               </>
             </NavLink>
           )}
@@ -169,7 +169,7 @@ export default function Sidebar() {
                   onFocus={() => { setSearchOpen(true); setHighlighted(0) }}
                   onKeyDown={handleKeyDown}
                   placeholder="Search tenants..."
-                  className="w-full bg-indigo-500/5 border border-indigo-500/10 rounded-md px-4 py-3 text-sm text-white placeholder:text-white/50 focus:outline-none focus:ring-2 focus:ring-indigo-500/30"
+                  className="w-full bg-indigo-500/5 border border-indigo-500/10 rounded-md px-4 py-3 text-sm text-text-main placeholder:text-text-secondary focus:outline-none focus:ring-2 focus:ring-indigo-500/30"
                 />
 
                 {searchOpen && (
@@ -197,9 +197,9 @@ export default function Sidebar() {
 
               <div className="mt-3 flex items-center gap-3 p-3 rounded-xl">
                 <div className="p-1.5 rounded-lg bg-white/5">
-                  <TenantIcon className="w-5 h-5 text-white" />
+                  <TenantIcon className="w-5 h-5 text-text-main" />
                 </div>
-                <span className="font-normal text-[18px] text-white">Select Tenant</span>
+                <span className="font-normal text-[18px] text-text-main">Select Tenant</span>
               </div>
 
               <div className="mt-2 px-3 w-full">
@@ -215,7 +215,7 @@ export default function Sidebar() {
                     }}
                     className="w-4 h-4 rounded bg-card border border-indigo-500/10"
                   />
-                  <span className="text-white">All Tenants</span>
+                  <span className="text-text-main">All Tenants</span>
                 </label>
               </div>
             </div>

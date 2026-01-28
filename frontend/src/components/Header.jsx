@@ -62,7 +62,7 @@ export default function Header() {
             <div className="w-9 h-9 rounded-lg bg-accent flex items-center justify-center shadow-accent-neon active:scale-95 transition-transform">
             <span className="text-white text-[18px]">LH</span>
           </div>
-          <div className="text-[26px] font-normal tracking-tight text-white">LightHouse</div>
+          <div className="text-[26px] font-bold tracking-tight text-text-main">LightHouse</div>
         </Link>
         
         {/* Context display: shows selected tenant name/id or All Tenants */}
@@ -105,14 +105,14 @@ export default function Header() {
                 onClick={() => { setTheme('dim'); setIsThemeDropdownOpen(false); }} 
                 className={`w-full text-left px-4 py-2.5 text-[11px] font-black uppercase tracking-widest hover:bg-indigo-500/5 flex items-center gap-3 transition-colors ${theme === 'dim' ? 'text-indigo-500 bg-indigo-500/5' : 'text-text-main opacity-60'}`}
               >
-                <span className="w-2.5 h-2.5 rounded-full bg-[#1E1E2F] border border-indigo-400/30 shadow-sm" />
+                <span className="w-2.5 h-2.5 rounded-full border border-indigo-400/30 shadow-sm" style={{backgroundColor: 'var(--card-bg)'}} />
                 Dim Mode
               </button>
               <button 
                 onClick={() => { setTheme('dark'); setIsThemeDropdownOpen(false); }} 
                 className={`w-full text-left px-4 py-2.5 text-[11px] font-black uppercase tracking-widest hover:bg-indigo-500/5 flex items-center gap-3 transition-colors ${theme === 'dark' ? 'text-indigo-500 bg-indigo-500/5' : 'text-text-main opacity-60'}`}
               >
-                <span className="w-2.5 h-2.5 rounded-full bg-black border border-indigo-900 shadow-sm" />
+                <span className="w-2.5 h-2.5 rounded-full border border-indigo-900 shadow-sm" style={{backgroundColor: '#1a1a1a'}} />
                 Dark Mode
               </button>
               <button 

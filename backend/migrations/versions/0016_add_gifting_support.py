@@ -1,7 +1,7 @@
 """Add gifting mode support: pickup locations, time slots, and gift images
 
 Revision ID: 0016_add_gifting_support
-Revises: 3a4043bbb0a6
+Revises: 0015_add_event_management
 Create Date: 2024-01-27 00:00:00.000000
 
 """
@@ -11,7 +11,7 @@ from sqlalchemy.dialects import postgresql
 
 # revision identifiers, used by Alembic.
 revision = '0016_add_gifting_support'
-down_revision = '3a4043bbb0a6'
+down_revision = '0015_add_event_management'
 branch_labels = None
 depends_on = None
 

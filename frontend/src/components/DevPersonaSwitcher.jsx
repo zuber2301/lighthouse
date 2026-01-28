@@ -72,7 +72,7 @@ export default function DevPersonaSwitcher({ onSwitch } = {}) {
                   backgroundColor: roleColors[p.name], 
                   borderRadius: '12px', 
                   padding: '4px 10px',
-                  color: '#000',
+                  color: 'var(--text-main)',
                   fontWeight: 'bold',
                   boxShadow: '0 2px 8px rgba(0,0,0,0.2)'
                 }}>
